@@ -9,7 +9,7 @@
        description="%runtimeType10Description"
        vendor="%vendor"
        version="1.0"
-       class="org.eclipse.jst.server.smartio.core.internal.ServerRuntime">
+       class="org.eclipse.jst.server.smartio.core.ServerRuntime">
        <moduleType
          types="jst.web"
          versions="2.2, 2.3, 2.4, 2.5, 3.0, 3.1, 4.0"/>
@@ -19,18 +19,11 @@
     </runtimeType>
   </extension>
 
-  <extension point="org.eclipse.wst.server.core.runtimeLocators">
-    <runtimeLocator
-       id="org.eclipse.jst.server.smartio.runtime.locator"
-       typeIds="org.eclipse.jst.server.smartio.runtime.*"
-       class="org.eclipse.jst.server.smartio.core.internal.ServerRuntimeLocator"/>
-  </extension>
-
   <extension point="org.eclipse.jst.server.core.runtimeClasspathProviders">
      <runtimeClasspathProvider
         id="org.eclipse.jst.server.smartio.runtimeTarget"
         runtimeTypeIds="org.eclipse.jst.server.smartio.runtime.*"
-        class="org.eclipse.jst.server.smartio.core.internal.ServerRuntimeClasspathProvider"/>
+        class="org.eclipse.jst.server.smartio.core.runtime.ClasspathProvider"/>
    </extension>
 
   <extension point="org.eclipse.wst.server.core.serverTypes">
@@ -46,28 +39,28 @@
        hasConfiguration="true"
        launchConfigId="org.eclipse.jst.server.smartio.core.launchConfigurationType"
        runtimeTypeId="org.eclipse.jst.server.smartio.runtime.10"
-       class="org.eclipse.jst.server.smartio.core.internal.ServerWrapper"
-       behaviourClass="org.eclipse.jst.server.smartio.core.internal.ServerBehaviour">
+       class="org.eclipse.jst.server.smartio.core.ServerWrapper"
+       behaviourClass="org.eclipse.jst.server.smartio.core.ServerBehaviour">
      </serverType>
   </extension>
 
   <extension point="org.eclipse.wst.server.core.launchableAdapters">
      <launchableAdapter
-        class="org.eclipse.jst.server.smartio.core.internal.ServerLaunchableAdapterDelegate"
+        class="org.eclipse.jst.server.smartio.core.ServerLaunchableAdapter"
         id="org.eclipse.jst.server.smartio.web"/>
   </extension>
 
   <extension point="org.eclipse.debug.core.sourcePathComputers">
      <sourcePathComputer
         id="org.eclipse.jst.server.smartio.core.sourcePathComputer"
-        class="org.eclipse.jst.server.smartio.core.internal.ServerSourcePathComputerDelegate"/>
+        class="org.eclipse.jst.server.smartio.core.runtime.SourcePathComputer"/>
   </extension>
 
   <extension point="org.eclipse.debug.core.launchConfigurationTypes">
      <launchConfigurationType
         id="org.eclipse.jst.server.smartio.core.launchConfigurationType"
         name="%launchConfigurationType"
-        delegate="org.eclipse.jst.server.smartio.core.internal.ServerLaunchConfigurationDelegate"
+        delegate="org.eclipse.jst.server.smartio.core.ServerLaunchConfiguration"
         modes="run, debug, profile"
         sourceLocatorId="org.eclipse.jdt.launching.sourceLocator.JavaSourceLookupDirector"
         sourcePathComputerId="org.eclipse.jst.server.smartio.core.sourcePathComputer"/>
@@ -77,7 +70,7 @@
      <publishTask
         id="org.eclipse.jst.server.smartio.core.publishTask"
         typeIds="org.eclipse.jst.server.smartio.*"
-        class="org.eclipse.jst.server.smartio.core.internal.PublishTask"/>
+        class="org.eclipse.jst.server.smartio.core.PublishTask"/>
   </extension>
 
   <extension point="org.eclipse.wst.common.project.facet.core.runtimes">
@@ -88,10 +81,8 @@
     <adapter>
       <runtime-component
          id="org.eclipse.jst.server.smartio"/>
-      <factory
-         class="org.eclipse.jst.server.core.internal.RuntimeClasspathProvider$Factory"/>
-      <type
-         class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
+      <factory class="org.eclipse.jst.server.core.internal.RuntimeClasspathProvider$Factory"/>
+      <type class="org.eclipse.jst.common.project.facet.core.IClasspathProvider"/>
     </adapter>
 
     <supported>
@@ -127,19 +118,15 @@
   <extension point="org.eclipse.wst.server.core.installableRuntimes">
     <runtime
         id="org.eclipse.jst.server.smartio.runtime.10"
-        licenseUrl="http://www.apache.org/licenses/LICENSE-2.0.txt"
-        archiveUrl="http://archive.apache.org/dist/tomcat/tomcat-9/v9.0.19/bin/apache-tomcat-9.0.19-windows-x86.zip"
-        archivePath="apache-tomcat-9.0.19"
-        archiveSize="10562332"
+        licenseUrl="https://www.gnu.org/licenses/agpl-3.0.txt"
+        archiveUrl="https://downloads.tol.info/io/smartIO-Server-Win64-19.07.6.tar.zip"
         fileCount="645"
         os="win32"/>
     <runtime
         id="org.eclipse.jst.server.smartio.runtime.10"
-        licenseUrl="http://www.apache.org/licenses/LICENSE-2.0.txt"
-        archiveUrl="http://archive.apache.org/dist/tomcat/tomcat-9/v9.0.19/bin/apache-tomcat-9.0.19.tar.gz"
-        archivePath="apache-tomcat-9.0.19"
-        archiveSize="9277365"
-        fileCount="641"
+        licenseUrl="https://www.gnu.org/licenses/agpl-3.0.txt"
+        archiveUrl="https://downloads.tol.info/io/smartIO-Server-Linux-19.07.6.tar.gz"
+        archivePath="smartio-server-19.09"
         os="linux"/>
   </extension>
 </plugin>

@@ -20,7 +20,7 @@
          namespace="org.eclipse.jst.server.smartio.ui"
          properties="hasConfiguration"
          type="java.lang.Object"
-         class="org.eclipse.jst.server.smartio.ui.internal.ConfigurationPropertyTester">
+         class="org.eclipse.jst.server.smartio.ui.ConfigurationPropertyTester">
       </propertyTester>
    </extension>
 
@@ -30,7 +30,7 @@
          order="20"
          name="%configurationEditorWebModulesPage"
          typeIds="org.eclipse.jst.server.smartio.*"
-         class="org.eclipse.jst.server.smartio.ui.internal.editor.ConfigurationWebModuleEditorPart">
+         class="org.eclipse.jst.server.smartio.ui.editor.ConfigurationWebModuleEditorPart">
          <enablement>
            <test property="org.eclipse.jst.server.smartio.ui.hasConfiguration" value="true"/>
          </enablement>
@@ -39,23 +39,17 @@
 
    <extension point="org.eclipse.wst.server.ui.editorPageSections">
       <section
-         id="org.eclipse.jst.server.smartio.server.editor.instance"
+         id="org.eclipse.jst.server.smartio.server.editor.general"
          order="0"
          insertionId="org.eclipse.wst.server.editor.overview.left"
          typeIds="org.eclipse.jst.server.smartio.*"
-         class="org.eclipse.jst.server.smartio.ui.internal.editor.ServerLocationEditorSection"/>
-      <section
-         id="org.eclipse.jst.server.smartio.server.editor.general"
-         order="5"
-         insertionId="org.eclipse.wst.server.editor.overview.left"
-         typeIds="org.eclipse.jst.server.smartio.*"
-         class="org.eclipse.jst.server.smartio.ui.internal.editor.ServerGeneralEditorSection"/>
+         class="org.eclipse.jst.server.smartio.ui.editor.ServerGeneralEditorSection"/>
       <section
          id="org.eclipse.jst.server.smartio.configuration.editor.port"
-         order="10"
+         order="5"
          insertionId="org.eclipse.wst.server.editor.overview.right"
          typeIds="org.eclipse.jst.server.smartio.*"
-         class="org.eclipse.jst.server.smartio.ui.internal.editor.ConfigurationPortEditorSection">
+         class="org.eclipse.jst.server.smartio.ui.editor.ConfigurationPortEditorSection">
          <enablement>
            <test property="org.eclipse.jst.server.smartio.ui.hasConfiguration" value="true"/>
          </enablement>
@@ -66,7 +60,7 @@
       <fragment
          id="org.eclipse.jst.server.smartio.runtime.10"
          typeIds="org.eclipse.jst.server.smartio.runtime.10"
-         class="org.eclipse.jst.server.smartio.ui.internal.RuntimeWizardFragment"/>
+         class="org.eclipse.jst.server.smartio.ui.RuntimeWizardFragment"/>
    </extension>
 
   <extension point="org.eclipse.debug.ui.launchConfigurationTypeImages">
@@ -81,7 +75,7 @@
     <launchConfigurationTabGroup
       id="org.eclipse.jst.server.smartio.ui.launchConfigurationTabGroup"
       type="org.eclipse.jst.server.smartio.core.launchConfigurationType"
-      class="org.eclipse.jst.server.smartio.ui.internal.LaunchConfigurationTabGroup">
+      class="org.eclipse.jst.server.smartio.ui.LaunchConfigurationTabGroup">
     </launchConfigurationTabGroup>
   </extension>
 
@@ -107,7 +101,7 @@
           <objectState name="serverType" value="org.eclipse.jst.server.smartio.*"/>
       </visibility>
       <action 
-        class="org.eclipse.jst.server.smartio.ui.internal.actions.CleanWorkDirAction"
+        class="org.eclipse.jst.server.smartio.ui.actions.CleanWorkDirAction"
         enablesFor="1"
         id="org.eclipse.jst.server.smartio.ui.cleanserverworkdir"
         label="%cleanWorkDir">
@@ -124,7 +118,7 @@
         </and>
       </visibility>
       <action
-        class="org.eclipse.jst.server.smartio.ui.internal.actions.CleanWorkDirAction"
+        class="org.eclipse.jst.server.smartio.ui.actions.CleanWorkDirAction"
         enablesFor="1"
         id="org.eclipse.jst.server.smartio.ui.cleanmoduleworkdir"
         label="%cleanModuleWorkDir">
@@ -139,6 +133,6 @@
         name="%publisherContextFixLabel"
         description="%publisherContextFixDescription"
         order=""
-        class="org.eclipse.jst.server.smartio.ui.internal.ContextPublisherDelegate"/>
+        class="org.eclipse.jst.server.smartio.ui.ContextPublisherDelegate"/>
   </extension>
 </plugin>
