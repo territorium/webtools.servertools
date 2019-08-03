@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<plugin>
+   <extension point="org.eclipse.wst.server.ui.serverImages">
+      <image
+         id="org.eclipse.jst.server.smartio.10"
+         icon="icons/obj16/smartio.gif"
+         typeIds="org.eclipse.jst.server.smartio.runtime.10"/>
+
+      <image
+         id="org.eclipse.jst.server.smartio.10"
+         icon="icons/obj16/smartio.gif"
+         typeIds="org.eclipse.jst.server.smartio.10"/>
+   </extension>
+   
+   <extension point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+         id="org.eclipse.jst.server.smartio.ui.propertyTester"
+         namespace="org.eclipse.jst.server.smartio.ui"
+         properties="hasConfiguration"
+         type="java.lang.Object"
+         class="org.eclipse.jst.server.smartio.ui.internal.ConfigurationPropertyTester">
+      </propertyTester>
+   </extension>
+
+   <extension point="org.eclipse.wst.server.ui.editorPages">
+      <page
+         id="org.eclipse.jst.server.smartio.configuration.editor.webmodule"
+         order="20"
+         name="%configurationEditorWebModulesPage"
+         typeIds="org.eclipse.jst.server.smartio.*"
+         class="org.eclipse.jst.server.smartio.ui.internal.editor.ConfigurationWebModuleEditorPart">
+         <enablement>
+           <test property="org.eclipse.jst.server.smartio.ui.hasConfiguration" value="true"/>
+         </enablement>
+      </page>
+   </extension>
+
+   <extension point="org.eclipse.wst.server.ui.editorPageSections">
+      <section
+         id="org.eclipse.jst.server.smartio.server.editor.instance"
+         order="0"
+         insertionId="org.eclipse.wst.server.editor.overview.left"
+         typeIds="org.eclipse.jst.server.smartio.*"
+         class="org.eclipse.jst.server.smartio.ui.internal.editor.ServerLocationEditorSection"/>
+      <section
+         id="org.eclipse.jst.server.smartio.server.editor.general"
+         order="5"
+         insertionId="org.eclipse.wst.server.editor.overview.left"
+         typeIds="org.eclipse.jst.server.smartio.*"
+         class="org.eclipse.jst.server.smartio.ui.internal.editor.ServerGeneralEditorSection"/>
+      <section
+         id="org.eclipse.jst.server.smartio.configuration.editor.port"
+         order="10"
+         insertionId="org.eclipse.wst.server.editor.overview.right"
+         typeIds="org.eclipse.jst.server.smartio.*"
+         class="org.eclipse.jst.server.smartio.ui.internal.editor.ConfigurationPortEditorSection">
+         <enablement>
+           <test property="org.eclipse.jst.server.smartio.ui.hasConfiguration" value="true"/>
+         </enablement>
+      </section>
+      <section
+         id="org.eclipse.jst.server.smartio.configuration.editor.mime"
+         order="20"
+         insertionId="org.eclipse.wst.server.editor.overview.right"
+         typeIds="org.eclipse.jst.server.smartio.*"
+         class="org.eclipse.jst.server.smartio.ui.internal.editor.ConfigurationMimeEditorSection">
+         <enablement>
+           <test property="org.eclipse.jst.server.smartio.ui.hasConfiguration" value="true"/>
+         </enablement>
+      </section>
+   </extension>
+   
+   <extension point="org.eclipse.wst.server.ui.wizardFragments">
+      <fragment
+         id="org.eclipse.jst.server.smartio.runtime.10"
+         typeIds="org.eclipse.jst.server.smartio.runtime.10"
+         class="org.eclipse.jst.server.smartio.ui.internal.RuntimeWizardFragment"/>
+   </extension>
+
+  <extension point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+    <launchConfigurationTypeImage
+      id="org.eclipse.jst.server.smartio.ui.launchConfigurationTypeImage"
+      configTypeID="org.eclipse.jst.server.smartio.core.launchConfigurationType"
+      icon="icons/obj16/smartio.gif">
+    </launchConfigurationTypeImage>
+  </extension>
+
+  <extension point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+    <launchConfigurationTabGroup
+      id="org.eclipse.jst.server.smartio.ui.launchConfigurationTabGroup"
+      type="org.eclipse.jst.server.smartio.core.launchConfigurationType"
+      class="org.eclipse.jst.server.smartio.ui.internal.LaunchConfigurationTabGroup">
+    </launchConfigurationTabGroup>
+  </extension>
+
+  <extension point="org.eclipse.wst.common.project.facet.ui.images">
+    <image runtime-component-type="org.eclipse.jst.server.smartio"
+      path="icons/obj16/smartio.gif"/>
+  </extension>
+
+  <extension point="org.eclipse.wst.common.project.facet.core.runtimes">
+    <adapter>
+      <runtime-component id="org.eclipse.jst.server.smartio"/>
+      <factory class="org.eclipse.jst.server.ui.internal.RuntimeLabelProvider$Factory"/>
+      <type class="org.eclipse.wst.common.project.facet.ui.IRuntimeComponentLabelProvider"/>
+    </adapter>
+  </extension>
+
+  <extension point="org.eclipse.ui.popupMenus">
+    <objectContribution
+      adaptable="true"
+      id="org.eclipse.jst.server.smartio.ui.serveractions"
+      objectClass="org.eclipse.wst.server.core.IServer">
+      <visibility>
+          <objectState name="serverType" value="org.eclipse.jst.server.smartio.*"/>
+      </visibility>
+      <action 
+        class="org.eclipse.jst.server.smartio.ui.internal.actions.CleanWorkDirAction"
+        enablesFor="1"
+        id="org.eclipse.jst.server.smartio.ui.cleanserverworkdir"
+        label="%cleanWorkDir">
+      </action>
+    </objectContribution>
+    <objectContribution
+      adaptable="true"
+      id="org.eclipse.jst.server.smartio.ui.serveractions"
+      objectClass="org.eclipse.wst.server.ui.internal.view.servers.ModuleServer">
+      <visibility>
+        <and>
+          <objectState name="serverType" value="org.eclipse.jst.server.smartio.*"/>
+          <objectState name="moduleType" value="jst.web"/>
+        </and>
+      </visibility>
+      <action
+        class="org.eclipse.jst.server.smartio.ui.internal.actions.CleanWorkDirAction"
+        enablesFor="1"
+        id="org.eclipse.jst.server.smartio.ui.cleanmoduleworkdir"
+        label="%cleanModuleWorkDir">
+      </action>
+    </objectContribution>
+  </extension>
+
+  <extension point="org.eclipse.wst.server.core.publishers">
+     <publisher
+        id="org.eclipse.jst.server.smartio.ui.context"
+        typeIds="org.eclipse.jst.server.smartio.*"
+        name="%publisherContextFixLabel"
+        description="%publisherContextFixDescription"
+        order=""
+        class="org.eclipse.jst.server.smartio.ui.internal.ContextPublisherDelegate"/>
+  </extension>
+</plugin>
