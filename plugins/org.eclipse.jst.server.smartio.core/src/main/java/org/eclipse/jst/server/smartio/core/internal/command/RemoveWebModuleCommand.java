@@ -11,7 +11,7 @@
 package org.eclipse.jst.server.smartio.core.internal.command;
 
 import org.eclipse.jst.server.smartio.core.internal.Messages;
-import org.eclipse.jst.server.smartio.core.internal.ServerConfiguration;
+import org.eclipse.jst.server.smartio.core.internal.IServerConfiguration;
 import org.eclipse.jst.server.smartio.core.internal.WebModule;
 
 /**
@@ -28,7 +28,7 @@ public class RemoveWebModuleCommand extends ConfigurationCommand {
    * @param configuration
    * @param index an index
    */
-  public RemoveWebModuleCommand(ServerConfiguration configuration, int index) {
+  public RemoveWebModuleCommand(IServerConfiguration configuration, int index) {
     super(configuration, Messages.configurationEditorActionRemoveWebModule);
     this.index = index;
   }

@@ -1,7 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2007 IBM Corporation and others. All rights reserved. This program and the
- * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
- * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2003, 2007 IBM Corporation and others. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which accompanies this distribution,
+ * and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -12,6 +13,7 @@ package org.eclipse.jst.server.smartio.core.internal;
 
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.jst.server.core.Servlet;
+import org.eclipse.jst.server.smartio.core.internal.ServerPlugin.Level;
 import org.eclipse.wst.server.core.IModuleArtifact;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.model.IURLProvider;
@@ -31,7 +33,7 @@ public class ServerLaunchableAdapterDelegate extends LaunchableAdapterDelegate {
    */
   @Override
   public Object getLaunchable(IServer server, IModuleArtifact moduleObject) {
-    Trace.trace(Trace.FINER, "ServerLaunchableAdapter " + server + "-" + moduleObject);
+    ServerPlugin.log(Level.FINER, "ServerLaunchableAdapter " + server + "-" + moduleObject);
     if (server.getAdapter(ServerWrapper.class) == null) {
       return null;
     }
@@ -46,7 +48,7 @@ public class ServerLaunchableAdapterDelegate extends LaunchableAdapterDelegate {
       URL url =
           ((IURLProvider) server.loadAdapter(IURLProvider.class, null)).getModuleRootURL(moduleObject.getModule());
 
-      Trace.trace(Trace.FINER, "root: " + url);
+      ServerPlugin.log(Level.FINER, "root: " + url);
 
       if (moduleObject instanceof Servlet) {
         Servlet servlet = (Servlet) moduleObject;
@@ -62,7 +64,7 @@ public class ServerLaunchableAdapterDelegate extends LaunchableAdapterDelegate {
       } else if (moduleObject instanceof WebResource) {
         WebResource resource = (WebResource) moduleObject;
         String path = resource.getPath().toString();
-        Trace.trace(Trace.FINER, "path: " + path);
+        ServerPlugin.log(Level.FINER, "path: " + path);
         if ((path != null) && path.startsWith("/") && (path.length() > 0)) {
           path = path.substring(1);
         }
@@ -72,7 +74,7 @@ public class ServerLaunchableAdapterDelegate extends LaunchableAdapterDelegate {
       }
       return new HttpLaunchable(url);
     } catch (Exception e) {
-      Trace.trace(Trace.SEVERE, "Error getting URL for " + moduleObject, e);
+      ServerPlugin.log(Level.SEVERE, "Error getting URL for " + moduleObject, e);
       return null;
     }
   }

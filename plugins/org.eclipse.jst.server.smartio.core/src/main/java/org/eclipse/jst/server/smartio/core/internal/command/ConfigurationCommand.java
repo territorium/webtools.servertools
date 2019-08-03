@@ -15,14 +15,14 @@ import org.eclipse.core.commands.operations.AbstractOperation;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jst.server.smartio.core.internal.ServerConfiguration;
+import org.eclipse.jst.server.smartio.core.internal.IServerConfiguration;
 
 /**
  * Configuration command.
  */
 abstract class ConfigurationCommand extends AbstractOperation {
 
-  protected ServerConfiguration configuration;
+  protected IServerConfiguration configuration;
 
   /**
    * ConfigurationCommand constructor comment.
@@ -30,7 +30,7 @@ abstract class ConfigurationCommand extends AbstractOperation {
    * @param configuration
    * @param label a label
    */
-  ConfigurationCommand(ServerConfiguration configuration, String label) {
+  ConfigurationCommand(IServerConfiguration configuration, String label) {
     super(label);
     this.configuration = configuration;
   }

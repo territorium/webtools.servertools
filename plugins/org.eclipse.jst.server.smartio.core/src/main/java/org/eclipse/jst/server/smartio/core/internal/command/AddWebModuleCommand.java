@@ -11,7 +11,7 @@
 package org.eclipse.jst.server.smartio.core.internal.command;
 
 import org.eclipse.jst.server.smartio.core.internal.Messages;
-import org.eclipse.jst.server.smartio.core.internal.ServerConfiguration;
+import org.eclipse.jst.server.smartio.core.internal.IServerConfiguration;
 import org.eclipse.jst.server.smartio.core.internal.WebModule;
 
 /**
@@ -28,7 +28,7 @@ public class AddWebModuleCommand extends ConfigurationCommand {
    * @param configuration
    * @param module a web module
    */
-  public AddWebModuleCommand(ServerConfiguration configuration, WebModule module) {
+  public AddWebModuleCommand(IServerConfiguration configuration, WebModule module) {
     super(configuration, Messages.configurationEditorActionAddWebModule);
     this.module = module;
   }

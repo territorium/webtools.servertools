@@ -1,7 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2018 IBM Corporation and others. All rights reserved. This program and the
- * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
- * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2003, 2018 IBM Corporation and others. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which accompanies this distribution,
+ * and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -16,12 +17,15 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.jdt.internal.launching.StandardVMType;
 import org.eclipse.jdt.launching.AbstractJavaLaunchConfigurationDelegate;
 import org.eclipse.jdt.launching.ExecutionArguments;
 import org.eclipse.jdt.launching.IVMInstall;
+import org.eclipse.jdt.launching.IVMInstallType;
 import org.eclipse.jdt.launching.IVMRunner;
 import org.eclipse.jdt.launching.VMRunnerConfiguration;
 import org.eclipse.jst.server.core.ServerProfilerDelegate;
+import org.eclipse.jst.server.smartio.core.internal.ServerPlugin.Level;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerCore;
 import org.eclipse.wst.server.core.ServerUtil;
@@ -38,7 +42,6 @@ import java.util.Map;
 public class ServerLaunchConfigurationDelegate extends AbstractJavaLaunchConfigurationDelegate {
 
   public ServerLaunchConfigurationDelegate() {
-    super();
     allowAdvancedSourcelookup();
   }
 
@@ -47,7 +50,7 @@ public class ServerLaunchConfigurationDelegate extends AbstractJavaLaunchConfigu
       throws CoreException {
     IServer server = ServerUtil.getServer(configuration);
     if (server == null) {
-      Trace.trace(Trace.FINEST, "Launch configuration could not find server");
+      ServerPlugin.log(Level.FINEST, "Launch configuration could not find server");
       // throw CoreException();
       return;
     }
@@ -60,7 +63,10 @@ public class ServerLaunchConfigurationDelegate extends AbstractJavaLaunchConfigu
 
     String mainTypeName = behavior.getRuntimeClass();
 
-    IVMInstall vm = verifyVMInstall(configuration);
+    final IVMInstallType installType = new StandardVMType();
+    IVMInstall vm = installType.createVMInstall("Smart.IO VM");
+    vm.setInstallLocation(behavior.getServerRuntime().getRuntime().getLocation().toFile());
+
 
     IVMRunner runner = vm.getVMRunner(mode);
     if (runner == null) {
@@ -91,7 +97,8 @@ public class ServerLaunchConfigurationDelegate extends AbstractJavaLaunchConfigu
     runConfig.setProgramArguments(execArgs.getProgramArgumentsArray());
 
     List<String> vmArguments = new ArrayList<>();
-    // Enable source lookup java agent, if allowAdvancedSourcelookup() was invoked
+    // Enable source lookup java agent, if allowAdvancedSourcelookup() was
+    // invoked
     vmArguments.addAll(Arrays.asList(DebugPlugin.parseArguments(getVMArguments(configuration, mode))));
     vmArguments.addAll(Arrays.asList(execArgs.getVMArgumentsArray()));
     runConfig.setVMArguments(vmArguments.toArray(new String[vmArguments.size()]));

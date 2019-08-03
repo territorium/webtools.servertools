@@ -56,18 +56,11 @@ public class Messages extends NLS {
   public static String configurationEditorMimeMapppingDialogMimeType;
   public static String configurationEditorMimeMapppingDialogMimeExtension;
   public static String serverEditorLocationsSection;
-  public static String serverEditorLocationsDescription;
-  public static String serverEditorLocationsDescription2;
   public static String serverEditorGeneralSection;
   public static String serverEditorGeneralDescription;
-  public static String serverEditorServerDirMetadata;
-  public static String serverEditorServerDirInstall;
-  public static String serverEditorServerDirCustom;
   public static String serverEditorSetDefaultDeployDirLink;
   public static String serverEditorSetDefaultDeployDirLink2;
-  public static String serverEditorServerDir;
   public static String serverEditorDeployDir;
-  public static String serverEditorNoPublish;
   public static String serverEditorSeparateContextFiles;
   public static String serverEditorReloadableByDefault;
   public static String serverEditorSecure;

@@ -1,11 +1,13 @@
 /**********************************************************************
- * Copyright (c) 2007, 2015 IBM Corporation and others. All rights reserved. This program and the
- * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
- * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2007, 2015 IBM Corporation and others. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which accompanies this distribution,
+ * and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Contributors: Igor Fedorenko & Fabrizio Giustina - Initial API and implementation
+ * Contributors: Igor Fedorenko & Fabrizio Giustina - Initial API and
+ * implementation
  **********************************************************************/
 
 package org.eclipse.jst.server.smartio.core.internal.wst;
@@ -29,7 +31,7 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jst.server.smartio.core.internal.ServerPlugin;
-import org.eclipse.jst.server.smartio.core.internal.Trace;
+import org.eclipse.jst.server.smartio.core.internal.ServerPlugin.Level;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.common.componentcore.ComponentCore;
 import org.eclipse.wst.common.componentcore.UnresolveableURIException;
@@ -63,21 +65,24 @@ public class ModuleTraverser {
       IModuleConstants.JST_WEB_MODULE;
 
   /**
-   * Name of the custom Java classpath entry attribute that is used to flag entries which should be
-   * exposed as module dependencies via the virtual component API.
+   * Name of the custom Java classpath entry attribute that is used to flag
+   * entries which should be exposed as module dependencies via the virtual
+   * component API.
    */
   private static final String CLASSPATH_COMPONENT_DEPENDENCY                           =
       "org.eclipse.jst.component.dependency";                                              // $NON-NLS-1
 
   /**
-   * Name of the custom Java classpath entry attribute that is used to flag the resolved entries of
-   * classpath containers that should not be exposed via the virtual component API.
+   * Name of the custom Java classpath entry attribute that is used to flag the
+   * resolved entries of classpath containers that should not be exposed via the
+   * virtual component API.
    */
   private static final String CLASSPATH_COMPONENT_NON_DEPENDENCY                       =
       "org.eclipse.jst.component.nondependency";                                           // $NON-NLS-1
 
   /**
-   * Argument values that are used to select component dependency attribute type.
+   * Argument values that are used to select component dependency attribute
+   * type.
    */
   private static final int    DEPENDECYATTRIBUTETYPE_DEPENDENCY_OR_NONDEPENDENCY       = 0;
   private static final int    DEPENDECYATTRIBUTETYPE_CLASSPATH_COMPONENT_DEPENDENCY    = 1;
@@ -101,7 +106,7 @@ public class ModuleTraverser {
 
     if (component == null) {
       // can happen if project has been closed
-      Trace.trace(Trace.WARNING, "Unable to create component for module " + module.getName());
+      ServerPlugin.log(Level.WARNING, "Unable to create component for module " + module.getName());
       return;
     }
 
@@ -120,7 +125,7 @@ public class ModuleTraverser {
     try {
       WorkbenchComponent comp = warStruct.getComponent();
       if (comp == null) {
-        Trace.trace(Trace.SEVERE, "Error getting WorkbenchComponent from war project. IProject=\"" + proj
+        ServerPlugin.log(Level.SEVERE, "Error getting WorkbenchComponent from war project. IProject=\"" + proj
             + "\" StructureEdit=\"" + warStruct + "\" WorkbenchComponent=\"" + comp + "\"");
         return;
       }
@@ -143,7 +148,7 @@ public class ModuleTraverser {
               if (refPath2 != null) {
                 visitor.visitArchiveComponent(rtFolder, refPath2);
               } else {
-                Trace.trace(Trace.WARNING, NLS.bind(
+                ServerPlugin.log(Level.WARNING, NLS.bind(
                     "Could not get the location of a referenced component.  It may not exist.  Project={0}, Parent Component={1}, Referenced Component Path={2}",
                     new Object[] { proj.getName(), comp.getName(), refPath }));
               }
@@ -343,7 +348,7 @@ public class ModuleTraverser {
           return Path.fromOSString(finaluri.toString());
         }
       }
-      Trace.trace(Trace.WARNING, NLS.bind(
+      ServerPlugin.log(Level.WARNING, NLS.bind(
           "smart.IO publishing could not resolve dependency URI \"{0}\".  A value for classpath variable {1} was not found.",
           uri, classpathVar));
     }
@@ -359,8 +364,7 @@ public class ModuleTraverser {
     // get the raw entries
     final Map<IClasspathEntry, IClasspathAttribute> referencedRawEntries =
         ModuleTraverser.getRawComponentClasspathDependencies(javaProject);
-    final Map<IClasspathEntry, IClasspathAttribute> validRawEntries =
-        new HashMap<>();
+    final Map<IClasspathEntry, IClasspathAttribute> validRawEntries = new HashMap<>();
 
     // filter out non-valid referenced raw entries
     final Iterator<IClasspathEntry> i = referencedRawEntries.keySet().iterator();
@@ -377,12 +381,15 @@ public class ModuleTraverser {
       return Collections.emptyMap();
     }
 
-    // XXX Would like to replace the code below with use of a public JDT API that returns
+    // XXX Would like to replace the code below with use of a public JDT API
+    // that returns
     // the raw IClasspathEntry for a given resolved IClasspathEntry (see see
     // https://bugs.eclipse.org/bugs/show_bug.cgi?id=183995)
     // The code must currently leverage IPackageFragmentRoot to determine this
-    // mapping and, because IPackageFragmentRoots do not maintain IClasspathEntry data, a prior
-    // call is needed to getResolvedClasspath() and the resolved IClasspathEntries have to be stored
+    // mapping and, because IPackageFragmentRoots do not maintain
+    // IClasspathEntry data, a prior
+    // call is needed to getResolvedClasspath() and the resolved
+    // IClasspathEntries have to be stored
     // in a Map from IPath-to-IClasspathEntry to
     // support retrieval using the resolved IPackageFragmentRoot
 
@@ -391,7 +398,8 @@ public class ModuleTraverser {
     final Map<IPath, IClasspathEntry> pathToResolvedEntry = new HashMap<>();
 
     // store in a map from path to entry
-    // Note: We need to check the non-dependency attribute for each entry since it
+    // Note: We need to check the non-dependency attribute for each entry since
+    // it
     // might be a child of a classpath container.
     for (IClasspathEntry entrie : entries) {
       IClasspathAttribute attrib = ModuleTraverser.checkForComponentDependencyAttribute(entrie,
@@ -402,8 +410,7 @@ public class ModuleTraverser {
       }
     }
 
-    final Map<IClasspathEntry, IClasspathAttribute> referencedEntries =
-        new LinkedHashMap<>();
+    final Map<IClasspathEntry, IClasspathAttribute> referencedEntries = new LinkedHashMap<>();
 
     // grab all IPackageFragmentRoots
     final IPackageFragmentRoot[] roots = javaProject.getPackageFragmentRoots();
@@ -418,14 +425,16 @@ public class ModuleTraverser {
 
       final IPath pkgFragPath = root.getPath();
       final IClasspathEntry resolvedEntry = pathToResolvedEntry.get(pkgFragPath);
-      // If the resolvedEntry is not present for this path, then it was excluded above due to being
+      // If the resolvedEntry is not present for this path, then it was excluded
+      // above due to being
       // a non-dependency
       if (resolvedEntry == null) {
         continue;
       }
       final IClasspathAttribute resolvedAttrib = ModuleTraverser.checkForComponentDependencyAttribute(resolvedEntry,
           ModuleTraverser.DEPENDECYATTRIBUTETYPE_DEPENDENCY_OR_NONDEPENDENCY);
-      // attribute for the resolved entry must either be unspecified or it must be the
+      // attribute for the resolved entry must either be unspecified or it must
+      // be the
       // dependency attribute for it to be included
       if ((resolvedAttrib == null) || resolvedAttrib.getName().equals(ModuleTraverser.CLASSPATH_COMPONENT_DEPENDENCY)) {
         // filter out resolved entry if it doesn't pass the validation rules
@@ -451,8 +460,7 @@ public class ModuleTraverser {
     if (javaProject == null) {
       return Collections.emptyMap();
     }
-    final Map<IClasspathEntry, IClasspathAttribute> referencedRawEntries =
-        new HashMap<>();
+    final Map<IClasspathEntry, IClasspathAttribute> referencedRawEntries = new HashMap<>();
     final IClasspathEntry[] entries = javaProject.getRawClasspath();
     for (final IClasspathEntry entry : entries) {
       final IClasspathAttribute attrib = ModuleTraverser.checkForComponentDependencyAttribute(entry,

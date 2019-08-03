@@ -60,16 +60,6 @@
            <test property="org.eclipse.jst.server.smartio.ui.hasConfiguration" value="true"/>
          </enablement>
       </section>
-      <section
-         id="org.eclipse.jst.server.smartio.configuration.editor.mime"
-         order="20"
-         insertionId="org.eclipse.wst.server.editor.overview.right"
-         typeIds="org.eclipse.jst.server.smartio.*"
-         class="org.eclipse.jst.server.smartio.ui.internal.editor.ConfigurationMimeEditorSection">
-         <enablement>
-           <test property="org.eclipse.jst.server.smartio.ui.hasConfiguration" value="true"/>
-         </enablement>
-      </section>
    </extension>
    
    <extension point="org.eclipse.wst.server.ui.wizardFragments">

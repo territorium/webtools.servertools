@@ -16,7 +16,7 @@ import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.jst.server.smartio.core.internal.ServerConfiguration;
+import org.eclipse.jst.server.smartio.core.internal.IServerConfiguration;
 import org.eclipse.jst.server.smartio.core.internal.ServerWrapper;
 import org.eclipse.jst.server.smartio.core.internal.command.ModifyPortCommand;
 import org.eclipse.jst.server.smartio.ui.internal.ContextIds;
@@ -51,7 +51,7 @@ import java.util.Iterator;
  */
 public class ConfigurationPortEditorSection extends ServerEditorSection {
 
-  protected ServerConfiguration    configuration;
+  protected IServerConfiguration    configuration;
 
   protected boolean                updating;
 
@@ -75,7 +75,7 @@ public class ConfigurationPortEditorSection extends ServerEditorSection {
 
       @Override
       public void propertyChange(PropertyChangeEvent event) {
-        if (ServerConfiguration.MODIFY_PORT_PROPERTY.equals(event.getPropertyName())) {
+        if (IServerConfiguration.MODIFY_PORT_PROPERTY.equals(event.getPropertyName())) {
           String id = (String) event.getOldValue();
           Integer i = (Integer) event.getNewValue();
           changePortNumber(id, i.intValue());

@@ -17,8 +17,8 @@ import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jst.server.core.IWebModule;
-import org.eclipse.jst.server.smartio.core.internal.IServerWrapperWorkingCopy;
-import org.eclipse.jst.server.smartio.core.internal.ServerConfiguration;
+import org.eclipse.jst.server.smartio.core.internal.IServerWrapper;
+import org.eclipse.jst.server.smartio.core.internal.IServerConfiguration;
 import org.eclipse.jst.server.smartio.core.internal.ServerWrapper;
 import org.eclipse.jst.server.smartio.core.internal.WebModule;
 import org.eclipse.jst.server.smartio.core.internal.command.AddModuleCommand;
@@ -65,17 +65,17 @@ import java.util.List;
  */
 public class ConfigurationWebModuleEditorPart extends ServerEditorPart {
 
-  protected IServerWrapperWorkingCopy server2;
-  protected ServerConfiguration       configuration;
+  protected IServerWrapper         server2;
+  protected IServerConfiguration    configuration;
 
-  protected Table                     webAppTable;
-  protected int                       selection = -1;
-  protected Button                    addProject;
-  protected Button                    addExtProject;
-  protected Button                    remove;
-  protected Button                    edit;
+  protected Table                  webAppTable;
+  protected int                    selection = -1;
+  protected Button                 addProject;
+  protected Button                 addExtProject;
+  protected Button                 remove;
+  protected Button                 edit;
 
-  protected PropertyChangeListener    listener;
+  protected PropertyChangeListener listener;
 
   /**
    * ConfigurationWebModuleEditorPart constructor comment.
@@ -92,11 +92,11 @@ public class ConfigurationWebModuleEditorPart extends ServerEditorPart {
 
       @Override
       public void propertyChange(PropertyChangeEvent event) {
-        if (ServerConfiguration.WEB_MODULE_PROPERTY_MODIFY.equals(event.getPropertyName())) {
+        if (IServerConfiguration.WEB_MODULE_PROPERTY_MODIFY.equals(event.getPropertyName())) {
           initialize();
-        } else if (ServerConfiguration.WEB_MODULE_PROPERTY_ADD.equals(event.getPropertyName())) {
+        } else if (IServerConfiguration.WEB_MODULE_PROPERTY_ADD.equals(event.getPropertyName())) {
           initialize();
-        } else if (ServerConfiguration.WEB_MODULE_PROPERTY_REMOVE.equals(event.getPropertyName())) {
+        } else if (IServerConfiguration.WEB_MODULE_PROPERTY_REMOVE.equals(event.getPropertyName())) {
           initialize();
         }
       }
@@ -327,7 +327,7 @@ public class ConfigurationWebModuleEditorPart extends ServerEditorPart {
     }
 
     if (server != null) {
-      server2 = (IServerWrapperWorkingCopy) server.loadAdapter(IServerWrapperWorkingCopy.class, null);
+      server2 = (IServerWrapper) server.loadAdapter(IServerWrapper.class, null);
     }
 
     initialize();

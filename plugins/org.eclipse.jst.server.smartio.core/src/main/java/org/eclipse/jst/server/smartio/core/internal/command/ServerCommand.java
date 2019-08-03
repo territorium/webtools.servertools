@@ -15,7 +15,7 @@ import org.eclipse.core.commands.operations.AbstractOperation;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jst.server.smartio.core.internal.IServerWrapperWorkingCopy;
+import org.eclipse.jst.server.smartio.core.internal.IServerWrapper;
 import org.eclipse.jst.server.smartio.core.internal.ServerWrapper;
 
 /**
@@ -31,7 +31,7 @@ abstract class ServerCommand extends AbstractOperation {
    * @param server
    * @param label a label
    */
-  ServerCommand(IServerWrapperWorkingCopy server, String label) {
+  ServerCommand(IServerWrapper server, String label) {
     super(label);
     this.server = (ServerWrapper) server;
   }

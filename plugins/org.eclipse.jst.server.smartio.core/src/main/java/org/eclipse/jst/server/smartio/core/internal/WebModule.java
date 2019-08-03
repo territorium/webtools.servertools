@@ -1,7 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others. All rights reserved. This program and the
- * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
- * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2004, 2005 IBM Corporation and others. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which accompanies this distribution,
+ * and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -15,6 +16,12 @@ package org.eclipse.jst.server.smartio.core.internal;
  */
 public class WebModule implements IServerWebModule {
 
+  // Default web.xml contents for a Servlet 2.5 web application.
+  public static final String DEFAULT_WEBXML_SERVLET25 = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"
+      + "<web-app xmlns=\"http://java.sun.com/xml/ns/javaee\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd\" version=\"2.5\">\n"
+      + "</web-app>";
+
+
   private final String  docBase;
   private final String  path;
   private final String  memento;
@@ -23,13 +30,12 @@ public class WebModule implements IServerWebModule {
   /**
    * WebModule constructor comment.
    * 
-   * @param path a path
-   * @param docBase a document base
-   * @param memento a memento
-   * @param reloadable <code>true</code> if reloadable
+   * @param path
+   * @param docBase
+   * @param memento
+   * @param reloadable
    */
   public WebModule(String path, String docBase, String memento, boolean reloadable) {
-    super();
     this.path = path;
     this.docBase = docBase;
     this.memento = memento;
@@ -38,8 +44,6 @@ public class WebModule implements IServerWebModule {
 
   /**
    * Get the document base.
-   *
-   * @return java.lang.String
    */
   @Override
   public String getDocumentBase() {
@@ -48,8 +52,6 @@ public class WebModule implements IServerWebModule {
 
   /**
    * Return the path. (context root)
-   *
-   * @return java.lang.String
    */
   @Override
   public String getPath() {
@@ -58,8 +60,6 @@ public class WebModule implements IServerWebModule {
 
   /**
    * Return the memento.
-   *
-   * @return java.lang.String
    */
   @Override
   public String getMemento() {
@@ -68,8 +68,6 @@ public class WebModule implements IServerWebModule {
 
   /**
    * Return true if the web module is auto-reloadable.
-   *
-   * @return java.lang.String
    */
   @Override
   public boolean isReloadable() {

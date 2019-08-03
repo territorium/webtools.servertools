@@ -1,7 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2018 IBM Corporation and others. All rights reserved. This program and the
- * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
- * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2003, 2018 IBM Corporation and others. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which accompanies this distribution,
+ * and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -10,7 +11,6 @@
 
 package org.eclipse.jst.server.smartio.core.internal;
 
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -29,11 +29,10 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.jdt.launching.IJavaLaunchConfigurationConstants;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
-import org.eclipse.jdt.launching.IVMInstall;
-import org.eclipse.jdt.launching.IVMInstall2;
 import org.eclipse.jdt.launching.JavaRuntime;
 import org.eclipse.jst.server.core.IJ2EEModule;
 import org.eclipse.jst.server.core.IWebModule;
+import org.eclipse.jst.server.smartio.core.internal.ServerPlugin.Level;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -71,12 +70,15 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
   private transient PingThread             ping = null;
   private transient IDebugEventSetListener processListener;
 
+
   /**
-   * {@link ServerBehaviour}
+   * Get the {@link ServerWrapper} for the current
+   * {@link ServerBehaviourDelegate}
    */
-  public ServerBehaviour() {
-    super();
+  public final ServerWrapper getWrapper() {
+    return (ServerWrapper) getServer().loadAdapter(ServerWrapper.class, null);
   }
+
 
   @Override
   public void initialize(IProgressMonitor monitor) {
@@ -95,12 +97,8 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
     return getWrapper().getVersionHandler();
   }
 
-  public ServerConfiguration getConfiguration() throws CoreException {
+  public IServerConfiguration getConfiguration() throws CoreException {
     return getWrapper().getConfiguration();
-  }
-
-  public ServerWrapper getWrapper() {
-    return (ServerWrapper) getServer().loadAdapter(ServerWrapper.class, null);
   }
 
   /**
@@ -113,7 +111,8 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
   }
 
   /**
-   * Returns the runtime base path for relative paths in the server configuration.
+   * Returns the runtime base path for relative paths in the server
+   * configuration.
    * 
    * @return the base path
    */
@@ -129,14 +128,7 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
    */
   private String[] getRuntimeProgramArguments(boolean starting) {
     IPath configPath = null;
-    if (getWrapper().isTestEnvironment()) {
-      configPath = getRuntimeBaseDirectory();
-    }
-    return getVersionHandler().getRuntimeProgramArguments(configPath, getWrapper().isDebug(), starting);
-  }
-
-  private String[] getExcludedRuntimeProgramArguments(boolean starting) {
-    return getVersionHandler().getExcludedRuntimeProgramArguments(getWrapper().isDebug(), starting);
+    return getVersionHandler().getRuntimeProgramArguments(configPath, starting);
   }
 
   /**
@@ -146,7 +138,8 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
    */
   private String[] getRuntimeVMArguments() {
     IPath installPath = getServer().getRuntime().getLocation();
-    // If installPath is relative, convert to canonical path and hope for the best
+    // If installPath is relative, convert to canonical path and hope for the
+    // best
     if (!installPath.isAbsolute()) {
       try {
         String installLoc = (new File(installPath.toOSString())).getCanonicalPath();
@@ -157,30 +150,18 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
     }
     IPath configPath = getRuntimeBaseDirectory();
     IPath deployPath;
-    // If serving modules without publishing, use workspace path as the deploy path
-    if (getWrapper().isServeModulesWithoutPublish()) {
-      deployPath = ResourcesPlugin.getWorkspace().getRoot().getLocation();
-    }
-    // Else normal publishing for modules
-    else {
-      deployPath = getServerDeployDirectory();
-      // If deployPath is relative, convert to canonical path and hope for the best
-      if (!deployPath.isAbsolute()) {
-        try {
-          String deployLoc = (new File(deployPath.toOSString())).getCanonicalPath();
-          deployPath = new Path(deployLoc);
-        } catch (IOException e) {
-          // Ignore if there is a problem
-        }
+    deployPath = getServerDeployDirectory();
+    // If deployPath is relative, convert to canonical path and hope for the
+    // best
+    if (!deployPath.isAbsolute()) {
+      try {
+        String deployLoc = (new File(deployPath.toOSString())).getCanonicalPath();
+        deployPath = new Path(deployLoc);
+      } catch (IOException e) {
+        // Ignore if there is a problem
       }
     }
-    return getVersionHandler().getRuntimeVMArguments(installPath, configPath, deployPath,
-        getWrapper().isTestEnvironment());
-  }
-
-  private String getRuntimePolicyFile() {
-    IPath configPath = getRuntimeBaseDirectory();
-    return getVersionHandler().getRuntimePolicyFile(configPath);
+    return getVersionHandler().getRuntimeVMArguments(installPath, configPath, deployPath);
   }
 
   private static String renderCommandLine(String[] commandLine, String separator) {
@@ -241,16 +222,7 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
     }
 
     IPath installDir = getServer().getRuntime().getLocation();
-    IPath confDir = null;
-    if (getWrapper().isTestEnvironment()) {
-      confDir = getRuntimeBaseDirectory();
-      IStatus status = getVersionHandler().prepareRuntimeDirectory(confDir);
-      if ((status != null) && !status.isOK()) {
-        throw new CoreException(status);
-      }
-    } else {
-      confDir = installDir;
-    }
+    IPath confDir = installDir;
     IStatus status = getVersionHandler().prepareDeployDirectory(getServerDeployDirectory());
     if ((status != null) && !status.isOK()) {
       throw new CoreException(status);
@@ -259,14 +231,12 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
     monitor = ProgressUtil.getMonitorFor(monitor);
     monitor.beginTask(Messages.publishServerTask, 600);
 
-    status = getConfiguration().cleanupServer(confDir, installDir,
-        !getWrapper().isSaveSeparateContextFiles(), ProgressUtil.getSubMonitorFor(monitor, 100));
+    status = getConfiguration().cleanupServer(confDir, installDir, ProgressUtil.getSubMonitorFor(monitor, 100));
     if ((status != null) && !status.isOK()) {
       throw new CoreException(status);
     }
 
-    status = getConfiguration().backupAndPublish(confDir, !getWrapper().isTestEnvironment(),
-        ProgressUtil.getSubMonitorFor(monitor, 400));
+    status = getConfiguration().backupAndPublish(confDir, ProgressUtil.getSubMonitorFor(monitor, 400));
     if ((status != null) && !status.isOK()) {
       throw new CoreException(status);
     }
@@ -292,9 +262,6 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
       if ((deltaKind == ServerBehaviourDelegate.ADDED) || (deltaKind == ServerBehaviourDelegate.REMOVED)) {
         setServerRestartState(true);
       }
-    }
-    if (getWrapper().isTestEnvironment()) {
-      return;
     }
 
     Properties p = loadModulePublishLocations();
@@ -343,8 +310,9 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
   private void publishDir(int deltaKind, Properties p, IModule module[], PublishHelper helper, IProgressMonitor monitor)
       throws CoreException {
     List<IStatus> status = new ArrayList<>();
-    // Remove if requested or if previously published and are now serving without publishing
-    if ((deltaKind == ServerBehaviourDelegate.REMOVED) || getWrapper().isServeModulesWithoutPublish()) {
+    // Remove if requested or if previously published and are now serving
+    // without publishing
+    if ((deltaKind == ServerBehaviourDelegate.REMOVED)) {
       String publishPath = (String) p.get(module[0].getId());
       if (publishPath != null) {
         try {
@@ -398,8 +366,9 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
    */
   private void publishJar(String jarURI, int kind, int deltaKind, Properties p, IModule[] module, PublishHelper helper,
       IProgressMonitor monitor) throws CoreException {
-    // Remove if requested or if previously published and are now serving without publishing
-    if ((deltaKind == ServerBehaviourDelegate.REMOVED) || getWrapper().isServeModulesWithoutPublish()) {
+    // Remove if requested or if previously published and are now serving
+    // without publishing
+    if ((deltaKind == ServerBehaviourDelegate.REMOVED)) {
       try {
         String publishPath = (String) p.get(module[1].getId());
         if (publishPath != null) {
@@ -440,8 +409,9 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
 
   private void publishArchiveModule(String jarURI, int kind, int deltaKind, Properties p, IModule[] module,
       PublishHelper helper, IProgressMonitor monitor) throws CoreException {
-    // Remove if requested or if previously published and are now serving without publishing
-    if ((deltaKind == ServerBehaviourDelegate.REMOVED) || getWrapper().isServeModulesWithoutPublish()) {
+    // Remove if requested or if previously published and are now serving
+    // without publishing
+    if ((deltaKind == ServerBehaviourDelegate.REMOVED)) {
       try {
         String publishPath = (String) p.get(module[1].getId());
         if (publishPath != null) {
@@ -485,31 +455,11 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
   protected void publishFinish(IProgressMonitor monitor) throws CoreException {
     IStatus status;
     IPath baseDir = getRuntimeBaseDirectory();
-    ServerWrapper ts = getWrapper();
-    IServerVersionHandler tvh = getVersionHandler();
+    IServerVersionHandler handler = getVersionHandler();
     String serverTypeID = getServer().getServerType().getId();
-    String version = TomcatVersionHelper.getCatalinaVersion(getServer().getRuntime().getLocation(), serverTypeID);
+    String serverVersion = VersionHelper.getVersion(baseDir, serverTypeID);
     // Include or remove loader jar depending on state of serving directly
-    status = tvh.prepareForServingDirectly(baseDir, getWrapper(), version);
-    if (status.isOK()) {
-      // If serving modules directly, update server.xml accordingly (includes project context.xmls)
-      if (ts.isServeModulesWithoutPublish()) {
-        status = getConfiguration().updateContextsToServeDirectly(baseDir, version,
-            tvh.getSharedLoader(baseDir), monitor);
-      }
-      // Else serving normally. Add project context.xmls to server.xml
-      else {
-        // Publish context configuration for servers that support META-INF/context.xml
-        status = getConfiguration().publishContextConfig(baseDir, getServerDeployDirectory(), monitor);
-      }
-      if (status.isOK() && ts.isSaveSeparateContextFiles()) {
-        // Determine if context's path attribute should be removed
-        boolean noPath = (serverTypeID.indexOf("55") > 0) || (serverTypeID.indexOf("60") > 0);
-        boolean serverStopped = getServer().getServerState() == IServer.STATE_STOPPED;
-        // TODO Add a monitor
-        TomcatVersionHelper.moveContextsToSeparateFiles(baseDir, noPath, serverStopped, null);
-      }
-    }
+    status = handler.prepareForServingDirectly(baseDir, getWrapper(), serverVersion);
     if (!status.isOK()) {
       throw new CoreException(status);
     }
@@ -534,7 +484,7 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
     }
 
     // setRestartNeeded(false);
-    ServerConfiguration configuration = getConfiguration();
+    IServerConfiguration configuration = getConfiguration();
 
     // check that ports are free
     Iterator<ServerPort> iterator = configuration.getServerPorts().iterator();
@@ -595,7 +545,7 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
       }
       ping = new PingThread(getServer(), url, -1, this);
     } catch (Exception e) {
-      Trace.trace(Trace.SEVERE, "Can't ping for smart.IO startup.");
+      ServerPlugin.log(Level.SEVERE, "Can't ping for smart.IO startup.");
     }
   }
 
@@ -620,8 +570,8 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
     }
 
     try {
-      if (Trace.isTraceEnabled()) {
-        Trace.trace(Trace.FINER, "Stopping smart.IO");
+      if (ServerPlugin.isTraceEnabled()) {
+        ServerPlugin.log(Level.FINER, "Stopping smart.IO");
       }
       if (state != IServer.STATE_STOPPED) {
         setServerState(IServer.STATE_STOPPING);
@@ -642,7 +592,7 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
       wc.setAttribute(ServerBehaviour.ATTR_STOP, "true");
       wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
     } catch (Exception e) {
-      Trace.trace(Trace.SEVERE, "Error stopping smart.IO", e);
+      ServerPlugin.log(Level.SEVERE, "Error stopping smart.IO", e);
     }
   }
 
@@ -656,8 +606,8 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
 
     try {
       setServerState(IServer.STATE_STOPPING);
-      if (Trace.isTraceEnabled()) {
-        Trace.trace(Trace.FINER, "Killing the smart.IO process");
+      if (ServerPlugin.isTraceEnabled()) {
+        ServerPlugin.log(Level.FINER, "Killing the smart.IO process");
       }
       ILaunch launch = getServer().getLaunch();
       if (launch != null) {
@@ -665,7 +615,7 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
         stopImpl();
       }
     } catch (Exception e) {
-      Trace.trace(Trace.SEVERE, "Error killing the process", e);
+      ServerPlugin.log(Level.SEVERE, "Error killing the process", e);
     }
   }
 
@@ -706,18 +656,19 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
   }
 
   /**
-   * Merge the given arguments into the original argument string, replacing invalid values if they
-   * have been changed. Special handling is provided if the keepActionLast argument is true and the
-   * last vmArg is a simple string. The vmArgs will be merged such that the last vmArg is guaranteed
-   * to be the last argument in the merged string.
+   * Merge the given arguments into the original argument string, replacing
+   * invalid values if they have been changed. Special handling is provided if
+   * the keepActionLast argument is true and the last vmArg is a simple string.
+   * The vmArgs will be merged such that the last vmArg is guaranteed to be the
+   * last argument in the merged string.
    * 
    * @param originalArg String of original arguments.
    * @param vmArgs Arguments to merge into the original arguments string
    * @param excludeArgs Arguments to exclude from the original arguments string
-   * @param keepActionLast If <b>true</b> the vmArguments are assumed to be server program
-   *        arguments, the last of which is the action to perform which must remain the last
-   *        argument. This only has an impact if the last vmArg is a simple string argument, like
-   *        &quot;start&quot;.
+   * @param keepActionLast If <b>true</b> the vmArguments are assumed to be
+   *        server program arguments, the last of which is the action to perform
+   *        which must remain the last argument. This only has an impact if the
+   *        last vmArg is a simple string argument, like &quot;start&quot;.
    * @return merged argument string
    */
   private static String mergeArguments(String originalArg, String[] vmArgs, String[] excludeArgs,
@@ -799,7 +750,8 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
             String s = originalArg.substring(0, index);
             int index2 = ServerBehaviour.getNextToken(originalArg, index + ind + 1);
             if (index2 >= 0) {
-              // If remainder will become the first argument, remove leading blanks
+              // If remainder will become the first argument, remove leading
+              // blanks
               while ((index2 < originalArg.length()) && Character.isWhitespace(originalArg.charAt(index2))) {
                 index2 += 1;
               }
@@ -815,7 +767,8 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
             String s = originalArg.substring(0, index);
             int index2 = ServerBehaviour.getNextToken(originalArg, index);
             if (index2 >= 0) {
-              // If remainder will become the first argument, remove leading blanks
+              // If remainder will become the first argument, remove leading
+              // blanks
               while ((index2 < originalArg.length()) && Character.isWhitespace(originalArg.charAt(index2))) {
                 index2 += 1;
               }
@@ -858,25 +811,6 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
   }
 
   /**
-   * Replace the current JRE container classpath with the given entry.
-   * 
-   * @param cp
-   * @param entry
-   */
-  private static void replaceJREContainer(List<IRuntimeClasspathEntry> cp, IRuntimeClasspathEntry entry) {
-    int size = cp.size();
-    for (int i = 0; i < size; i++) {
-      IRuntimeClasspathEntry entry2 = cp.get(i);
-      if (entry2.getPath().uptoSegment(2).isPrefixOf(entry.getPath())) {
-        cp.set(i, entry);
-        return;
-      }
-    }
-
-    cp.add(0, entry);
-  }
-
-  /**
    * Merge a single classpath entry into the classpath list.
    * 
    * @param cp
@@ -900,8 +834,8 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
       throws CoreException {
     String existingProgArgs =
         workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String) null);
-    workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, ServerBehaviour.mergeArguments(
-        existingProgArgs, getRuntimeProgramArguments(true), getExcludedRuntimeProgramArguments(true), true));
+    workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS,
+        ServerBehaviour.mergeArguments(existingProgArgs, getRuntimeProgramArguments(true), null, true));
 
     String existingVMArgs =
         workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, (String) null);
@@ -924,7 +858,6 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
         String[] newVMArgs = new String[configVMArgs.length + 3];
         System.arraycopy(configVMArgs, 0, newVMArgs, 0, configVMArgs.length);
         newVMArgs[configVMArgs.length] = "-Djava.security.manager";
-        newVMArgs[configVMArgs.length + 1] = "-Djava.security.policy=\"" + getRuntimePolicyFile() + "\"";
         newVMArgs[configVMArgs.length + 2] = "-Dwtp.configured.security=true";
         configVMArgs = newVMArgs;
       }
@@ -953,12 +886,8 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
     String mergedVMArguments = ServerBehaviour.mergeArguments(existingVMArgs, configVMArgs, null, false);
     workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, mergedVMArguments);
 
-    IServerRuntime runtime = getServerRuntime();
-    IVMInstall vmInstall = runtime.getVMInstall();
-    if (vmInstall != null) {
-      workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH,
-          JavaRuntime.newJREContainerPath(vmInstall).toPortableString());
-    }
+    workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH,
+        getRuntimeBaseDirectory().toString());
 
     // update classpath
     IRuntimeClasspathEntry[] originalClasspath = JavaRuntime.computeUnresolvedRuntimeClasspath(workingCopy);
@@ -968,67 +897,11 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
       oldCp.add(originalClasspath[i]);
     }
 
-    List<IRuntimeClasspathEntry> cp2 = runtime.getRuntimeClasspath(getRuntimeBaseDirectory());
+    List<IRuntimeClasspathEntry> cp2 = getServerRuntime().getRuntimeClasspath(getRuntimeBaseDirectory());
     Iterator<IRuntimeClasspathEntry> iterator = cp2.iterator();
     while (iterator.hasNext()) {
       IRuntimeClasspathEntry entry = iterator.next();
       ServerBehaviour.mergeClasspath(oldCp, entry);
-    }
-
-    if (vmInstall != null) {
-      try {
-        String typeId = vmInstall.getVMInstallType().getId();
-        ServerBehaviour.replaceJREContainer(oldCp,
-            JavaRuntime.newRuntimeContainerClasspathEntry(
-                new Path(JavaRuntime.JRE_CONTAINER).append(typeId).append(vmInstall.getName()),
-                IRuntimeClasspathEntry.BOOTSTRAP_CLASSES));
-      } catch (Exception e) {
-        // ignore
-      }
-
-      IPath jrePath = new Path(vmInstall.getInstallLocation().getAbsolutePath());
-      if (jrePath != null) {
-        IPath toolsPath = jrePath.append("lib").append("tools.jar");
-        if (toolsPath.toFile().exists()) {
-          IRuntimeClasspathEntry toolsJar = JavaRuntime.newArchiveRuntimeClasspathEntry(toolsPath);
-          // Search for index to any existing tools.jar entry
-          int toolsIndex;
-          for (toolsIndex = 0; toolsIndex < oldCp.size(); toolsIndex++) {
-            IRuntimeClasspathEntry entry = oldCp.get(toolsIndex);
-            if ((entry.getType() == IRuntimeClasspathEntry.ARCHIVE)
-                && entry.getPath().lastSegment().equals("tools.jar")) {
-              break;
-            }
-          }
-          // If existing tools.jar found, replace in case it's different. Otherwise add.
-          if (toolsIndex < oldCp.size()) {
-            oldCp.set(toolsIndex, toolsJar);
-          } else {
-            ServerBehaviour.mergeClasspath(oldCp, toolsJar);
-          }
-        }
-
-        String version = null;
-        if (vmInstall instanceof IVMInstall2) {
-          version = ((IVMInstall2) vmInstall).getJavaVersion();
-        }
-
-        int version_num = 8;
-        if (version != null) {
-          version_num = Integer.parseInt(version.split("\\.")[0]);
-        }
-
-
-        if ((version == null) || (version_num < 9)) {
-          String endorsedDirectories =
-              getVersionHandler().getEndorsedDirectories(getServer().getRuntime().getLocation());
-          if (endorsedDirectories.length() > 0) {
-            String[] endorsements = new String[] { "-Djava.endorsed.dirs=\"" + endorsedDirectories + "\"" };
-            mergedVMArguments = ServerBehaviour.mergeArguments(mergedVMArguments, endorsements, null, false);
-            workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, mergedVMArguments);
-          }
-        }
-      }
     }
 
     iterator = oldCp.iterator();
@@ -1038,7 +911,7 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
       try {
         list.add(entry.getMemento());
       } catch (Exception e) {
-        Trace.trace(Trace.SEVERE, "Could not resolve classpath entry: " + entry, e);
+        ServerPlugin.log(Level.SEVERE, "Could not resolve classpath entry: " + entry, e);
       }
     }
 
@@ -1124,8 +997,8 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
   }
 
   /**
-   * Cleans the entire work directory for this server. This involves deleting all subdirectories of
-   * the server's work directory.
+   * Cleans the entire work directory for this server. This involves deleting
+   * all subdirectories of the server's work directory.
    * 
    * @param monitor a progress monitor
    * @return results of the clean operation
@@ -1172,7 +1045,8 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
   }
 
   /**
-   * Cleans the work directory associated with the specified module on this server.
+   * Cleans the work directory associated with the specified module on this
+   * server.
    * 
    * @param module module whose work directory should be cleaned
    * @param monitor a progress monitor
@@ -1224,11 +1098,12 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
   }
 
   /**
-   * Temporary method to help web services team. Returns the path that the module is published to.
+   * Temporary method to help web services team. Returns the path that the
+   * module is published to.
    * 
    * @param module a module on the server
-   * @return the path that the module is published to when in test environment mode, or null if the
-   *         module is not a web module
+   * @return the path that the module is published to when in test environment
+   *         mode, or null if the module is not a web module
    */
   @Override
   public IPath getPublishDirectory(IModule[] module) {

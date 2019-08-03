@@ -11,7 +11,7 @@
 package org.eclipse.jst.server.smartio.core.internal.command;
 
 import org.eclipse.jst.server.smartio.core.internal.Messages;
-import org.eclipse.jst.server.smartio.core.internal.ServerConfiguration;
+import org.eclipse.jst.server.smartio.core.internal.IServerConfiguration;
 import org.eclipse.jst.server.smartio.core.internal.WebModule;
 
 /**
@@ -23,7 +23,7 @@ public class ModifyWebModuleCommand extends ConfigurationCommand {
   private WebModule       oldModule;
   private final WebModule newModule;
 
-  public ModifyWebModuleCommand(ServerConfiguration configuration, int index, WebModule module) {
+  public ModifyWebModuleCommand(IServerConfiguration configuration, int index, WebModule module) {
     super(configuration, Messages.configurationEditorActionModifyWebModule);
     this.index = index;
     newModule = module;

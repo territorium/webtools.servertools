@@ -51,14 +51,6 @@
      </serverType>
   </extension>
 
-  <extension point="org.eclipse.wst.server.core.serverLocators">
-    <serverLocator
-       id="org.eclipse.jst.server.smartio.server.locator"
-       supportsRemoteHosts="false"
-       typeIds="org.eclipse.jst.server.smartio.*"
-       class="org.eclipse.jst.server.smartio.core.internal.ServerLocator"/>
-  </extension>
-
   <extension point="org.eclipse.wst.server.core.launchableAdapters">
      <launchableAdapter
         class="org.eclipse.jst.server.smartio.core.internal.ServerLaunchableAdapterDelegate"

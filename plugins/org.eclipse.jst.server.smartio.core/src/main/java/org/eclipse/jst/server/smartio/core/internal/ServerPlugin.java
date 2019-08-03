@@ -1,7 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2016 IBM Corporation and others. All rights reserved. This program and the
- * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
- * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2003, 2016 IBM Corporation and others. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which accompanies this distribution,
+ * and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -10,34 +11,63 @@
 
 package org.eclipse.jst.server.smartio.core.internal;
 
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.core.runtime.preferences.IPreferencesService;
+import org.eclipse.wst.server.core.IServer;
+import org.eclipse.wst.server.core.IServerType;
+import org.eclipse.wst.server.core.ServerCore;
+import org.eclipse.wst.server.core.internal.ServerType;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * The server plugin.
  */
-public class ServerPlugin extends Plugin {
+public class ServerPlugin extends Plugin implements IResourceChangeListener {
 
-  private static ServerPlugin                  singleton;
 
-  public static final String                   PLUGIN_ID             = "org.eclipse.jst.server.smartio.core";
+  public static final String PLUGIN_NS = "org.eclipse.jst.server.smartio.";
+  public static final String PLUGIN_ID = "org.eclipse.jst.server.smartio.core";
+  public static final String SERVER_10 = "org.eclipse.jst.server.smartio.10";
 
-  static final String                          SERVER_10             = "org.eclipse.jst.server.smartio.10";
 
-  private static final IStatus                 emptyInstallDirStatus =
+  public static final IStatus EmptyInstallDirStatus =
       new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, Messages.errorInstallDirEmpty, null);
 
-  private static ConfigurationResourceListener configurationListener;
+
+  public enum Level {
+    CONFIG,
+    WARNING,
+    SEVERE,
+    FINER,
+    FINEST;
+  }
+
+  private static final String           spacer       = "                                   ";
+
+  private static final SimpleDateFormat sdf          = new SimpleDateFormat("dd/MM/yy HH:mm.ss.SSS");
+
+  private static int                    pluginLength = -1;
+
+  private static ServerPlugin           singleton;
+
+
+  private IProject serversProject;
 
   /**
    * {@link ServerPlugin} constructor comment.
@@ -49,14 +79,12 @@ public class ServerPlugin extends Plugin {
   @Override
   public void start(BundleContext context) throws Exception {
     super.start(context);
-    ServerPlugin.configurationListener = new ConfigurationResourceListener();
-    ResourcesPlugin.getWorkspace().addResourceChangeListener(ServerPlugin.configurationListener,
-        IResourceChangeEvent.POST_CHANGE);
+    ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE);
   }
 
   @Override
   public void stop(BundleContext context) throws Exception {
-    ResourcesPlugin.getWorkspace().removeResourceChangeListener(ServerPlugin.configurationListener);
+    ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
     super.stop(context);
   }
 
@@ -70,22 +98,104 @@ public class ServerPlugin extends Plugin {
   /**
    * Return the install location preference.
    * 
-   * @param id a runtime type id
-   * @return the install location
+   * @param name
    */
-  static String getPreference(String id) {
-    return ServerPlugin.getInstance().getPluginPreferences().getString(id);
+  public static String getPreference(String name) {
+    IPreferencesService service = Platform.getPreferencesService();
+    Preferences node = service.getRootNode().node(ConfigurationScope.SCOPE).node(PLUGIN_ID);
+    return (node == null) ? "" : node.get(name, "");
   }
 
   /**
    * Set the install location preference.
    * 
-   * @param id the runtimt type id
-   * @param value the location
+   * @param name
+   * @param value
    */
   public static void setPreference(String id, String value) {
-    ServerPlugin.getInstance().getPluginPreferences().setValue(id, value);
-    ServerPlugin.getInstance().savePluginPreferences();
+    IPreferencesService service = Platform.getPreferencesService();
+    Preferences node = service.getRootNode().node(ConfigurationScope.SCOPE).node(PLUGIN_ID);
+    if (node != null) {
+      node.put(id, value);
+      try {
+        node.flush();
+      } catch (BackingStoreException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+  }
+
+  /**
+   * Currently, only changes to server configuration files are detected and the
+   * associated server's state updated. This method needs to be as brief as
+   * possible if the change is unrelated to server configuration changes. Since
+   * the Servers project would change so rarely, it is worth saving some cycles
+   * in the resource listener by caching this project.
+   */
+  @Override
+  public void resourceChanged(IResourceChangeEvent event) {
+    if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
+      if (serversProject == null) {
+        IProject project;
+        try {
+          project = ServerType.getServerProject();
+          synchronized (this) {
+            serversProject = project;
+          }
+        } catch (CoreException e) {
+          // Ignore
+        }
+      }
+      if (serversProject != null) {
+        IResourceDelta delta = event.getDelta();
+        if (delta != null) {
+          IResourceDelta serversProjectDelta = delta.findMember(serversProject.getFullPath());
+          if (serversProjectDelta != null) {
+            // The change occurred within the Servers project.
+            IResourceDelta[] childDelta = serversProjectDelta.getAffectedChildren();
+            if (childDelta.length > 0) {
+              IServer[] servers = ServerCore.getServers();
+              for (IResourceDelta element : childDelta) {
+                // Check if this subfolder of the Servers folder matches a
+                // server configuration
+                // folder
+                for (IServer server : servers) {
+                  IServerType serverType = server.getServerType();
+                  if (serverType.getId().startsWith(ServerPlugin.PLUGIN_NS)) {
+                    IFolder configFolder = server.getServerConfiguration();
+                    if (configFolder != null) {
+                      if (element.getFullPath().equals(configFolder.getFullPath())) {
+                        // Found a server server affected by this delta. Update
+                        // this server's
+                        // publish state.
+                        ServerBehaviour tcServerBehaviour =
+                            (ServerBehaviour) server.loadAdapter(ServerBehaviour.class, null);
+                        if (tcServerBehaviour != null) {
+                          // Indicate that this server needs to publish and
+                          // restart if running
+                          tcServerBehaviour.setServerStates(IServer.PUBLISH_STATE_INCREMENTAL, true);
+                        }
+                        break;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Gets state of debug flag for the plug-in.
+   * 
+   * @return true if tracing is enabled
+   */
+  public static boolean isTraceEnabled() {
+    return ServerPlugin.getInstance().isDebugging();
   }
 
   /**
@@ -98,55 +208,52 @@ public class ServerPlugin extends Plugin {
   }
 
   /**
-   * Return the version handler.
-   * 
-   * @param id
-   * @return a version handler
+   * Trace the given text.
+   *
+   * @param level
+   * @param message
    */
-  static IServerVersionHandler getVersionHandler(String id) {
-    if (id.indexOf("runtime") > 0) {
-      id = id.substring(0, 30) + id.substring(38);
-    }
-    // id = id.substring(0, id.length() - 8);
-    if (ServerPlugin.SERVER_10.equals(id)) {
-      return new Server10Handler();
-    } else {
-      return null;
-    }
+  public static void log(Level level, String message) {
+    ServerPlugin.log(level, message, null);
   }
 
   /**
-   * Utility method to verify an installation directory according to the specified server ID. The
-   * verification includes checking the installation directory name to see if it indicates a
-   * different version of the server.
-   * 
-   * @param installPath Path to verify
-   * @param id Type ID of the server
-   * @return Status of the verification. Will be Status.OK_STATUS, if verification was successful,
-   *         or error status if not.
+   * Trace the given message and exception.
+   *
+   * @param level
+   * @param message
+   * @param throwable
    */
-  static IStatus verifyInstallPathWithFolderCheck(IPath installPath, String version) {
-    if (version == null) {
-      return new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, Messages.errorVersionEmpty, null);
+  public static void log(Level level, String message, Throwable throwable) {
+    if (!ServerPlugin.getInstance().isDebugging()) {
+      return;
     }
-    if (installPath == null) {
-      return ServerPlugin.emptyInstallDirStatus;
-    }
-    return Status.OK_STATUS;
-  }
 
-  /**
-   * Return a <code>java.io.File</code> object that corresponds to the specified <code>IPath</code>
-   * in the plugin directory.
-   * 
-   * @return a file
-   */
-  protected static File getPlugin() {
-    try {
-      URL installURL = ServerPlugin.getInstance().getBundle().getEntry("/");
-      return new File(FileLocator.toFileURL(installURL).getFile());
-    } catch (IOException ioe) {
-      return null;
+    if (message == null) {
+      return;
+    }
+
+    if (!ServerPlugin.getInstance().isDebugging()) {
+      return;
+    }
+
+    StringBuffer sb = new StringBuffer(ServerPlugin.PLUGIN_ID);
+    if (ServerPlugin.PLUGIN_ID.length() > ServerPlugin.pluginLength) {
+      ServerPlugin.pluginLength = ServerPlugin.PLUGIN_ID.length();
+    } else if (ServerPlugin.PLUGIN_ID.length() < ServerPlugin.pluginLength) {
+      sb.append(ServerPlugin.spacer.substring(0, ServerPlugin.pluginLength - ServerPlugin.PLUGIN_ID.length()));
+    }
+    sb.append(" ");
+    sb.append(level.name());
+    sb.append(" ");
+    sb.append(ServerPlugin.sdf.format(new Date()));
+    sb.append(" ");
+    sb.append(message);
+    // Platform.getDebugOption(ServerCore.PLUGIN_ID + "/" + "resources");
+
+    System.out.println(sb.toString());
+    if (throwable != null) {
+      throwable.printStackTrace();
     }
   }
 }

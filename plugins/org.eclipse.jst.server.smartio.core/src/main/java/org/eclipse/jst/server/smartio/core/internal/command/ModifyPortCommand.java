@@ -11,7 +11,7 @@
 package org.eclipse.jst.server.smartio.core.internal.command;
 
 import org.eclipse.jst.server.smartio.core.internal.Messages;
-import org.eclipse.jst.server.smartio.core.internal.ServerConfiguration;
+import org.eclipse.jst.server.smartio.core.internal.IServerConfiguration;
 import org.eclipse.wst.server.core.ServerPort;
 
 import java.util.Iterator;
@@ -32,7 +32,7 @@ public class ModifyPortCommand extends ConfigurationCommand {
    * @param id a port id
    * @param port new port number
    */
-  public ModifyPortCommand(ServerConfiguration configuration, String id, int port) {
+  public ModifyPortCommand(IServerConfiguration configuration, String id, int port) {
     super(configuration, Messages.configurationEditorActionModifyPort);
     this.id = id;
     this.port = port;

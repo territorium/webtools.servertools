@@ -10,7 +10,7 @@
 
 package org.eclipse.jst.server.smartio.core.internal.command;
 
-import org.eclipse.jst.server.smartio.core.internal.IServerWrapperWorkingCopy;
+import org.eclipse.jst.server.smartio.core.internal.IServerWrapper;
 import org.eclipse.jst.server.smartio.core.internal.Messages;
 
 /**
@@ -27,7 +27,7 @@ public class SetSecureCommand extends ServerCommand {
    * @param server
    * @param secure <code>true</code> for security on
    */
-  public SetSecureCommand(IServerWrapperWorkingCopy server, boolean secure) {
+  public SetSecureCommand(IServerWrapper server, boolean secure) {
     super(server, Messages.serverEditorActionSetSecure);
     this.secure = secure;
   }

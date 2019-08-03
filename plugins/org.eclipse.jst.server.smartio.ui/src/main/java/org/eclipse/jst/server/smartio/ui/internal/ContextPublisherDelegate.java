@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jst.server.core.IWebModule;
-import org.eclipse.jst.server.smartio.core.internal.ServerConfiguration;
+import org.eclipse.jst.server.smartio.core.internal.IServerConfiguration;
 import org.eclipse.jst.server.smartio.core.internal.ServerWrapper;
 import org.eclipse.jst.server.smartio.core.internal.WebModule;
 import org.eclipse.osgi.util.NLS;
@@ -49,7 +49,7 @@ public class ContextPublisherDelegate extends PublisherDelegate {
 
     IServer server = (IServer) getTaskModel().getObject(TaskModel.TASK_SERVER);
     ServerWrapper wrapper = (ServerWrapper) server.loadAdapter(ServerWrapper.class, monitor);
-    final ServerConfiguration configuration = wrapper.getConfiguration();
+    final IServerConfiguration configuration = wrapper.getConfiguration();
 
     final boolean[] save = new boolean[1];
     List<IModule[]> modules = (List) getTaskModel().getObject(TaskModel.TASK_MODULES);

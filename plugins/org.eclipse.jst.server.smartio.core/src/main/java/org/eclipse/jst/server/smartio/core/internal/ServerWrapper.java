@@ -1,7 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2016 IBM Corporation and others. All rights reserved. This program and the
- * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
- * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2003, 2016 IBM Corporation and others. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which accompanies this distribution,
+ * and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -20,6 +21,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jst.server.core.FacetUtil;
 import org.eclipse.jst.server.core.IWebModule;
+import org.eclipse.jst.server.smartio.core.internal.ServerPlugin.Level;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IModuleType;
@@ -35,14 +37,13 @@ import java.util.List;
 /**
  * Generic {@link ServerWrapper}.
  */
-public class ServerWrapper extends ServerDelegate implements IServerWrapper, IServerWrapperWorkingCopy {
+public class ServerWrapper extends ServerDelegate implements IServerWrapper {
 
   private static final String WEB_MODULE      = "jst.web";
   public static final String  PROPERTY_SECURE = "secure";
-  public static final String  PROPERTY_DEBUG  = "debug";
 
 
-  private transient ServerConfiguration   configuration;
+  private transient IServerConfiguration  configuration;
   private transient IServerVersionHandler versionHandler;
 
   // Configuration version control
@@ -51,42 +52,20 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper, ISe
   private final Object versionLock = new Object();
 
   /**
-   * {@link ServerWrapper}.
-   */
-  public ServerWrapper() {
-    super();
-  }
-
-  /**
-   * Get the {@link ServerRuntime} for this server.
-   */
-  public ServerRuntime getServerRuntime() {
-    if (getServer().getRuntime() == null) {
-      return null;
-    }
-
-    return (ServerRuntime) getServer().getRuntime().loadAdapter(ServerRuntime.class, null);
-  }
-
-  /**
    * Gets the server version handler for this server.
-   * 
-   * @return version handler for this server
    */
-  public IServerVersionHandler getVersionHandler() {
+  public final IServerVersionHandler getVersionHandler() {
     if (versionHandler == null) {
-      if ((getServer().getRuntime() == null) || (getServerRuntime() == null)) {
-        return null;
-      }
-
-      versionHandler = getServerRuntime().getVersionHandler();
+      IRuntime runtime = getServer().getRuntime();
+      ServerRuntime r = (runtime == null) ? null : (ServerRuntime) runtime.loadAdapter(ServerRuntime.class, null);
+      versionHandler = (r == null) ? null : r.getVersionHandler();
     }
     return versionHandler;
   }
 
-  public ServerConfiguration getConfiguration() throws CoreException {
+  public IServerConfiguration getConfiguration() throws CoreException {
     int current;
-    ServerConfiguration tcConfig;
+    IServerConfiguration tcConfig;
     // Grab current state
     synchronized (versionLock) {
       current = currentVersion;
@@ -152,15 +131,15 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper, ISe
 
     String id = getServer().getServerType().getId();
     IFolder folder = getServer().getServerConfiguration();
-    ServerConfiguration tcConfig;
+    IServerConfiguration config;
     if (id.indexOf("10") > 0) {
-      tcConfig = new Server10Configuration(folder);
+      config = new Server10Configuration(folder);
     } else {
       throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, Messages.errorUnknownVersion, null));
     }
 
     try {
-      tcConfig.importFromPath(path, isTestEnvironment(), monitor);
+      config.load(path, monitor);
     } catch (CoreException ce) {
       throw ce;
     }
@@ -168,18 +147,16 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper, ISe
     synchronized (versionLock) {
       // If not already initialized by some other thread, save the configuration
       if (configuration == null) {
-        configuration = tcConfig;
+        configuration = config;
       }
     }
   }
 
   @Override
   public void saveConfiguration(IProgressMonitor monitor) throws CoreException {
-    ServerConfiguration tcConfig = configuration;
-    if (tcConfig == null) {
-      return;
+    if (configuration != null) {
+      configuration.save(getServer().getServerConfiguration(), monitor);
     }
-    tcConfig.save(getServer().getServerConfiguration(), monitor);
   }
 
   @Override
@@ -203,7 +180,7 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper, ISe
         return null;
       }
 
-      ServerConfiguration config = getConfiguration();
+      IServerConfiguration config = getConfiguration();
       if (config == null) {
         return null;
       }
@@ -223,28 +200,9 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper, ISe
 
       return new URL(url);
     } catch (Exception e) {
-      Trace.trace(Trace.SEVERE, "Could not get root URL", e);
+      ServerPlugin.log(Level.SEVERE, "Could not get root URL", e);
       return null;
     }
-  }
-
-  /**
-   * Returns true if the process is set to run in debug mode.
-   *
-   * @return boolean
-   */
-  public boolean isDebug() {
-    return getAttribute(ServerWrapper.PROPERTY_DEBUG, false);
-  }
-
-  /**
-   * Returns true if this is a test (run code out of the workbench) server.
-   *
-   * @return boolean
-   */
-  @Override
-  public boolean isTestEnvironment() {
-    return getAttribute(IServerWrapper.PROPERTY_TEST_ENVIRONMENT, false);
   }
 
   /**
@@ -269,38 +227,7 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper, ISe
    */
   @Override
   public String getDeployDirectory() {
-    // Default to value used by prior WTP versions
-    return getAttribute(IServerWrapper.PROPERTY_DEPLOY_DIR, IServerWrapperWorkingCopy.LEGACY_DEPLOYDIR);
-  }
-
-  /**
-   * Returns true if modules should be served without publishing.
-   * 
-   * @return boolean
-   */
-  @Override
-  public boolean isServeModulesWithoutPublish() {
-    // If feature is supported, return current setting
-    IServerVersionHandler tvh = getVersionHandler();
-    if ((tvh != null) && tvh.supportsServeModulesWithoutPublish()) {
-      return getAttribute(IServerWrapper.PROPERTY_SERVE_MODULES_WITHOUT_PUBLISH, false);
-    }
-    return false;
-  }
-
-  /**
-   * Returns true if contexts should be saved in separate files during server publish.
-   * 
-   * @return boolean
-   */
-  @Override
-  public boolean isSaveSeparateContextFiles() {
-    // If feature is supported, return current setting
-    IServerVersionHandler tvh = getVersionHandler();
-    if ((tvh != null) && tvh.supportsSeparateContextFiles()) {
-      return getAttribute(IServerWrapper.PROPERTY_SAVE_SEPARATE_CONTEXT_FILES, false);
-    }
-    return false;
+    return IServerWrapper.LEGACY_DEPLOYDIR;
   }
 
   /**
@@ -319,17 +246,16 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper, ISe
 
 
   /**
-   * Gets the base directory where the server instance runs. This path can vary depending on the
-   * configuration. Null may be returned if a runtime hasn't been specified for the server.
+   * Gets the base directory where the server instance runs. This path can vary
+   * depending on the configuration. Null may be returned if a runtime hasn't
+   * been specified for the server.
    * 
-   * @return path to base directory for the server or null if runtime hasn't been specified.
+   * @return path to base directory for the server or null if runtime hasn't
+   *         been specified.
    */
   public IPath getRuntimeBaseDirectory() {
     IServerVersionHandler tvh = getVersionHandler();
-    if (tvh != null) {
-      return tvh.getRuntimeBaseDirectory(this);
-    }
-    return null;
+    return (tvh == null) ? null : tvh.getRuntimeBaseDirectory(this);
   }
 
   /**
@@ -394,7 +320,8 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper, ISe
   }
 
   /**
-   * Returns true if the given project is supported by this server, and false otherwise.
+   * Returns true if the given project is supported by this server, and false
+   * otherwise.
    *
    * @param add modules
    * @param remove modules
@@ -449,19 +376,8 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper, ISe
 
   @Override
   public void setDefaults(IProgressMonitor monitor) {
-    setTestEnvironment(true);
     setAttribute("auto-publish-setting", 2);
     setAttribute("auto-publish-time", 1);
-    setDeployDirectory(IServerWrapperWorkingCopy.DEFAULT_DEPLOYDIR);
-  }
-
-  /**
-   * Sets this process to debug mode.
-   *
-   * @param b boolean
-   */
-  public void setDebug(boolean b) {
-    setAttribute(ServerWrapper.PROPERTY_DEBUG, b);
   }
 
   /**
@@ -474,62 +390,6 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper, ISe
   }
 
   /**
-   * Sets this server to test environment mode.
-   * 
-   * @param b boolean
-   */
-  @Override
-  public void setTestEnvironment(boolean b) {
-    setAttribute(IServerWrapper.PROPERTY_TEST_ENVIRONMENT, b);
-  }
-
-  /**
-   * @see IServerWrapperWorkingCopy#setInstanceDirectory(String)
-   */
-  @Override
-  public void setInstanceDirectory(String instanceDir) {
-    setAttribute(IServerWrapper.PROPERTY_INSTANCE_DIR, instanceDir);
-  }
-
-  /**
-   * @see IServerWrapperWorkingCopy#setDeployDirectory(String)
-   */
-  @Override
-  public void setDeployDirectory(String deployDir) {
-    // Remove attribute if setting to legacy value assumed in prior versions of WTP.
-    // Allowing values that differ only in case is asking for more trouble that it is worth.
-    if (IServerWrapperWorkingCopy.LEGACY_DEPLOYDIR.equalsIgnoreCase(deployDir)) {
-      setAttribute(IServerWrapper.PROPERTY_DEPLOY_DIR, (String) null);
-    } else {
-      setAttribute(IServerWrapper.PROPERTY_DEPLOY_DIR, deployDir);
-    }
-  }
-
-  /**
-   * @see IServerWrapperWorkingCopy#setServeModulesWithoutPublish(boolean)
-   */
-  @Override
-  public void setServeModulesWithoutPublish(boolean b) {
-    setAttribute(IServerWrapper.PROPERTY_SERVE_MODULES_WITHOUT_PUBLISH, b);
-  }
-
-  /**
-   * @see IServerWrapperWorkingCopy#setSaveSeparateContextFiles(boolean)
-   */
-  @Override
-  public void setSaveSeparateContextFiles(boolean b) {
-    setAttribute(IServerWrapper.PROPERTY_SAVE_SEPARATE_CONTEXT_FILES, b);
-  }
-
-  /**
-   * @see IServerWrapperWorkingCopy#setModulesReloadableByDefault(boolean)
-   */
-  @Override
-  public void setModulesReloadableByDefault(boolean b) {
-    setAttribute(IServerWrapper.PROPERTY_MODULES_RELOADABLE_BY_DEFAULT, b);
-  }
-
-  /**
    * @see ServerDelegate#modifyModules(IModule[], IModule[], IProgressMonitor)
    */
   @Override
@@ -539,7 +399,7 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper, ISe
       throw new CoreException(status);
     }
 
-    ServerConfiguration config = getConfiguration();
+    IServerConfiguration config = getConfiguration();
 
     if (add != null) {
       int size = add.length;
@@ -577,8 +437,8 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper, ISe
    * Returns the web modules that the utility module is contained within.
    * 
    * @param module a utility module
-   * @param monitor a progress monitor, or <code>null</code> if progress reporting and cancellation
-   *        are not desired
+   * @param monitor a progress monitor, or <code>null</code> if progress
+   *        reporting and cancellation are not desired
    * @return a possibly empty array of web modules
    */
   public static IModule[] getWebModules(IModule module) {
@@ -601,14 +461,13 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper, ISe
     return list.toArray(new IModule[list.size()]);
   }
 
-
   /**
    * Return a string representation of this object.
    * 
    * @return java.lang.String
    */
   @Override
-  public String toString() {
+  public final String toString() {
     return "ServerWrapper";
   }
 }

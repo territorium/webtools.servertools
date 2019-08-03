@@ -50,7 +50,7 @@ class PublishOperation2 extends PublishOperation {
    * @param module module to publish
    * @param deltaKind kind of change
    */
-  PublishOperation2(ServerBehaviour server, int kind, IModule[] module, int deltaKind) {
+  public PublishOperation2(ServerBehaviour server, int kind, IModule[] module, int deltaKind) {
     super("Publish to server", "Publish Web module to smart.IO server");
     this.server = server;
     this.module = module;
@@ -124,15 +124,14 @@ class PublishOperation2 extends PublishOperation {
     IPath path = server.getModuleDeployDirectory(module2);
 
     // Remove if requested or if previously published and are now serving without publishing
-    if ((kind == IServer.PUBLISH_CLEAN) || (deltaKind == ServerBehaviourDelegate.REMOVED)
-        || server.getWrapper().isServeModulesWithoutPublish()) {
+    if ((kind == IServer.PUBLISH_CLEAN) || (deltaKind == ServerBehaviourDelegate.REMOVED)) {
       File f = path.toFile();
       if (f.exists()) {
         IStatus[] stat = PublishHelper.deleteDirectory(f, monitor);
         PublishOperation2.addArrayToList(status, stat);
       }
 
-      if ((deltaKind == ServerBehaviourDelegate.REMOVED) || server.getWrapper().isServeModulesWithoutPublish()) {
+      if ((deltaKind == ServerBehaviourDelegate.REMOVED)) {
         return;
       }
     }
@@ -179,15 +178,14 @@ class PublishOperation2 extends PublishOperation {
     path = jarPath.removeLastSegments(1);
 
     // Remove if requested or if previously published and are now serving without publishing
-    if (moving || (kind == IServer.PUBLISH_CLEAN) || (deltaKind == ServerBehaviourDelegate.REMOVED)
-        || server.getWrapper().isServeModulesWithoutPublish()) {
+    if (moving || (kind == IServer.PUBLISH_CLEAN) || (deltaKind == ServerBehaviourDelegate.REMOVED)) {
       File file = oldJarPath.toFile();
       if (file.exists()) {
         file.delete();
       }
       p.remove(module[1].getId());
 
-      if ((deltaKind == ServerBehaviourDelegate.REMOVED) || server.getWrapper().isServeModulesWithoutPublish()) {
+      if ((deltaKind == ServerBehaviourDelegate.REMOVED)) {
         return;
       }
     }
@@ -235,15 +233,14 @@ class PublishOperation2 extends PublishOperation {
     path = jarPath.removeLastSegments(1);
 
     // Remove if requested or if previously published and are now serving without publishing
-    if (moving || (kind == IServer.PUBLISH_CLEAN) || (deltaKind == ServerBehaviourDelegate.REMOVED)
-        || server.getWrapper().isServeModulesWithoutPublish()) {
+    if (moving || (kind == IServer.PUBLISH_CLEAN) || (deltaKind == ServerBehaviourDelegate.REMOVED)) {
       File file = oldJarPath.toFile();
       if (file.exists()) {
         file.delete();
       }
       p.remove(module[1].getId());
 
-      if ((deltaKind == ServerBehaviourDelegate.REMOVED) || server.getWrapper().isServeModulesWithoutPublish()) {
+      if ((deltaKind == ServerBehaviourDelegate.REMOVED)) {
         return;
       }
     }
