@@ -36,6 +36,10 @@ import java.util.List;
  */
 class Server10Configuration extends ServerConfiguration {
 
+  public static final String SERVER  = "server.properties";
+  public static final String LOGGING = "logging.properties";
+
+
   private Configuration configuration;
 
   /**
@@ -66,21 +70,21 @@ class Server10Configuration extends ServerConfiguration {
     // first add admin port
     try {
       int port = this.configuration.get("server.web.admin", 8888);
-      ports.add(new ServerPort("server", Messages.portServer, port, "TCPIP"));
+      ports.add(new ServerPort("admin", Messages.portServer, port, "TCPIP"));
     } catch (Exception e) {
       ServerPlugin.log(Level.SEVERE, "Error getting server ports", e);
     }
 
     try {
       int port = this.configuration.get("server.web.http", 8888);
-      ports.add(new ServerPort("0", "HTTP/1.1", port, "HTTP", new String[] { "web", "webservices" }, false));
+      ports.add(new ServerPort("http", "HTTP/1.1", port, "HTTP", new String[] { "web", "webservices" }, false));
     } catch (Exception e) {
       ServerPlugin.log(Level.SEVERE, "Error getting server ports", e);
     }
 
     try {
       int port = this.configuration.get("server.web.ajp", 8888);
-      ports.add(new ServerPort("1", "AJP/1.3", port, "AJP", null, false));
+      ports.add(new ServerPort("ajp", "AJP/1.3", port, "AJP", null, false));
     } catch (Exception e) {
       ServerPlugin.log(Level.SEVERE, "Error getting server ports", e);
     }
@@ -97,19 +101,19 @@ class Server10Configuration extends ServerConfiguration {
   public void setServerPort(String id, int port) {
     try {
       switch (id) {
-        case "server":
+        case "admin":
           this.configuration.set("server.web.admin", "" + port);
           // isServerDirty = true;
           firePropertyChangeEvent(ServerConfiguration.SET_PORT_PROPERTY, id, new Integer(port));
           return;
 
-        case "HTTP/1.1":
+        case "http":
           this.configuration.set("server.web.http", "" + port);
           // isServerDirty = true;
           firePropertyChangeEvent(ServerConfiguration.SET_PORT_PROPERTY, id, new Integer(port));
           return;
 
-        case "AJP/1.3":
+        case "ajp":
           this.configuration.set("server.web.ajp", "" + port);
           firePropertyChangeEvent(ServerConfiguration.SET_PORT_PROPERTY, id, new Integer(port));
           return;
@@ -149,9 +153,9 @@ class Server10Configuration extends ServerConfiguration {
       monitor = ProgressUtil.getMonitorFor(monitor);
       monitor.beginTask(Messages.loadingTask, 7);
 
-      // Load server.ini
+      // Load server properties
       this.configuration = new Configuration();
-      this.configuration.load(new FileInputStream(path.append("server.ini").toFile()));
+      this.configuration.load(new FileInputStream(path.append(Server10Configuration.SERVER).toFile()));
       monitor.worked(1);
 
       if (monitor.isCanceled()) {
@@ -180,8 +184,8 @@ class Server10Configuration extends ServerConfiguration {
       monitor = ProgressUtil.getMonitorFor(monitor);
       monitor.beginTask(Messages.loadingTask, 1200);
 
-      // Load server.ini
-      IFile file = folder.getFile("server.ini");
+      // Load server properties
+      IFile file = folder.getFile(Server10Configuration.SERVER);
       this.configuration = new Configuration();
       this.configuration.load(file.getContents());
       monitor.worked(200);
@@ -215,8 +219,8 @@ class Server10Configuration extends ServerConfiguration {
       this.configuration.save(writer, "", Format.INI);
       InputStream in = new ByteArrayInputStream(writer.toString().getBytes());
 
-      // save server.ini
-      IFile file = folder.getFile("server.ini");
+      // save server properties
+      IFile file = folder.getFile(Server10Configuration.SERVER);
       if (file.exists()) {
         file.setContents(in, true, true, ProgressUtil.getSubMonitorFor(monitor, 100));
       } else {
@@ -224,15 +228,16 @@ class Server10Configuration extends ServerConfiguration {
       }
       monitor.worked(100);
 
-
-      // save server.ini
-      file = folder.getFile("logging.properties");
+      // save logging properties
+      file = folder.getFile(Server10Configuration.LOGGING);
       if (!file.exists()) {
         writer = new StringWriter();
-        writer.write("### Global properties\n\n");
-        writer.write("handlers= it.smartio.util.logging.ConsoleHandler\n");
-        writer.write(".level= INFO\n\n");
-        writer.write("it.smartio.util.logging.ConsoleHandler.level = INFO\n");
+        writer.write(";Global properties\n");
+        writer.write("level = INFO\n");
+        writer.write("handler = Console\n\n");
+        writer.write("[handler.Console]\n");
+        writer.write("type  = CONSOLE\n");
+        writer.write("level = FINE\n");
         file.create(new ByteArrayInputStream(writer.toString().getBytes()), true,
             ProgressUtil.getSubMonitorFor(monitor, 200));
       }

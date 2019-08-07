@@ -115,7 +115,10 @@
       version="1.0"/>
   </extension>
 
-  <extension point="org.eclipse.wst.server.core.installableRuntimes">
+  <extension
+        id="plaft"
+        name="smart.IO Platform"
+        point="org.eclipse.wst.server.core.installableRuntimes">
     <runtime
         id="org.eclipse.jst.server.smartio.runtime.10"
         licenseUrl="https://www.gnu.org/licenses/agpl-3.0.txt"

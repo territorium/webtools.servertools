@@ -10,7 +10,6 @@
 
 package org.eclipse.jst.server.smartio.core;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
@@ -21,17 +20,28 @@ import org.eclipse.jst.server.smartio.core.util.ServerTools;
 import org.eclipse.jst.server.smartio.core.util.VersionHelper;
 import org.eclipse.wst.server.core.IModule;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * smart.IO handler.
  */
 class Server10Installation implements IServerInstallation {
 
-
-  private static final String VM_PATH = "-D%s=\"%s\"";
+  /**
+   * Create a VM parameter with pathes.
+   *
+   * @param name
+   * @param pathes
+   */
+  private static String toVMParameter(String name, Object... pathes) {
+    return String.format("-D%s=%s", name, Arrays.asList(pathes).stream().map(p -> String.format("\"%s\"", p))
+        .collect(Collectors.joining(File.pathSeparator)));
+  }
 
   /**
    * Gets the base directory for this server. This directory is used as the "base" property for the
@@ -49,7 +59,7 @@ class Server10Installation implements IServerInstallation {
    */
   @Override
   public String getRuntimeClass() {
-    return "it.smartio.startup.StartUp";
+    return "it.smartio.daemon.Bootstrap";
   }
 
   /**
@@ -71,17 +81,25 @@ class Server10Installation implements IServerInstallation {
    */
   @Override
   public final String[] getRuntimeVMArguments(IPath installPath, IPath configPath, IPath deployPath, IFolder config) {
-    List<String> vmArgs = new ArrayList<>();
-    IFile logging = config.getFile("logging.properties");
-    if (logging.exists()) {
-      IPath path = logging.getLocation();
-      vmArgs.add(String.format(VM_PATH, "java.util.logging.config.file", path.toOSString()));
+    List<String> configPaths = new ArrayList<>();
+
+    if (config.exists()) {
+      configPaths.add(config.getLocation().toOSString());
+    }
+    if (!installPath.isPrefixOf(configPath) && configPath.toFile().exists()) {
+      configPaths.add(configPath.toOSString());
     }
 
-    vmArgs.add(String.format(VM_PATH, "smartio.conf", configPath.toOSString()));
-    vmArgs.add(String.format(VM_PATH, "smartio.deploy", deployPath.toOSString()));
+    List<String> vmArgs = new ArrayList<>();
+    if (!configPaths.isEmpty()) {
+      vmArgs.add(Server10Installation.toVMParameter("smartio.config", configPaths.toArray()));
+    }
+    vmArgs.add(Server10Installation.toVMParameter("smartio.deploy", deployPath.toOSString()));
+    vmArgs.add("--add-opens=\"java.base/java.lang=ALL-UNNAMED\"");
+    vmArgs.add("--add-opens=\"java.rmi/sun.rmi.transport=ALL-UNNAMED\"");
+    vmArgs.add("--add-opens=\"java.base/java.io=tomcat.embed\"");
     vmArgs.add("-m");
-    vmArgs.add("smartio.startup");
+    vmArgs.add("smartio.daemon");
     return vmArgs.toArray(new String[vmArgs.size()]);
   }
 
@@ -90,7 +108,7 @@ class Server10Installation implements IServerInstallation {
    */
   @Override
   public String[] getRuntimeProgramArguments(IPath configPath, boolean starting) {
-    return starting ? new String[] { "start" } : new String[] { "stop" };
+    return new String[] { "--shutdown", "8005", starting ? "start" : "stop" };
   }
 
   /**

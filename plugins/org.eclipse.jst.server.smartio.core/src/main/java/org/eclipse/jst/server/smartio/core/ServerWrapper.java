@@ -10,7 +10,6 @@
 
 package org.eclipse.jst.server.smartio.core;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -22,7 +21,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jst.server.core.FacetUtil;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.jst.server.smartio.core.ServerPlugin.Level;
-import org.eclipse.jst.server.smartio.core.util.FileUtil;
 import org.eclipse.jst.server.smartio.core.util.ServerTools;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
@@ -32,7 +30,6 @@ import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.core.ServerUtil;
 import org.eclipse.wst.server.core.model.ServerDelegate;
 
-import java.io.File;
 import java.net.URL;
 import java.util.List;
 

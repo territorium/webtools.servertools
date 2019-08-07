@@ -10,28 +10,17 @@
 
 package org.eclipse.jst.server.smartio.core;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.jst.server.smartio.core.ServerPlugin.Level;
-import org.eclipse.jst.server.smartio.core.util.FileUtil;
-import org.eclipse.jst.server.smartio.core.util.ProgressUtil;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -76,92 +65,6 @@ public abstract class ServerConfiguration implements IServerConfiguration {
       } catch (Exception e) {
         ServerPlugin.log(Level.SEVERE, "Error firing property change event", e);
       }
-    }
-  }
-
-  /**
-   * Copies all files from the given directory in the workbench to the given location. Can be
-   * overridden by version specific class to modify or enhance what publish does.
-   *
-   * @param folder
-   * @param confPath
-   * @param monitor
-   */
-  @Override
-  public IStatus backupAndPublish(IFolder folder, IPath confPath, IProgressMonitor monitor) {
-    MultiStatus ms = new MultiStatus(ServerPlugin.PLUGIN_ID, 0, Messages.publishConfigurationTask, null);
-    if (ServerPlugin.isTraceEnabled()) {
-      ServerPlugin.log(Level.FINER, "Backup and publish");
-    }
-    monitor = ProgressUtil.getMonitorFor(monitor);
-
-    try {
-      backupFolder(folder, confPath, null, ms, monitor);
-    } catch (Exception e) {
-      ServerPlugin.log(Level.SEVERE, "backupAndPublish() error", e);
-      IStatus s = new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0,
-          NLS.bind(Messages.errorPublishConfiguration, new String[] { e.getLocalizedMessage() }), e);
-      ms.add(s);
-    }
-
-    monitor.done();
-    return ms;
-  }
-
-  private void backupFolder(IFolder folder, IPath confDir, IPath backup, MultiStatus ms, IProgressMonitor monitor)
-      throws CoreException {
-    IResource[] children = folder.members();
-    if (children == null) {
-      return;
-    }
-
-    int size = children.length;
-    monitor.beginTask(Messages.publishConfigurationTask, size * 100);
-    for (int i = 0; i < size; i++) {
-      if (children[i] instanceof IFile) {
-        try {
-          IFile file = (IFile) children[i];
-          String name = file.getName();
-          monitor.subTask(NLS.bind(Messages.publisherPublishTask, new String[] { name }));
-          if (ServerPlugin.isTraceEnabled()) {
-            ServerPlugin.log(Level.FINEST, "Publishing " + name);
-          }
-
-          // backup and copy file
-          boolean copy = true;
-          if ((backup != null) && !(backup.append(name).toFile().exists())) {
-            IStatus status = FileUtil.copyFile(confDir.append(name).toOSString(), backup + File.separator + name);
-            ms.add(status);
-            if (!status.isOK()) {
-              copy = false;
-            }
-          }
-
-          if (copy) {
-            String destPath = confDir.append(name).toOSString();
-            String destContents = null;
-            String srcContents = null;
-            File dest = new File(destPath);
-            if (dest.exists()) {
-              InputStream fis = new FileInputStream(destPath);
-              destContents = FileUtil.getFileContents(fis);
-              if (destContents != null) {
-                fis = file.getContents();
-                srcContents = FileUtil.getFileContents(fis);
-              }
-            }
-            if ((destContents == null) || (srcContents == null) || !srcContents.equals(destContents)) {
-              InputStream in = file.getContents();
-              ms.add(FileUtil.copyFile(in, destPath));
-            }
-          }
-        } catch (Exception e) {
-          ServerPlugin.log(Level.SEVERE, "backupAndPublish() error", e);
-          ms.add(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0,
-              NLS.bind(Messages.errorPublishConfiguration, new String[] { e.getLocalizedMessage() }), e));
-        }
-      }
-      monitor.worked(100);
     }
   }
 

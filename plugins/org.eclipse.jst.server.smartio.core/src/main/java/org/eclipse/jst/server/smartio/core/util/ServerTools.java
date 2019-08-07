@@ -30,7 +30,10 @@ import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.ServerUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The {@link ServerTools} class.
@@ -100,6 +103,45 @@ public abstract class ServerTools {
       buf.append(commandLine[i]);
     }
     return buf.toString();
+  }
+
+
+  /**
+   * Merge the given arguments into the original argument string, replacing invalid values if they
+   * have been changed. Special handling is provided if the keepActionLast argument is true and the
+   * last vmArg is a simple string. The vmArgs will be merged such that the last vmArg is guaranteed
+   * to be the last argument in the merged string.
+   *
+   * @param parserdArg String of original arguments.
+   * @param vmArgs Arguments to merge into the original arguments string
+   */
+  public static String mergeArguments(String existingArgs, String[] vmArgs) {
+    List<String> arguments = new ArrayList<>();
+    simplify(existingArgs).forEach(a -> arguments.add(a));
+    simplify(String.join(" ", vmArgs)).stream().filter(a -> !arguments.contains(a)).forEach(a -> arguments.add(a));
+    return String.join(" ", arguments);
+  }
+
+  private static final Pattern ARG =
+      Pattern.compile("([^\\s=\"]+(\\s+|=)(\"[^\"]+\"|[^\\s]+))", Pattern.CASE_INSENSITIVE);
+
+  private static List<String> simplify(String args) {
+    if (args == null) {
+      return Collections.emptyList();
+    }
+
+    List<String> arguments = new ArrayList<>();
+    Matcher matcher = ARG.matcher(args);
+
+    while (matcher.find()) {
+      arguments.add(matcher.group(1));
+    }
+    return arguments;
+  }
+
+  public static void main(String... args) {
+    System.out.println(simplify(
+        "-Dsmartio.config=\"/data/smartIO/workspace/runtime-EclipseApplication/Servers/smart.IO v1.0 Server at localhost-config\" -Dsmartio.deploy=\"/data/smartIO/develop/platform/jlink/target/smartIO-19.07.9/webapps\" --add-opens=\"java.base/java.lang=ALL-UNNAMED\" --add-opens=\"java.rmi/sun.rmi.transport=ALL-UNNAMED\" --add-opens=\"java.base/java.io=tomcat.embed\" -m smartio.daemon"));
   }
 
   /**

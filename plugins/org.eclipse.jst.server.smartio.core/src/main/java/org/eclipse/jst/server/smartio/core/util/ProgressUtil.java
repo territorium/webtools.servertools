@@ -42,9 +42,6 @@ public class ProgressUtil {
    * @param ticks
    */
   public static IProgressMonitor getSubMonitorFor(IProgressMonitor monitor, int ticks) {
-    if (monitor == null) {
-      return new NullProgressMonitor();
-    }
-    return (monitor instanceof NullProgressMonitor) ? monitor : new SubProgressMonitor(monitor, ticks);
+    return (monitor == null) ? new NullProgressMonitor() : new SubProgressMonitor(monitor, ticks);
   }
 }

@@ -1,8 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2018 IBM Corporation and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which accompanies this distribution,
- * and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2003, 2018 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
+ * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -36,10 +35,12 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * The {@link ServerLaunchConfiguration} is responsible to start the Java VM
- * with the smart.IO Server.
+ * The {@link ServerLaunchConfiguration} is responsible to start the Java VM with the smart.IO
+ * Server.
  */
 public class ServerLaunchConfiguration extends AbstractJavaLaunchConfigurationDelegate {
+
+  private IVMInstall vm;
 
   /**
    * Constructs an instance of {@link ServerLaunchConfiguration}.
@@ -72,9 +73,11 @@ public class ServerLaunchConfiguration extends AbstractJavaLaunchConfigurationDe
 
     ServerBehaviour behavior = (ServerBehaviour) server.loadAdapter(ServerBehaviour.class, null);
 
-    IVMInstallType installType = new StandardVMType();
-    IVMInstall vm = installType.createVMInstall("Smart.IO VM");
-    vm.setInstallLocation(behavior.getServerRuntime().getRuntime().getLocation().toFile());
+    if (vm == null) {
+      IVMInstallType installType = new StandardVMType();
+      vm = installType.createVMInstall("smart.IO VM");
+      vm.setInstallLocation(behavior.getServerRuntime().getRuntime().getLocation().toFile());
+    }
 
     IVMRunner runner = vm.getVMRunner(mode);
     if (runner == null) {
@@ -92,24 +95,24 @@ public class ServerLaunchConfiguration extends AbstractJavaLaunchConfigurationDe
     String[][] classAndModulePath = getClasspathAndModulepath(conf);
 
     // Create VM configuration
-    VMRunnerConfiguration runConfig = new VMRunnerConfiguration(behavior.getRuntimeClass(), classAndModulePath[0]);
-    runConfig.setModulepath(classAndModulePath[1]);
-    runConfig.setProgramArguments(args.getProgramArgumentsArray());
-    runConfig.setVMArguments(getVMArguments(conf, mode, args));
-    runConfig.setWorkingDirectory(workingDirName);
-    runConfig.setEnvironment(getEnvironment(conf));
-    runConfig.setVMSpecificAttributesMap(getVMSpecificAttributesMap(conf));
+    VMRunnerConfiguration configuration = new VMRunnerConfiguration(behavior.getRuntimeClass(), classAndModulePath[0]);
+    configuration.setModulepath(classAndModulePath[1]);
+    configuration.setProgramArguments(args.getProgramArgumentsArray());
+    configuration.setVMArguments(getVMArguments(conf, mode, args));
+    configuration.setWorkingDirectory(workingDirName);
+    configuration.setEnvironment(getEnvironment(conf));
+    configuration.setVMSpecificAttributesMap(getVMSpecificAttributesMap(conf));
 
     // Bootpath
     String[] bootpath = getBootpath(conf);
     if ((bootpath != null) && (bootpath.length > 0)) {
-      runConfig.setBootClassPath(bootpath);
+      configuration.setBootClassPath(bootpath);
     }
     setDefaultSourceLocator(launch, conf);
 
     if (ILaunchManager.PROFILE_MODE.equals(mode)) {
       try {
-        ServerProfilerDelegate.configureProfiling(launch, vm, runConfig, monitor);
+        ServerProfilerDelegate.configureProfiling(launch, vm, configuration, monitor);
       } catch (CoreException ce) {
         behavior.stopImpl();
         throw ce;
@@ -119,7 +122,7 @@ public class ServerLaunchConfiguration extends AbstractJavaLaunchConfigurationDe
     // Launch the configuration
     behavior.setupLaunch(launch, mode, monitor);
     try {
-      runner.run(runConfig, launch, monitor);
+      runner.run(configuration, launch, monitor);
       behavior.addProcessListener(launch.getProcesses()[0]);
     } catch (Exception e) {
       // Ensure we don't continue to think the server is starting
@@ -128,8 +131,8 @@ public class ServerLaunchConfiguration extends AbstractJavaLaunchConfigurationDe
   }
 
   /**
-   * Get the VM arguments. Enable source lookup java agent, if
-   * allowAdvancedSourcelookup() was invoked.
+   * Get the VM arguments. Enable source lookup java agent, if allowAdvancedSourcelookup() was
+   * invoked.
    *
    * @param conf
    * @param mode
@@ -142,6 +145,4 @@ public class ServerLaunchConfiguration extends AbstractJavaLaunchConfigurationDe
     vmArguments.addAll(Arrays.asList(args.getVMArgumentsArray()));
     return vmArguments.toArray(new String[vmArguments.size()]);
   }
-  
-  
 }

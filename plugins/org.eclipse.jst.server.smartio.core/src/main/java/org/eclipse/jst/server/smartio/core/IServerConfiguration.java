@@ -60,16 +60,6 @@ public interface IServerConfiguration {
    */
   public void modifyWebModule(int index, String docBase, String path, boolean reloadable);
 
-  /**
-   * Copies all files from the given directory in the workbench to the given location. Can be
-   * overridden by version specific class to modify or enhance what publish does.
-   *
-   * @param source
-   * @param destDir
-   * @param monitor
-   */
-  public IStatus backupAndPublish(IFolder source, IPath destDir, IProgressMonitor monitor);
-
   public IStatus cleanupServer(IPath confDir, IPath installDir, IProgressMonitor monitor);
 
   /**

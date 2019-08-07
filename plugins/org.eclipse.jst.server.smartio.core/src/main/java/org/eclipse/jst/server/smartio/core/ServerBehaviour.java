@@ -10,7 +10,6 @@
 
 package org.eclipse.jst.server.smartio.core;
 
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -156,7 +155,8 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
         // Ignore if there is a problem
       }
     }
-    return getHandler().getRuntimeVMArguments(installPath, configPath, deployPath,getServer().getServerConfiguration());
+    return getHandler().getRuntimeVMArguments(installPath, configPath, deployPath,
+        getServer().getServerConfiguration());
   }
 
   protected void addProcessListener(final IProcess newProcess) {
@@ -211,12 +211,6 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
     monitor.beginTask(Messages.publishServerTask, 600);
 
     status = getConfig().cleanupServer(confDir, installDir, ProgressUtil.getSubMonitorFor(monitor, 100));
-    if ((status != null) && !status.isOK()) {
-      throw new CoreException(status);
-    }
-
-    IFolder folder = getServer().getServerConfiguration();
-    status = getConfig().backupAndPublish(folder, confDir, ProgressUtil.getSubMonitorFor(monitor, 400));
     if ((status != null) && !status.isOK()) {
       throw new CoreException(status);
     }
@@ -401,16 +395,13 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
 
     String existingVMArgs =
         workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, (String) null);
-    String[] parsedVMArgs = null;
-    if (null != existingVMArgs) {
-      parsedVMArgs = DebugPlugin.parseArguments(existingVMArgs);
-    }
-    String[] configVMArgs = getRuntimeVMArguments();
 
-    String mergedVMArguments = ServerTools.mergeArguments(existingVMArgs, configVMArgs, null, false);
+    String mergedVMArguments = ServerTools.mergeArguments(existingVMArgs, getRuntimeVMArguments());
+    // ServerTools.mergeArguments(existingVMArgs, configVMArgs, null, false);
     workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, mergedVMArguments);
     workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH,
         getRuntimeBaseDirectory().toString());
+
 
     // update classpath
     IRuntimeClasspathEntry[] originalClasspath = JavaRuntime.computeUnresolvedRuntimeClasspath(workingCopy);
