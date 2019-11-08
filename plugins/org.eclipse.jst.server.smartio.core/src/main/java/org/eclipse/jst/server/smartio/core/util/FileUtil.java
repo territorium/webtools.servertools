@@ -1,8 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2008 IBM Corporation and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which accompanies this distribution,
- * and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2003, 2008 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
+ * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -106,9 +105,9 @@ public class FileUtil {
   }
 
   /**
-   * Reads the from the specified InputStream and returns the result as a
-   * String. Each line is terminated by &quot;\n&quot;. Returns whatever is read
-   * regardless of any errors that occurs while reading.
+   * Reads the from the specified InputStream and returns the result as a String. Each line is
+   * terminated by &quot;\n&quot;. Returns whatever is read regardless of any errors that occurs
+   * while reading.
    *
    * @param stream
    */
@@ -133,8 +132,8 @@ public class FileUtil {
   }
 
   /**
-   * Creates the specified deployment directory if it does not already exist. It
-   * will include a default ROOT web application using the specified web.xml.
+   * Creates the specified deployment directory if it does not already exist. It will include a
+   * default ROOT web application using the specified web.xml.
    *
    * @param deployDir path to deployment directory to create
    * @param webxml web.xml context to use for the ROOT web application.

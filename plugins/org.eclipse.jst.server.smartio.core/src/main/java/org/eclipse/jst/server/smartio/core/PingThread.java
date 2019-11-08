@@ -1,8 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2012 IBM Corporation and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which accompanies this distribution,
- * and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2003, 2012 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
+ * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -43,8 +42,7 @@ class PingThread {
    *
    * @param server
    * @param url
-   * @param maxPings the maximum number of times to try pinging, or -1 to
-   *        continue forever
+   * @param maxPings the maximum number of times to try pinging, or -1 to continue forever
    * @param behaviour
    */
   PingThread(IServer server, String url, int maxPings, ServerBehaviour behaviour) {
@@ -65,8 +63,7 @@ class PingThread {
   }
 
   /**
-   * Ping the server until it is started. Then set the server state to
-   * STATE_STARTED.
+   * Ping the server until it is started. Then set the server state to STATE_STARTED.
    */
   private void ping() {
     int count = 0;
@@ -75,44 +72,44 @@ class PingThread {
     } catch (Exception e) {
       // ignore
     }
-    while (!this.stop) {
+    while (!stop) {
       try {
-        if (count == this.maxPings) {
+        if (count == maxPings) {
           try {
-            this.server.stop(false);
+            server.stop(false);
           } catch (Exception e) {
             ServerPlugin.log(Level.FINEST, "Ping: could not stop server");
           }
-          this.stop = true;
+          stop = true;
           break;
         }
         count++;
 
         ServerPlugin.log(Level.FINEST, "Ping: pinging " + count);
-        URL pingUrl = new URL(this.url);
+        URL pingUrl = new URL(url);
         URLConnection conn = pingUrl.openConnection();
         ((HttpURLConnection) conn).setInstanceFollowRedirects(false);
         ((HttpURLConnection) conn).getResponseCode();
 
         // ping worked - server is up
-        if (!this.stop) {
+        if (!stop) {
           ServerPlugin.log(Level.FINEST, "Ping: success");
           Thread.sleep(200);
-          this.behaviour.setServerStarted();
+          behaviour.setServerStarted();
         }
-        this.stop = true;
+        stop = true;
       } catch (FileNotFoundException fe) {
         try {
           Thread.sleep(200);
         } catch (Exception e) {
           // ignore
         }
-        this.behaviour.setServerStarted();
-        this.stop = true;
+        behaviour.setServerStarted();
+        stop = true;
       } catch (Exception e) {
         ServerPlugin.log(Level.FINEST, "Ping: failed");
         // pinging failed
-        if (!this.stop) {
+        if (!stop) {
           try {
             Thread.sleep(PingThread.PING_INTERVAL);
           } catch (InterruptedException e2) {
@@ -128,6 +125,6 @@ class PingThread {
    */
   void stop() {
     ServerPlugin.log(Level.FINEST, "Ping: stopping");
-    this.stop = true;
+    stop = true;
   }
 }

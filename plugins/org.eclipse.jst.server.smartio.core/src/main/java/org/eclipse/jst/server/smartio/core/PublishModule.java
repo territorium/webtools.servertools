@@ -23,7 +23,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jst.server.core.IJ2EEModule;
 import org.eclipse.jst.server.core.IWebModule;
-import org.eclipse.jst.server.smartio.core.util.ServerTools;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IServer;
@@ -104,7 +103,7 @@ public class PublishModule extends PublishHelper {
         break;
 
       default:
-        IPath path = getBehaviour().getPublishDirectory(module);
+        IPath path = getBehaviour().getPublishDirectory(module[0]);
         IModuleResource[] mr = getBehaviour().getResources(module);
         IPath[] jarPaths = null;
         IWebModule webModule = (IWebModule) module[0].loadAdapter(IWebModule.class, getMonitor());
@@ -159,7 +158,7 @@ public class PublishModule extends PublishHelper {
         break;
 
       default:
-        IPath path = getBehaviour().getPublishDirectory(module);
+        IPath path = getBehaviour().getPublishDirectory(module[0]);
         if (jarURI == null) {
           jarURI = "WEB-INF/lib" + module[1].getName() + ".jar";
         }
@@ -207,7 +206,7 @@ public class PublishModule extends PublishHelper {
 
       default:
         List<IStatus> status = new ArrayList<>();
-        IPath path = getBehaviour().getPublishDirectory(module);
+        IPath path = getBehaviour().getPublishDirectory(module[0]);
         if (jarURI == null) {
           jarURI = "WEB-INF/lib" + module[1].getName();
         }

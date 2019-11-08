@@ -1,8 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which accompanies this distribution,
- * and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2003, 2005 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
+ * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -45,16 +44,16 @@ public class ModifyPortCommand extends ConfigurationCommand {
   @Override
   public void execute() {
     // find old port number
-    Iterator<ServerPort> iterator = this.configuration.getServerPorts().iterator();
+    Iterator<ServerPort> iterator = configuration.getServerPorts().iterator();
     while (iterator.hasNext()) {
       ServerPort temp = iterator.next();
-      if (this.id.equals(temp.getId())) {
-        this.oldPort = temp.getPort();
+      if (id.equals(temp.getId())) {
+        oldPort = temp.getPort();
       }
     }
 
     // make the change
-    this.configuration.setServerPort(this.id, this.port);
+    configuration.setServerPort(id, port);
   }
 
   /**
@@ -62,6 +61,6 @@ public class ModifyPortCommand extends ConfigurationCommand {
    */
   @Override
   public void undo() {
-    this.configuration.setServerPort(this.id, this.oldPort);
+    configuration.setServerPort(id, oldPort);
   }
 }

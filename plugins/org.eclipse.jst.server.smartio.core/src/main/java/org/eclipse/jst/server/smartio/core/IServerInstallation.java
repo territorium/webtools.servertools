@@ -1,8 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2017 IBM Corporation and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which accompanies this distribution,
- * and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2003, 2017 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
+ * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -25,8 +24,7 @@ import java.util.List;
 public interface IServerInstallation {
 
   /**
-   * Verifies if the specified path points to a a server installation of this
-   * version.
+   * Verifies if the specified path points to a a server installation of this version.
    *
    * @param installPath
    */
@@ -53,8 +51,8 @@ public interface IServerInstallation {
   public String[] getRuntimeProgramArguments(IPath configPath, boolean starting);
 
   /**
-   * Gets the subset of the startup VM arguments for the server that apply to
-   * all compatible JVM versions.
+   * Gets the subset of the startup VM arguments for the server that apply to all compatible JVM
+   * versions.
    *
    * @param installPath
    * @param configPath
@@ -63,32 +61,29 @@ public interface IServerInstallation {
   public String[] getRuntimeVMArguments(IPath installPath, IPath configPath, IPath deployPath, IFolder folder);
 
   /**
-   * Returns true if the given project is supported by this server, and false
-   * otherwise.
+   * Returns true if the given project is supported by this server, and false otherwise.
    *
    * @param module
    */
   public IStatus canAddModule(IModule module);
 
   /**
-   * Returns the runtime base path for relative paths in the server
-   * configuration.
+   * Returns the runtime base path for relative paths in the server configuration.
    *
    * @param server
    */
   public IPath getRuntimeBaseDirectory(ServerWrapper server);
 
   /**
-   * Prepares the specified directory by making sure it exists and is
-   * initialized appropriately.
+   * Prepares the specified directory by making sure it exists and is initialized appropriately.
    *
    * @param deployPath
    */
   public IStatus prepareDeployDirectory(IPath deployPath);
 
   /**
-   * Prepare directory for serving contexts directly if enabled. If not enabled,
-   * restore directory if necessary.
+   * Prepare directory for serving contexts directly if enabled. If not enabled, restore directory
+   * if necessary.
    *
    * @param baseDir
    * @param server

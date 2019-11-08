@@ -36,26 +36,6 @@ public class ServerRuntime extends RuntimeDelegate implements IServerRuntime {
   }
 
   /**
-   * Gets the directory to which web applications are to be deployed. If relative, it is relative to
-   * the runtime base directory for the server.
-   */
-  public final String getDeployDirectory() {
-    String id = getRuntime().getRuntimeType().getId() + ".deploy";
-    return getAttribute(id, IServerRuntime.LEGACY_DEPLOYDIR);
-  }
-
-  /**
-   * Set the deployment directory for the server. May be absolute or relative to runtime base
-   * directory.
-   * 
-   * @param deployDir
-   */
-  public final void setDeployDirectory(String deployDir) {
-    String id = getRuntime().getRuntimeType().getId() + ".deploy";
-    setAttribute(id, deployDir);
-  }
-
-  /**
    * Validate the runtime.
    *
    * @see RuntimeDelegate#validate()

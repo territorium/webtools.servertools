@@ -1,20 +1,16 @@
 /*
- * Copyright (c) 2001-2019 Territorium Online Srl / TOL GmbH. All Rights
- * Reserved.
+ * Copyright (c) 2001-2019 Territorium Online Srl / TOL GmbH. All Rights Reserved.
  *
- * This file contains Original Code and/or Modifications of Original Code as
- * defined in and that are subject to the Territorium Online License Version
- * 1.0. You may not use this file except in compliance with the License. Please
- * obtain a copy of the License at http://www.tol.info/license/ and read it
- * before using this file.
+ * This file contains Original Code and/or Modifications of Original Code as defined in and that are
+ * subject to the Territorium Online License Version 1.0. You may not use this file except in
+ * compliance with the License. Please obtain a copy of the License at http://www.tol.info/license/
+ * and read it before using this file.
  *
- * The Original Code and all software distributed under the License are
- * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS
- * OR IMPLIED, AND TERRITORIUM ONLINE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
- * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY, FITNESS FOR
- * A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT. Please see the
- * License for the specific language governing rights and limitations under the
- * License.
+ * The Original Code and all software distributed under the License are distributed on an 'AS IS'
+ * basis, WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, AND TERRITORIUM ONLINE HEREBY
+ * DISCLAIMS ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT. Please see the License for
+ * the specific language governing rights and limitations under the License.
  */
 
 package org.eclipse.jst.server.smartio.core.conf;
@@ -24,13 +20,11 @@ import java.io.InputStream;
 import java.io.Reader;
 
 /**
- * The {@link LineReader} read in a "logical line" from character or byte
- * stream. It skipping all comments and blank lines and filter out those leading
- * whitespace characters (\u0020, \u0009 and \u000c) from the beginning of a
- * "natural line".
+ * The {@link LineReader} read in a "logical line" from character or byte stream. It skipping all
+ * comments and blank lines and filter out those leading whitespace characters (\u0020, \u0009 and
+ * \u000c) from the beginning of a "natural line".
  *
- * Method returns the char length of the "logical line" and stores the line into
- * the buffer.
+ * Method returns the char length of the "logical line" and stores the line into the buffer.
  */
 abstract class LineReader {
 
@@ -54,7 +48,7 @@ abstract class LineReader {
    * Get the line buffer.
    */
   protected final char[] getLineBuffer() {
-    return this.buffer;
+    return buffer;
   }
 
   /**
@@ -71,10 +65,10 @@ abstract class LineReader {
     boolean appendedLineBegin = false;
     boolean precedingBackslash = false;
     while (true) {
-      if (this.offset >= this.limit) {
-        this.limit = read();
-        this.offset = 0;
-        if (this.limit <= 0) {
+      if (offset >= limit) {
+        limit = read();
+        offset = 0;
+        if (limit <= 0) {
           if ((length == 0) || isCommentLine) {
             return -1;
           }
@@ -84,7 +78,7 @@ abstract class LineReader {
           return length;
         }
       }
-      character = readAt(this.offset++);
+      character = readAt(offset++);
 
       if (skipLF) {
         skipLF = false;
@@ -111,15 +105,15 @@ abstract class LineReader {
       }
 
       if ((character != '\n') && (character != '\r')) {
-        this.buffer[length++] = character;
-        if (length == this.buffer.length) {
-          int newLength = this.buffer.length * 2;
+        buffer[length++] = character;
+        if (length == buffer.length) {
+          int newLength = buffer.length * 2;
           if (newLength < 0) {
             newLength = Integer.MAX_VALUE;
           }
           char[] buf = new char[newLength];
-          System.arraycopy(this.buffer, 0, buf, 0, this.buffer.length);
-          this.buffer = buf;
+          System.arraycopy(buffer, 0, buf, 0, buffer.length);
+          buffer = buf;
         }
         // flip the preceding backslash flag
         if (character == '\\') {
@@ -136,10 +130,10 @@ abstract class LineReader {
           length = 0;
           continue;
         }
-        if (this.offset >= this.limit) {
-          this.limit = read();
-          this.offset = 0;
-          if (this.limit <= 0) {
+        if (offset >= limit) {
+          limit = read();
+          offset = 0;
+          if (limit <= 0) {
             if (precedingBackslash) {
               length--;
             }
@@ -190,24 +184,23 @@ abstract class LineReader {
 
     private ByteReader(InputStream stream) {
       this.stream = stream;
-      this.buffer = new byte[8192];
+      buffer = new byte[8192];
     }
 
     @Override
     protected final int read() throws IOException {
-      return this.stream.read(this.buffer);
+      return stream.read(buffer);
     }
 
     // Uses an ISO8859-1 decoder.
     @Override
     protected final char readAt(int index) throws IOException {
-      return (char) (0xff & this.buffer[index]);
+      return (char) (0xff & buffer[index]);
     }
   }
 
   /**
-   * The {@link CharReader} implements a {@link LineReader} for a character
-   * stream.
+   * The {@link CharReader} implements a {@link LineReader} for a character stream.
    */
   private static class CharReader extends LineReader {
 
@@ -216,17 +209,17 @@ abstract class LineReader {
 
     private CharReader(Reader reader) {
       this.reader = reader;
-      this.buffer = new char[8192];
+      buffer = new char[8192];
     }
 
     @Override
     protected final int read() throws IOException {
-      return this.reader.read(this.buffer);
+      return reader.read(buffer);
     }
 
     @Override
     protected final char readAt(int index) throws IOException {
-      return this.buffer[index];
+      return buffer[index];
     }
   }
 }

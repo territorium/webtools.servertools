@@ -1,20 +1,16 @@
 /*
- * Copyright (c) 2001-2019 Territorium Online Srl / TOL GmbH. All Rights
- * Reserved.
+ * Copyright (c) 2001-2019 Territorium Online Srl / TOL GmbH. All Rights Reserved.
  *
- * This file contains Original Code and/or Modifications of Original Code as
- * defined in and that are subject to the Territorium Online License Version
- * 1.0. You may not use this file except in compliance with the License. Please
- * obtain a copy of the License at http://www.tol.info/license/ and read it
- * before using this file.
+ * This file contains Original Code and/or Modifications of Original Code as defined in and that are
+ * subject to the Territorium Online License Version 1.0. You may not use this file except in
+ * compliance with the License. Please obtain a copy of the License at http://www.tol.info/license/
+ * and read it before using this file.
  *
- * The Original Code and all software distributed under the License are
- * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS
- * OR IMPLIED, AND TERRITORIUM ONLINE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
- * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY, FITNESS FOR
- * A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT. Please see the
- * License for the specific language governing rights and limitations under the
- * License.
+ * The Original Code and all software distributed under the License are distributed on an 'AS IS'
+ * basis, WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, AND TERRITORIUM ONLINE HEREBY
+ * DISCLAIMS ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT. Please see the License for
+ * the specific language governing rights and limitations under the License.
  */
 
 package org.eclipse.jst.server.smartio.core.conf;
@@ -29,9 +25,9 @@ import java.util.Date;
 
 
 /**
- * The {@link Properties} class represents a persistent set of properties. The
- * {@link Properties} can be saved to a stream or loaded from a stream. Each key
- * and its corresponding value in the property list is a string.
+ * The {@link Properties} class represents a persistent set of properties. The {@link Properties}
+ * can be saved to a stream or loaded from a stream. Each key and its corresponding value in the
+ * property list is a string.
  */
 public abstract class Properties {
 
@@ -49,20 +45,18 @@ public abstract class Properties {
   protected static final Comparator<String> COMPARATOR = new NameComparator();
 
   /**
-   * Searches for the property with the specified key in this property list. If
-   * the key is not found in this property list, the default property list, and
-   * its defaults, recursively, are then checked. The method returns
-   * {@code null} if the property is not found.
+   * Searches for the property with the specified key in this property list. If the key is not found
+   * in this property list, the default property list, and its defaults, recursively, are then
+   * checked. The method returns {@code null} if the property is not found.
    *
    * @param key the property key.
    */
   public abstract String get(String key);
 
   /**
-   * Searches for the property with the specified key in this property list. If
-   * the key is not found in this property list, the default property list, and
-   * its defaults, recursively, are then checked. The method returns the default
-   * value argument if the property is not found.
+   * Searches for the property with the specified key in this property list. If the key is not found
+   * in this property list, the default property list, and its defaults, recursively, are then
+   * checked. The method returns the default value argument if the property is not found.
    *
    * @param key
    * @param string
@@ -105,10 +99,9 @@ public abstract class Properties {
   }
 
   /**
-   * Calls the <tt>Hashtable</tt> method {@code put}. Provided for parallelism
-   * with the <tt>getProperty</tt> method. Enforces use of strings for property
-   * keys and values. The value returned is the result of the <tt>Hashtable</tt>
-   * call to {@code put}.
+   * Calls the <tt>Hashtable</tt> method {@code put}. Provided for parallelism with the
+   * <tt>getProperty</tt> method. Enforces use of strings for property keys and values. The value
+   * returned is the result of the <tt>Hashtable</tt> call to {@code put}.
    *
    * @param key
    * @param value
@@ -116,9 +109,8 @@ public abstract class Properties {
   public abstract void set(String key, String value);
 
   /**
-   * Reads a property list (key and element pairs) from the input character
-   * stream in a simple line-oriented format. {@link Properties} are processed
-   * in terms of lines.
+   * Reads a property list (key and element pairs) from the input character stream in a simple
+   * line-oriented format. {@link Properties} are processed in terms of lines.
    *
    * @param reader
    */
@@ -127,13 +119,12 @@ public abstract class Properties {
   }
 
   /**
-   * Reads a property list (key and element pairs) from the input byte stream.
-   * The input stream is in a simple line-oriented format as specified in
-   * {@link #load(java.io.Reader) load(Reader)} and is assumed to use the ISO
-   * 8859-1 character encoding; that is each byte is one Latin1 character.
-   * Characters not in Latin1, and certain special characters, are represented
-   * in keys and elements using Unicode escapes as defined in section 3.3 of
-   * <cite>The Java&trade; Language Specification</cite>.
+   * Reads a property list (key and element pairs) from the input byte stream. The input stream is
+   * in a simple line-oriented format as specified in {@link #load(java.io.Reader) load(Reader)} and
+   * is assumed to use the ISO 8859-1 character encoding; that is each byte is one Latin1 character.
+   * Characters not in Latin1, and certain special characters, are represented in keys and elements
+   * using Unicode escapes as defined in section 3.3 of <cite>The Java&trade; Language
+   * Specification</cite>.
    *
    * @param stream
    */
@@ -142,9 +133,9 @@ public abstract class Properties {
   }
 
   /**
-   * Writes this property list (key and element pairs) in this
-   * {@link Properties} table to the output character stream in a format
-   * suitable for using the {@link #load(java.io.Reader) load(Reader)} method.
+   * Writes this property list (key and element pairs) in this {@link Properties} table to the
+   * output character stream in a format suitable for using the {@link #load(java.io.Reader)
+   * load(Reader)} method.
    *
    * @param writer
    * @param comment
@@ -154,10 +145,9 @@ public abstract class Properties {
   }
 
   /**
-   * Writes this property list (key and element pairs) in this
-   * {@link Properties} table to the output stream in a format suitable for
-   * loading into a {@link Properties} table using the {@link #load(InputStream)
-   * load(InputStream)} method.
+   * Writes this property list (key and element pairs) in this {@link Properties} table to the
+   * output stream in a format suitable for loading into a {@link Properties} table using the
+   * {@link #load(InputStream) load(InputStream)} method.
    *
    * @param stream
    * @param comment

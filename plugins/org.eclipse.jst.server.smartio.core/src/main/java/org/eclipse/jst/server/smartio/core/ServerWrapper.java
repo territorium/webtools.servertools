@@ -21,7 +21,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jst.server.core.FacetUtil;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.jst.server.smartio.core.ServerPlugin.Level;
-import org.eclipse.jst.server.smartio.core.util.ServerTools;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IModuleType;
@@ -41,7 +40,6 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
   private transient IServerInstallation  handler;
   private transient IServerConfiguration configuration;
 
-
   // Configuration version control
   private int          versionLoaded;
   private int          versionCurrent;
@@ -60,11 +58,11 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
    */
   @Override
   public final IServerInstallation getHandler() {
-    if (this.handler == null) {
+    if (handler == null) {
       ServerRuntime runtime = getServerRuntime();
-      this.handler = (runtime == null) ? null : runtime.getHandler();
+      handler = (runtime == null) ? null : runtime.getHandler();
     }
-    return this.handler;
+    return handler;
   }
 
   /**
@@ -87,17 +85,17 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
   @Override
   public void importRuntimeConfiguration(IRuntime runtime, IProgressMonitor monitor) throws CoreException {
     // Initialize state
-    synchronized (this.versionLock) {
-      this.configuration = null;
-      this.versionCurrent = 0;
-      this.versionLoaded = 0;
+    synchronized (versionLock) {
+      configuration = null;
+      versionCurrent = 0;
+      versionLoaded = 0;
     }
     if (runtime == null) {
       return;
     }
 
     IServerConfiguration config = createConfig();
-    IPath path = ServerTools.getPath(getRuntimeBaseDirectory(), getConfDirectory());
+    IPath path = ServerTools.getAbsolutePath(getRuntimeBaseDirectory(), getConfDirectory());
     try {
       config.importConfiguration(path, monitor);
     } catch (CoreException ce) {
@@ -105,10 +103,10 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
     }
 
     // Update version
-    synchronized (this.versionLock) {
+    synchronized (versionLock) {
       // If not already initialized by some other thread, save the configuration
-      if (this.configuration == null) {
-        this.configuration = config;
+      if (configuration == null) {
+        configuration = config;
       }
     }
   }
@@ -120,9 +118,9 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
    */
   @Override
   public void saveConfiguration(IProgressMonitor monitor) throws CoreException {
-    if (this.configuration != null) {
-      IPath path = ServerTools.getPath(getRuntimeBaseDirectory(), getConfDirectory());
-      this.configuration.saveConfiguration(path, getServer().getServerConfiguration(), monitor);
+    if (configuration != null) {
+      IPath path = ServerTools.getAbsolutePath(getRuntimeBaseDirectory(), getConfDirectory());
+      configuration.saveConfiguration(path, getServer().getServerConfiguration(), monitor);
     }
   }
 
@@ -131,9 +129,9 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
    */
   @Override
   public void configurationChanged() {
-    synchronized (this.versionLock) {
+    synchronized (versionLock) {
       // Alter the current version
-      this.versionCurrent++;
+      versionCurrent++;
     }
   }
 
@@ -312,13 +310,13 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
     int current;
     IServerConfiguration configTemp;
     // Grab current state
-    synchronized (this.versionLock) {
-      current = this.versionCurrent;
-      configTemp = this.configuration;
+    synchronized (versionLock) {
+      current = versionCurrent;
+      configTemp = configuration;
     }
 
     // If configuration needs loading
-    if ((configTemp == null) || (this.versionLoaded != current)) {
+    if ((configTemp == null) || (versionLoaded != current)) {
       IFolder folder = getServer().getServerConfiguration();
       if ((folder == null) || !folder.exists()) {
         String path = null;
@@ -340,15 +338,15 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
       }
 
       try {
-        IPath path = ServerTools.getPath(getRuntimeBaseDirectory(), getConfDirectory());
+        IPath path = ServerTools.getAbsolutePath(getRuntimeBaseDirectory(), getConfDirectory());
         configTemp.loadConfiguration(path, folder, new NullProgressMonitor());
 
         // Update loaded version
-        synchronized (this.versionLock) {
+        synchronized (versionLock) {
           // If newer version not already loaded, update version
-          if ((this.configuration == null) || (this.versionLoaded < current)) {
-            this.configuration = configTemp;
-            this.versionLoaded = current;
+          if ((configuration == null) || (versionLoaded < current)) {
+            configuration = configTemp;
+            versionLoaded = current;
           }
         }
       } catch (CoreException ce) {
@@ -356,14 +354,6 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
       }
     }
     return configTemp;
-  }
-
-  /**
-   * Get the location of the web-app deploy directory.
-   */
-  @Override
-  public final String getDeployDirectory() {
-    return IServerRuntime.LEGACY_DEPLOYDIR;
   }
 
   /**
@@ -391,8 +381,7 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
    */
   @Override
   public final String getConfDirectory() {
-    String legacy = getRuntimeBaseDirectory().append("conf").toOSString();
-    return getAttribute(IServerWrapper.PROPERTY_CONF_DIR, legacy);
+    return getAttribute(IServerWrapper.PROPERTY_CONF_DIR, "conf");
   }
 
   /**
@@ -403,8 +392,25 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
   @Override
   public final void setConfDirectory(String directory) {
     setAttribute(IServerWrapper.PROPERTY_CONF_DIR, directory);
-    
   }
+
+  /**
+   * Get the location of the web-app deploy directory.
+   */
+  @Override
+  public final String getDeployDirectory() {
+    return "webapps";// getAttribute(IServerWrapper.PROPERTY_DEPLOY_DIR, "webapps");
+  }
+
+  // /**
+  // * Sets this process to secure mode.
+  // *
+  // * @param bool
+  // */
+  // @Override
+  // public final void setDeployDirectory(String directory) {
+  // setAttribute(IServerWrapper.PROPERTY_DEPLOY_DIR, directory);
+  // }
 
   /**
    * Return a string representation of this object.

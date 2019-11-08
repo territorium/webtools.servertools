@@ -56,296 +56,255 @@ import java.util.List;
  */
 class RuntimeComposite extends Composite {
 
-	private IServerRuntime runtime;
-	private IRuntimeWorkingCopy runtimeWC;
+  private IServerRuntime      runtime;
+  private IRuntimeWorkingCopy runtimeWC;
 
-	private final IWizardHandle wizard;
+  private final IWizardHandle wizard;
 
-	private IInstallableRuntime installRuntime;
-	private Job installRuntimeJob;
-	private IJobChangeListener jobListener;
+  private IInstallableRuntime installRuntime;
+  private Job                 installRuntimeJob;
+  private IJobChangeListener  jobListener;
 
-	private Text name;
+  private Text                name;
 
-	private Label installLabel;
-	private Text installDir;
-	private Button install;
+  private Label               installLabel;
+  private Text                installDir;
+  private Button              install;
 
-	private Text deployDir;
-	private Button deployDirBrowse;
+  /**
+   * {@link RuntimeComposite} constructor comment.
+   *
+   * @param parent the parent composite
+   * @param wizard the wizard handle
+   */
+  protected RuntimeComposite(Composite parent, IWizardHandle wizard) {
+    super(parent, SWT.NONE);
+    this.wizard = wizard;
 
-	/**
-	 * {@link RuntimeComposite} constructor comment.
-	 *
-	 * @param parent the parent composite
-	 * @param wizard the wizard handle
-	 */
-	protected RuntimeComposite(Composite parent, IWizardHandle wizard) {
-		super(parent, SWT.NONE);
-		this.wizard = wizard;
+    wizard.setTitle(Messages.wizardTitle);
+    wizard.setDescription(Messages.wizardDescription);
+    wizard.setImageDescriptor(ServerUIPlugin.getImageDescriptor(ServerUIPlugin.IMG_WIZ));
 
-		wizard.setTitle(Messages.wizardTitle);
-		wizard.setDescription(Messages.wizardDescription);
-		wizard.setImageDescriptor(ServerUIPlugin.getImageDescriptor(ServerUIPlugin.IMG_WIZ));
+    createControl();
+  }
 
-		createControl();
-	}
+  protected void setRuntime(IRuntimeWorkingCopy newRuntime) {
+    if (newRuntime == null) {
+      runtimeWC = null;
+      runtime = null;
+    } else {
+      runtimeWC = newRuntime;
+      runtime = (IServerRuntime) newRuntime.loadAdapter(IServerRuntime.class, null);
+    }
 
-	protected void setRuntime(IRuntimeWorkingCopy newRuntime) {
-		if (newRuntime == null) {
-			this.runtimeWC = null;
-			this.runtime = null;
-		} else {
-			this.runtimeWC = newRuntime;
-			this.runtime = (IServerRuntime) newRuntime.loadAdapter(IServerRuntime.class, null);
-			this.deployDir.setText(runtime.getDeployDirectory());
-		}
+    if (runtimeWC == null) {
+      installRuntime = null;
+      install.setEnabled(false);
+      installLabel.setText("");
+    } else {
+      installRuntime = ServerPlugin.findInstallableRuntime(runtimeWC.getRuntimeType().getId());
+      if (installRuntime != null) {
+        String name = installRuntime.getName();
+        install.setEnabled(true);
+        installLabel.setText(name == null ? "smart.IO" : name);
+      }
+    }
 
-		if (this.runtimeWC == null) {
-			this.installRuntime = null;
-			this.install.setEnabled(false);
-			this.installLabel.setText("");
-		} else {
-			this.installRuntime = ServerPlugin.findInstallableRuntime(this.runtimeWC.getRuntimeType().getId());
-			if (this.installRuntime != null) {
-				String name = this.installRuntime.getName();
-				this.install.setEnabled(true);
-				this.installLabel.setText(name == null ? "smart.IO" : name);
-			}
-		}
+    init();
+    validate();
+  }
 
-		init();
-		validate();
-	}
+  @Override
+  public void dispose() {
+    super.dispose();
+    if (installRuntimeJob != null) {
+      installRuntimeJob.removeJobChangeListener(jobListener);
+    }
+  }
 
-	@Override
-	public void dispose() {
-		super.dispose();
-		if (this.installRuntimeJob != null) {
-			this.installRuntimeJob.removeJobChangeListener(this.jobListener);
-		}
-	}
+  /**
+   * Provide a wizard page to change the smart.IO installation directory.
+   */
+  private void createControl() {
+    GridLayout layout = new GridLayout();
+    layout.numColumns = 2;
+    setLayout(layout);
+    setLayoutData(new GridData(GridData.FILL_BOTH));
+    PlatformUI.getWorkbench().getHelpSystem().setHelp(this, ContextIds.RUNTIME_COMPOSITE);
 
-	/**
-	 * Provide a wizard page to change the smart.IO installation directory.
-	 */
-	private void createControl() {
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		setLayout(layout);
-		setLayoutData(new GridData(GridData.FILL_BOTH));
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(this, ContextIds.RUNTIME_COMPOSITE);
+    Label label = new Label(this, SWT.NONE);
+    label.setText(Messages.runtimeName);
+    GridData data = new GridData();
+    data.horizontalSpan = 2;
+    label.setLayoutData(data);
 
-		Label label = new Label(this, SWT.NONE);
-		label.setText(Messages.runtimeName);
-		GridData data = new GridData();
-		data.horizontalSpan = 2;
-		label.setLayoutData(data);
+    name = new Text(this, SWT.BORDER);
+    data = new GridData(GridData.FILL_HORIZONTAL);
+    name.setLayoutData(data);
+    name.addModifyListener(new ModifyListener() {
 
-		this.name = new Text(this, SWT.BORDER);
-		data = new GridData(GridData.FILL_HORIZONTAL);
-		this.name.setLayoutData(data);
-		this.name.addModifyListener(new ModifyListener() {
+      @Override
+      public void modifyText(ModifyEvent e) {
+        runtimeWC.setName(name.getText());
+        validate();
+      }
+    });
 
-			@Override
-			public void modifyText(ModifyEvent e) {
-				RuntimeComposite.this.runtimeWC.setName(RuntimeComposite.this.name.getText());
-				validate();
-			}
-		});
+    label = new Label(this, SWT.NONE);
+    label.setText(Messages.installDir);
+    data = new GridData();
+    data.horizontalSpan = 2;
+    label.setLayoutData(data);
 
-		label = new Label(this, SWT.NONE);
-		label.setText(Messages.installDir);
-		data = new GridData();
-		data.horizontalSpan = 2;
-		label.setLayoutData(data);
+    installDir = new Text(this, SWT.BORDER);
+    data = new GridData(GridData.FILL_HORIZONTAL);
+    installDir.setLayoutData(data);
+    installDir.addModifyListener(new ModifyListener() {
 
-		this.installDir = new Text(this, SWT.BORDER);
-		data = new GridData(GridData.FILL_HORIZONTAL);
-		this.installDir.setLayoutData(data);
-		this.installDir.addModifyListener(new ModifyListener() {
+      @Override
+      public void modifyText(ModifyEvent e) {
+        runtimeWC.setLocation(new Path(installDir.getText()));
+        validate();
+      }
+    });
 
-			@Override
-			public void modifyText(ModifyEvent e) {
-				RuntimeComposite.this.runtimeWC.setLocation(new Path(RuntimeComposite.this.installDir.getText()));
-				validate();
-			}
-		});
+    Button browse = SWTUtil.createButton(this, Messages.browse);
+    browse.addSelectionListener(new SelectionAdapter() {
 
-		Button browse = SWTUtil.createButton(this, Messages.browse);
-		browse.addSelectionListener(new SelectionAdapter() {
+      @Override
+      public void widgetSelected(SelectionEvent se) {
+        DirectoryDialog dialog = new DirectoryDialog(RuntimeComposite.this.getShell());
+        dialog.setMessage(Messages.selectInstallDir);
+        dialog.setFilterPath(installDir.getText());
+        String selectedDirectory = dialog.open();
+        if (selectedDirectory != null) {
+          installDir.setText(selectedDirectory);
+        }
+      }
+    });
 
-			@Override
-			public void widgetSelected(SelectionEvent se) {
-				DirectoryDialog dialog = new DirectoryDialog(RuntimeComposite.this.getShell());
-				dialog.setMessage(Messages.selectInstallDir);
-				dialog.setFilterPath(RuntimeComposite.this.installDir.getText());
-				String selectedDirectory = dialog.open();
-				if (selectedDirectory != null) {
-					RuntimeComposite.this.installDir.setText(selectedDirectory);
-				}
-			}
-		});
+    installLabel = new Label(this, SWT.RIGHT);
+    data = new GridData(GridData.FILL_HORIZONTAL);
+    data.horizontalIndent = 10;
+    installLabel.setLayoutData(data);
 
-		this.installLabel = new Label(this, SWT.RIGHT);
-		data = new GridData(GridData.FILL_HORIZONTAL);
-		data.horizontalIndent = 10;
-		this.installLabel.setLayoutData(data);
+    install = SWTUtil.createButton(this, Messages.install);
+    install.setEnabled(false);
+    install.addSelectionListener(new SelectionAdapter() {
 
-		this.install = SWTUtil.createButton(this, Messages.install);
-		this.install.setEnabled(false);
-		this.install.addSelectionListener(new SelectionAdapter() {
+      @Override
+      public void widgetSelected(SelectionEvent se) {
+        String license = null;
+        try {
+          license = installRuntime.getLicense(new NullProgressMonitor());
+        } catch (CoreException e) {
+          Trace.trace(Trace.SEVERE, "Error getting license", e);
+        }
+        TaskModel taskModel = new TaskModel();
+        taskModel.putObject(LicenseWizardFragment.LICENSE, license);
+        TaskWizard wizard2 = new TaskWizard(Messages.installDialogTitle, new WizardFragment() {
 
-			@Override
-			public void widgetSelected(SelectionEvent se) {
-				String license = null;
-				try {
-					license = RuntimeComposite.this.installRuntime.getLicense(new NullProgressMonitor());
-				} catch (CoreException e) {
-					Trace.trace(Trace.SEVERE, "Error getting license", e);
-				}
-				TaskModel taskModel = new TaskModel();
-				taskModel.putObject(LicenseWizardFragment.LICENSE, license);
-				TaskWizard wizard2 = new TaskWizard(Messages.installDialogTitle, new WizardFragment() {
+          @Override
+          protected void createChildFragments(List list) {
+            list.add(new LicenseWizardFragment());
+          }
+        }, taskModel);
 
-					@Override
-					protected void createChildFragments(List list) {
-						list.add(new LicenseWizardFragment());
-					}
-				}, taskModel);
+        WizardDialog dialog2 = new WizardDialog(getShell(), wizard2);
+        if (dialog2.open() == Window.CANCEL) {
+          return;
+        }
 
-				WizardDialog dialog2 = new WizardDialog(getShell(), wizard2);
-				if (dialog2.open() == Window.CANCEL) {
-					return;
-				}
+        DirectoryDialog dialog = new DirectoryDialog(RuntimeComposite.this.getShell());
+        dialog.setMessage(Messages.selectInstallDir);
+        dialog.setFilterPath(installDir.getText());
+        String selectedDirectory = dialog.open();
+        if (selectedDirectory != null) {
+          // ir.install(new Path(selectedDirectory));
+          final IPath installPath = new Path(selectedDirectory);
+          installRuntimeJob = new Job("Installing server runtime environment") {
 
-				DirectoryDialog dialog = new DirectoryDialog(RuntimeComposite.this.getShell());
-				dialog.setMessage(Messages.selectInstallDir);
-				dialog.setFilterPath(RuntimeComposite.this.installDir.getText());
-				String selectedDirectory = dialog.open();
-				if (selectedDirectory != null) {
-					// ir.install(new Path(selectedDirectory));
-					final IPath installPath = new Path(selectedDirectory);
-					RuntimeComposite.this.installRuntimeJob = new Job("Installing server runtime environment") {
+            @Override
+            public boolean belongsTo(Object family) {
+              return ServerPlugin.PLUGIN_ID.equals(family);
+            }
 
-						@Override
-						public boolean belongsTo(Object family) {
-							return ServerPlugin.PLUGIN_ID.equals(family);
-						}
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+              try {
+                installRuntime.install(installPath, monitor);
+              } catch (CoreException ce) {
+                return ce.getStatus();
+              }
 
-						@Override
-						protected IStatus run(IProgressMonitor monitor) {
-							try {
-								RuntimeComposite.this.installRuntime.install(installPath, monitor);
-							} catch (CoreException ce) {
-								return ce.getStatus();
-							}
+              return Status.OK_STATUS;
+            }
+          };
 
-							return Status.OK_STATUS;
-						}
-					};
+          installDir.setText(selectedDirectory);
+          jobListener = new JobChangeAdapter() {
 
-					RuntimeComposite.this.installDir.setText(selectedDirectory);
-					RuntimeComposite.this.jobListener = new JobChangeAdapter() {
+            @Override
+            public void done(IJobChangeEvent event) {
+              installRuntimeJob.removeJobChangeListener(this);
+              installRuntimeJob = null;
+              Display.getDefault().asyncExec(new Runnable() {
 
-						@Override
-						public void done(IJobChangeEvent event) {
-							RuntimeComposite.this.installRuntimeJob.removeJobChangeListener(this);
-							RuntimeComposite.this.installRuntimeJob = null;
-							Display.getDefault().asyncExec(new Runnable() {
+                @Override
+                public void run() {
+                  if (!isDisposed()) {
+                    validate();
+                  }
+                }
+              });
+            }
+          };
+          installRuntimeJob.addJobChangeListener(jobListener);
+          installRuntimeJob.schedule();
+        }
+      }
+    });
 
-								@Override
-								public void run() {
-									if (!isDisposed()) {
-										validate();
-									}
-								}
-							});
-						}
-					};
-					RuntimeComposite.this.installRuntimeJob.addJobChangeListener(RuntimeComposite.this.jobListener);
-					RuntimeComposite.this.installRuntimeJob.schedule();
-				}
-			}
-		});
+    init();
+    validate();
 
-		// deployment directory
-		label = new Label(this, SWT.RIGHT);
-		label.setText(Messages.serverEditorDeployDir);
-		data = new GridData();
-		data.horizontalSpan = 2;
-		label.setLayoutData(data);
+    Dialog.applyDialogFont(this);
 
-		this.deployDir = new Text(this, SWT.BORDER);
-		this.deployDir.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		this.deployDir.addModifyListener(new ModifyListener() {
+    name.forceFocus();
+  }
 
-			@Override
-			public void modifyText(ModifyEvent e) {
-				RuntimeComposite.this.runtime.setDeployDirectory(RuntimeComposite.this.deployDir.getText());
-				validate();
-			}
-		});
+  private void init() {
+    if ((name == null) || (runtime == null)) {
+      return;
+    }
 
-		this.deployDirBrowse = new Button(this, SWT.PUSH);
-		this.deployDirBrowse.setText(Messages.editorBrowse);
-		this.deployDirBrowse.addSelectionListener(new SelectionAdapter() {
+    if (runtimeWC.getName() != null) {
+      name.setText(runtimeWC.getName());
+    } else {
+      name.setText("");
+    }
 
-			@Override
-			public void widgetSelected(SelectionEvent se) {
-				DirectoryDialog dialog = new DirectoryDialog(RuntimeComposite.this.deployDir.getShell());
-				dialog.setMessage(Messages.serverEditorBrowseDeployMessage);
-				dialog.setFilterPath(RuntimeComposite.this.deployDir.getText());
-				String selectedDirectory = dialog.open();
-				if ((selectedDirectory != null)
-						&& !selectedDirectory.equals(RuntimeComposite.this.deployDir.getText())) {
-					RuntimeComposite.this.deployDir.setText(selectedDirectory);
-					validate();
-				}
-			}
-		});
-		this.deployDirBrowse.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+    if (runtimeWC.getLocation() != null) {
+      installDir.setText(runtimeWC.getLocation().toOSString());
+    } else {
+      installDir.setText("");
+    }
+  }
 
-		init();
-		validate();
+  private void validate() {
+    if (runtime == null) {
+      wizard.setMessage("", IMessageProvider.ERROR);
+      return;
+    }
 
-		Dialog.applyDialogFont(this);
-
-		this.name.forceFocus();
-	}
-
-	private void init() {
-		if ((this.name == null) || (this.runtime == null)) {
-			return;
-		}
-
-		if (this.runtimeWC.getName() != null) {
-			this.name.setText(this.runtimeWC.getName());
-		} else {
-			this.name.setText("");
-		}
-
-		if (this.runtimeWC.getLocation() != null) {
-			this.installDir.setText(this.runtimeWC.getLocation().toOSString());
-		} else {
-			this.installDir.setText("");
-		}
-	}
-
-	private void validate() {
-		if (this.runtime == null) {
-			this.wizard.setMessage("", IMessageProvider.ERROR);
-			return;
-		}
-
-		IStatus status = this.runtimeWC.validate(null);
-		if ((status == null) || status.isOK()) {
-			this.wizard.setMessage(null, IMessageProvider.NONE);
-		} else if (status.getSeverity() == IStatus.WARNING) {
-			this.wizard.setMessage(status.getMessage(), IMessageProvider.WARNING);
-		} else {
-			this.wizard.setMessage(status.getMessage(), IMessageProvider.ERROR);
-		}
-		this.wizard.update();
-	}
+    IStatus status = runtimeWC.validate(null);
+    if ((status == null) || status.isOK()) {
+      wizard.setMessage(null, IMessageProvider.NONE);
+    } else if (status.getSeverity() == IStatus.WARNING) {
+      wizard.setMessage(status.getMessage(), IMessageProvider.WARNING);
+    } else {
+      wizard.setMessage(status.getMessage(), IMessageProvider.ERROR);
+    }
+    wizard.update();
+  }
 }

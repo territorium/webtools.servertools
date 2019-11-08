@@ -80,7 +80,7 @@ public class CleanWorkDirDialog extends Dialog {
 
   @Override
   protected Control createDialogArea(Composite parent) {
-    if ((this.state < 0) || (this.state == IServer.STATE_UNKNOWN)) {
+    if ((state < 0) || (state == IServer.STATE_UNKNOWN)) {
       captureServerState();
     }
 
@@ -91,20 +91,19 @@ public class CleanWorkDirDialog extends Dialog {
     PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, ContextIds.SERVER_CLEAN_WORK_DIR);
 
     Label label = new Label(composite, SWT.WRAP);
-    if ((this.state == IServer.STATE_STARTING) || (this.state == IServer.STATE_STOPPING)
-        || (this.state == IServer.STATE_UNKNOWN)) {
-      label.setText(NLS.bind(Messages.cleanServerStateChanging, this.server.getName()));
+    if ((state == IServer.STATE_STARTING) || (state == IServer.STATE_STOPPING) || (state == IServer.STATE_UNKNOWN)) {
+      label.setText(NLS.bind(Messages.cleanServerStateChanging, server.getName()));
     } else {
-      if (this.module != null) {
-        label.setText(NLS.bind(Messages.cleanModuleWorkDir, this.module.getName(), this.server.getName()));
+      if (module != null) {
+        label.setText(NLS.bind(Messages.cleanModuleWorkDir, module.getName(), server.getName()));
       } else {
-        label.setText(NLS.bind(Messages.cleanServerWorkDir, this.server.getName()));
+        label.setText(NLS.bind(Messages.cleanServerWorkDir, server.getName()));
       }
       GridData data = new GridData();
       data.widthHint = 300;
       label.setLayoutData(data);
 
-      if (this.state == IServer.STATE_STARTED) {
+      if (state == IServer.STATE_STARTED) {
         label = new Label(composite, SWT.WRAP);
         label.setText(Messages.cleanServerRunning);
         data = new GridData();
@@ -121,12 +120,12 @@ public class CleanWorkDirDialog extends Dialog {
   protected void createButtonsForButtonBar(Composite parent) {
     super.createButtonsForButtonBar(parent);
 
-    if ((this.state < 0) || (this.state == IServer.STATE_UNKNOWN)) {
+    if ((state < 0) || (state == IServer.STATE_UNKNOWN)) {
       captureServerState();
     }
 
     // If server is transitioning, only allow Cancel
-    if ((this.state == IServer.STATE_STARTING) || (this.state == IServer.STATE_STOPPING)) {
+    if ((state == IServer.STATE_STARTING) || (state == IServer.STATE_STOPPING)) {
       Button button = getButton(IDialogConstants.OK_ID);
       if (button != null) {
         button.setEnabled(false);
@@ -136,8 +135,7 @@ public class CleanWorkDirDialog extends Dialog {
 
   @Override
   protected void okPressed() {
-    String jobName =
-        NLS.bind(Messages.cleanServerTask, this.module != null ? this.module.getName() : this.server.getName());
+    String jobName = NLS.bind(Messages.cleanServerTask, module != null ? module.getName() : server.getName());
     // Create job to perform the cleaning, including stopping and starting the
     // server if necessary
     CleanWorkDirJob job = new CleanWorkDirJob(jobName);
@@ -179,18 +177,16 @@ public class CleanWorkDirDialog extends Dialog {
       final Object mutex = new Object();
 
       IWebModule webModule = null;
-      if (CleanWorkDirDialog.this.module != null) {
-        webModule = (IWebModule) CleanWorkDirDialog.this.module.loadAdapter(IWebModule.class, null);
+      if (module != null) {
+        webModule = (IWebModule) module.loadAdapter(IWebModule.class, null);
         if (webModule == null) {
-          return newErrorStatus(NLS.bind(Messages.errorCantIdentifyWebApp, CleanWorkDirDialog.this.module.getName()),
-              null);
+          return newErrorStatus(NLS.bind(Messages.errorCantIdentifyWebApp, module.getName()), null);
         }
       }
 
       // If state has changed since dialog was open, abort
-      if (CleanWorkDirDialog.this.server.getServerState() != CleanWorkDirDialog.this.state) {
-        return newErrorStatus(
-            NLS.bind(Messages.errorCouldNotCleanStateChange, CleanWorkDirDialog.this.server.getName()), null);
+      if (server.getServerState() != state) {
+        return newErrorStatus(NLS.bind(Messages.errorCouldNotCleanStateChange, server.getName()), null);
       }
 
       IOperationListener listener = new IOperationListener() {
@@ -198,7 +194,7 @@ public class CleanWorkDirDialog extends Dialog {
         @Override
         public void done(IStatus result) {
           synchronized (mutex) {
-            CleanWorkDirDialog.this.completionStatus = result;
+            completionStatus = result;
             mutex.notifyAll();
           }
         }
@@ -207,11 +203,10 @@ public class CleanWorkDirDialog extends Dialog {
       boolean restart = false;
       IStatus status = Status.OK_STATUS;
       // If server isn't stopped, try to stop, clean, and restart
-      if (CleanWorkDirDialog.this.state != IServer.STATE_STOPPED) {
-        status = CleanWorkDirDialog.this.server.canStop();
+      if (state != IServer.STATE_STOPPED) {
+        status = server.canStop();
         if (!status.isOK()) {
-          return wrapErrorStatus(status,
-              NLS.bind(Messages.errorCouldNotCleanCantStop, CleanWorkDirDialog.this.server.getName()));
+          return wrapErrorStatus(status, NLS.bind(Messages.errorCouldNotCleanCantStop, server.getName()));
         }
 
         boolean done = false;
@@ -219,9 +214,9 @@ public class CleanWorkDirDialog extends Dialog {
         while (!done) {
           // Stop the server and wait for completion
           synchronized (mutex) {
-            CleanWorkDirDialog.this.server.stop(force, listener);
+            server.stop(force, listener);
 
-            while (CleanWorkDirDialog.this.completionStatus == null) {
+            while (completionStatus == null) {
               try {
                 mutex.wait();
               } catch (InterruptedException e) {
@@ -232,35 +227,33 @@ public class CleanWorkDirDialog extends Dialog {
           // If forced, or there was an error (doesn't include timeout), or we
           // are stopped, time to
           // exit
-          if (force || !CleanWorkDirDialog.this.completionStatus.isOK()
-              || (CleanWorkDirDialog.this.server.getServerState() == IServer.STATE_STOPPED)) {
+          if (force || !completionStatus.isOK() || (server.getServerState() == IServer.STATE_STOPPED)) {
             done = true;
           } else {
-            force = ServerUIPlugin.queryCleanTermination(CleanWorkDirDialog.this.server);
-            CleanWorkDirDialog.this.completionStatus = null;
+            force = ServerUIPlugin.queryCleanTermination(server);
+            completionStatus = null;
           }
         }
 
-        if (!CleanWorkDirDialog.this.completionStatus.isOK()) {
+        if (!completionStatus.isOK()) {
           // If stop job failed, assume error was displayed for that job
           return Status.OK_STATUS;
         }
-        if (CleanWorkDirDialog.this.server.getServerState() != IServer.STATE_STOPPED) {
-          return newErrorStatus(
-              NLS.bind(Messages.errorCouldNotCleanStopFailed, CleanWorkDirDialog.this.server.getName()), null);
+        if (server.getServerState() != IServer.STATE_STOPPED) {
+          return newErrorStatus(NLS.bind(Messages.errorCouldNotCleanStopFailed, server.getName()), null);
         }
         restart = true;
-        CleanWorkDirDialog.this.completionStatus = null;
+        completionStatus = null;
       }
 
       DeleteWorkDirJob deleteJob = new DeleteWorkDirJob(getName(), webModule, restart);
-      deleteJob.setRule(ServerUtil.getServerSchedulingRule(CleanWorkDirDialog.this.server));
+      deleteJob.setRule(ServerUtil.getServerSchedulingRule(server));
       deleteJob.addJobChangeListener(new JobChangeAdapter() {
 
         @Override
         public void done(IJobChangeEvent event) {
           synchronized (mutex) {
-            CleanWorkDirDialog.this.completionStatus = event.getResult();
+            completionStatus = event.getResult();
             mutex.notifyAll();
           }
 
@@ -271,7 +264,7 @@ public class CleanWorkDirDialog extends Dialog {
       synchronized (mutex) {
         deleteJob.schedule();
 
-        while (CleanWorkDirDialog.this.completionStatus == null) {
+        while (completionStatus == null) {
           try {
             mutex.wait();
           } catch (InterruptedException e) {
@@ -279,24 +272,23 @@ public class CleanWorkDirDialog extends Dialog {
           }
         }
       }
-      if (!CleanWorkDirDialog.this.completionStatus.isOK()) {
+      if (!completionStatus.isOK()) {
         // If delete job failed, assume error was displayed for that job
         return Status.OK_STATUS;
       }
-      CleanWorkDirDialog.this.completionStatus = null;
+      completionStatus = null;
 
       if (restart) {
-        status = CleanWorkDirDialog.this.server.canStart(CleanWorkDirDialog.this.mode);
+        status = server.canStart(mode);
         if (!status.isOK()) {
-          return wrapErrorStatus(status,
-              NLS.bind(Messages.errorCleanCantRestart, CleanWorkDirDialog.this.server.getName()));
+          return wrapErrorStatus(status, NLS.bind(Messages.errorCleanCantRestart, server.getName()));
         }
 
         // Restart the server and wait for completion
         synchronized (mutex) {
-          CleanWorkDirDialog.this.server.start(CleanWorkDirDialog.this.mode, listener);
+          server.start(mode, listener);
 
-          while (CleanWorkDirDialog.this.completionStatus == null) {
+          while (completionStatus == null) {
             try {
               mutex.wait();
             } catch (InterruptedException e) {
@@ -305,7 +297,7 @@ public class CleanWorkDirDialog extends Dialog {
           }
         }
 
-        if (!CleanWorkDirDialog.this.completionStatus.isOK()) {
+        if (!completionStatus.isOK()) {
           // If start job failed, assume error was displayed for that job
           return Status.OK_STATUS;
         }
@@ -345,19 +337,17 @@ public class CleanWorkDirDialog extends Dialog {
 
       IStatus status = Status.OK_STATUS;
       // If server isn't stopped, abort the attempt to delete the work directory
-      if (CleanWorkDirDialog.this.server.getServerState() != IServer.STATE_STOPPED) {
-        return newErrorStatus(NLS.bind(Messages.errorCantDeleteServerNotStopped,
-            this.webModule != null ? CleanWorkDirDialog.this.module.getName()
-                : CleanWorkDirDialog.this.server.getName()),
+      if (server.getServerState() != IServer.STATE_STOPPED) {
+        return newErrorStatus(
+            NLS.bind(Messages.errorCantDeleteServerNotStopped, webModule != null ? module.getName() : server.getName()),
             null);
       }
 
       // Delete the work directory
-      ServerBehaviour behavior =
-          (ServerBehaviour) CleanWorkDirDialog.this.server.loadAdapter(ServerBehaviour.class, monitor);
+      ServerBehaviour behavior = (ServerBehaviour) server.loadAdapter(ServerBehaviour.class, monitor);
       try {
-        if (this.webModule != null) {
-          WebModule tcWebModule = new WebModule(this.webModule.getContextRoot(), "", "", true);
+        if (webModule != null) {
+          WebModule tcWebModule = new WebModule(webModule.getContextRoot(), "", "", true);
           status = behavior.cleanContextWorkDir(tcWebModule, null);
         } else {
           status = behavior.cleanServerWorkDir(null);
@@ -366,12 +356,9 @@ public class CleanWorkDirDialog extends Dialog {
         status = ce.getStatus();
       }
       if (!status.isOK()) {
-        String cleanName = CleanWorkDirDialog.this.module != null ? CleanWorkDirDialog.this.module.getName()
-            : CleanWorkDirDialog.this.server.getName();
+        String cleanName = module != null ? module.getName() : server.getName();
         return wrapErrorStatus(status,
-            this.restart
-                ? NLS.bind(Messages.errorErrorDuringCleanWasRunning, cleanName,
-                    CleanWorkDirDialog.this.server.getName())
+            restart ? NLS.bind(Messages.errorErrorDuringCleanWasRunning, cleanName, server.getName())
                 : NLS.bind(Messages.errorErrorDuringClean, cleanName));
       }
       return status;
@@ -379,9 +366,9 @@ public class CleanWorkDirDialog extends Dialog {
   }
 
   private void captureServerState() {
-    this.state = this.server.getServerState();
-    if (this.state != IServer.STATE_STOPPED) {
-      this.mode = this.server.getMode();
+    state = server.getServerState();
+    if (state != IServer.STATE_STOPPED) {
+      mode = server.getMode();
     }
   }
 

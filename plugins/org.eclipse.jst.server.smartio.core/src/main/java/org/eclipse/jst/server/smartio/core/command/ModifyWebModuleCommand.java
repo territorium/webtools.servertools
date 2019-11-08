@@ -1,8 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which accompanies this distribution,
- * and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2003, 2005 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
+ * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -27,7 +26,7 @@ public class ModifyWebModuleCommand extends ConfigurationCommand {
   public ModifyWebModuleCommand(IServerConfiguration configuration, int index, WebModule module) {
     super(configuration, Messages.configurationEditorActionModifyWebModule);
     this.index = index;
-    this.newModule = module;
+    newModule = module;
   }
 
   /**
@@ -35,9 +34,8 @@ public class ModifyWebModuleCommand extends ConfigurationCommand {
    */
   @Override
   public void execute() {
-    this.oldModule = this.configuration.getWebModules().get(this.index);
-    this.configuration.modifyWebModule(this.index, this.newModule.getDocumentBase(), this.newModule.getPath(),
-        this.newModule.isReloadable());
+    oldModule = configuration.getWebModules().get(index);
+    configuration.modifyWebModule(index, newModule.getDocumentBase(), newModule.getPath(), newModule.isReloadable());
   }
 
   /**
@@ -45,7 +43,6 @@ public class ModifyWebModuleCommand extends ConfigurationCommand {
    */
   @Override
   public void undo() {
-    this.configuration.modifyWebModule(this.index, this.oldModule.getDocumentBase(), this.oldModule.getPath(),
-        this.oldModule.isReloadable());
+    configuration.modifyWebModule(index, oldModule.getDocumentBase(), oldModule.getPath(), oldModule.isReloadable());
   }
 }

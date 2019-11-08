@@ -1,8 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which accompanies this distribution,
- * and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2003, 2005 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
+ * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -42,15 +41,15 @@ public class RuntimeWizardFragment extends WizardFragment {
 
   @Override
   public final Composite createComposite(Composite parent, IWizardHandle wizard) {
-    this.comp = new RuntimeComposite(parent, wizard);
-    return this.comp;
+    comp = new RuntimeComposite(parent, wizard);
+    return comp;
   }
 
   @Override
   public final void enter() {
-    if (this.comp != null) {
+    if (comp != null) {
       IRuntimeWorkingCopy runtime = (IRuntimeWorkingCopy) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
-      this.comp.setRuntime(runtime);
+      comp.setRuntime(runtime);
     }
   }
 
@@ -58,7 +57,7 @@ public class RuntimeWizardFragment extends WizardFragment {
   public final void exit() {
     IRuntimeWorkingCopy runtime = (IRuntimeWorkingCopy) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
     if (runtime.validate(null).getSeverity() != IStatus.ERROR) {
-//      runtime.getAdapter(IServerRuntime.class).getDefaults();
+      // runtime.getAdapter(IServerRuntime.class).getDefaults();
     }
   }
 }

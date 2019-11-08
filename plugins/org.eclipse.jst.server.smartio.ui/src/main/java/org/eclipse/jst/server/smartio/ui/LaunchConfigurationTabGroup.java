@@ -1,8 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2005 IBM Corporation and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which accompanies this distribution,
- * and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2003, 2005 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
+ * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -27,8 +26,7 @@ import org.eclipse.wst.server.ui.ServerLaunchConfigurationTab;
 public class LaunchConfigurationTabGroup extends AbstractLaunchConfigurationTabGroup {
 
   /*
-   * @see ILaunchConfigurationTabGroup#createTabs(ILaunchConfigurationDialog,
-   * String)
+   * @see ILaunchConfigurationTabGroup#createTabs(ILaunchConfigurationDialog, String)
    */
   @Override
   public void createTabs(ILaunchConfigurationDialog dialog, String mode) {

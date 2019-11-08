@@ -1,8 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2008 IBM Corporation and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which accompanies this distribution,
- * and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2003, 2008 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
+ * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -26,8 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The actual {@link ServerUIPlugin}. It allows the rest of the classes to load
- * images and get a handle to the desktop.
+ * The actual {@link ServerUIPlugin}. It allows the rest of the classes to load images and get a
+ * handle to the desktop.
  */
 public class ServerUIPlugin extends AbstractUIPlugin {
 
@@ -108,9 +107,9 @@ public class ServerUIPlugin extends AbstractUIPlugin {
 
 
   /**
-   * Convenience method to get a Display. The method first checks, if the thread
-   * calling this method has an associated display. If so, this display is
-   * returned. Otherwise the method returns the default display.
+   * Convenience method to get a Display. The method first checks, if the thread calling this method
+   * has an associated display. If so, this display is returned. Otherwise the method returns the
+   * default display.
    *
    * @return the display
    */
@@ -142,15 +141,15 @@ public class ServerUIPlugin extends AbstractUIPlugin {
     public void run() {
       Shell shell = ServerUIPlugin.getShell();
       TerminationDialog dialog = new TerminationDialog(shell, Messages.cleanTerminateServerDialogTitle,
-          NLS.bind(Messages.cleanTerminateServerDialogMessage, this.server.getName()));
+          NLS.bind(Messages.cleanTerminateServerDialogMessage, server.getName()));
       dialog.open();
       if (dialog.getReturnCode() == IDialogConstants.OK_ID) {
-        this.terminate = true;
+        terminate = true;
       }
     }
 
     private boolean shouldTerminate() {
-      return this.terminate;
+      return terminate;
     }
   }
 
@@ -178,7 +177,7 @@ public class ServerUIPlugin extends AbstractUIPlugin {
     try {
       ImageDescriptor id = ImageDescriptor.createFromURL(new URL(ServerUIPlugin.ICON_BASE_URL, partialURL));
       registry.put(key, id);
-      this.imageDescriptors.put(key, id);
+      imageDescriptors.put(key, id);
     } catch (Exception e) {
       Trace.trace(Trace.WARNING, "Error registering image", e);
     }

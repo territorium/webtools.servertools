@@ -1,8 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2005 IBM Corporation and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which accompanies this distribution,
- * and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2004, 2005 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
+ * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -48,28 +47,28 @@ public class WebModule {
    * Get the document base.
    */
   public final String getDocumentBase() {
-    return this.docBase;
+    return docBase;
   }
 
   /**
    * Return the path. (context root)
    */
   public final String getPath() {
-    return this.path;
+    return path;
   }
 
   /**
    * Return the memento.
    */
   public final String getMemento() {
-    return this.memento;
+    return memento;
   }
 
   /**
    * Return true if the web module is auto-reloadable.
    */
   public final boolean isReloadable() {
-    return this.reloadable;
+    return reloadable;
   }
 
   /**

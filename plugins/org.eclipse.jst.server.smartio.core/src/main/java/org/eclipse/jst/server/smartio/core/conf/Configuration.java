@@ -1,20 +1,16 @@
 /*
- * Copyright (c) 2001-2019 Territorium Online Srl / TOL GmbH. All Rights
- * Reserved.
+ * Copyright (c) 2001-2019 Territorium Online Srl / TOL GmbH. All Rights Reserved.
  *
- * This file contains Original Code and/or Modifications of Original Code as
- * defined in and that are subject to the Territorium Online License Version
- * 1.0. You may not use this file except in compliance with the License. Please
- * obtain a copy of the License at http://www.tol.info/license/ and read it
- * before using this file.
+ * This file contains Original Code and/or Modifications of Original Code as defined in and that are
+ * subject to the Territorium Online License Version 1.0. You may not use this file except in
+ * compliance with the License. Please obtain a copy of the License at http://www.tol.info/license/
+ * and read it before using this file.
  *
- * The Original Code and all software distributed under the License are
- * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS
- * OR IMPLIED, AND TERRITORIUM ONLINE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
- * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY, FITNESS FOR
- * A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT. Please see the
- * License for the specific language governing rights and limitations under the
- * License.
+ * The Original Code and all software distributed under the License are distributed on an 'AS IS'
+ * basis, WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, AND TERRITORIUM ONLINE HEREBY
+ * DISCLAIMS ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT. Please see the License for
+ * the specific language governing rights and limitations under the License.
  */
 
 package org.eclipse.jst.server.smartio.core.conf;
@@ -30,9 +26,9 @@ import java.util.stream.Stream;
 
 
 /**
- * The {@link Configuration} class represents a persistent set of properties.
- * The {@link Configuration} can be saved to a stream or loaded from a stream.
- * Each key and its corresponding value in the property list is a string.
+ * The {@link Configuration} class represents a persistent set of properties. The
+ * {@link Configuration} can be saved to a stream or loaded from a stream. Each key and its
+ * corresponding value in the property list is a string.
  */
 public class Configuration extends Properties {
 
@@ -61,14 +57,13 @@ public class Configuration extends Properties {
    * Constructs an instance of {@link Configuration}.
    */
   public Configuration() {
-    this.sections.put(Configuration.DEFAULT_NAME, new Section(Configuration.DEFAULT_NAME));
+    sections.put(Configuration.DEFAULT_NAME, new Section(Configuration.DEFAULT_NAME));
   }
 
   /**
-   * Searches for the property with the specified key in this property list. If
-   * the key is not found in this property list, the default property list, and
-   * its defaults, recursively, are then checked. The method returns
-   * {@code null} if the property is not found.
+   * Searches for the property with the specified key in this property list. If the key is not found
+   * in this property list, the default property list, and its defaults, recursively, are then
+   * checked. The method returns {@code null} if the property is not found.
    *
    * @param key the property key.
    */
@@ -78,15 +73,14 @@ public class Configuration extends Properties {
     String prefix = (indexOf < 0) ? Configuration.DEFAULT_NAME : key.substring(0, indexOf);
     String suffix = (indexOf < 0) ? key : key.substring(indexOf + 1);
 
-    Section section = this.sections.get(prefix);
+    Section section = sections.get(prefix);
     return (section == null) ? null : section.values.get(suffix);
   }
 
   /**
-   * Calls the <tt>Hashtable</tt> method {@code put}. Provided for parallelism
-   * with the <tt>getProperty</tt> method. Enforces use of strings for property
-   * keys and values. The value returned is the result of the <tt>Hashtable</tt>
-   * call to {@code put}.
+   * Calls the <tt>Hashtable</tt> method {@code put}. Provided for parallelism with the
+   * <tt>getProperty</tt> method. Enforces use of strings for property keys and values. The value
+   * returned is the result of the <tt>Hashtable</tt> call to {@code put}.
    *
    * @param key
    * @param value
@@ -97,17 +91,17 @@ public class Configuration extends Properties {
     String prefix = (indexOf < 0) ? Configuration.DEFAULT_NAME : key.substring(0, indexOf);
     String suffix = (indexOf < 0) ? key : key.substring(indexOf + 1);
 
-    Section section = this.sections.get(prefix);
+    Section section = sections.get(prefix);
     if (section == null) {
       section = new Section(prefix);
-      this.sections.put(prefix, section);
+      sections.put(prefix, section);
     }
     section.values.put(suffix, value);
   }
 
   /**
-   * Writes the configuration list in a format suitable for loading into a
-   * {@link Configuration} table using the {@link #load(java.io.Reader)} method.
+   * Writes the configuration list in a format suitable for loading into a {@link Configuration}
+   * table using the {@link #load(java.io.Reader)} method.
    *
    * @param writer
    * @param comment
@@ -118,8 +112,8 @@ public class Configuration extends Properties {
   }
 
   /**
-   * Writes the configuration list in a format suitable for loading into a
-   * {@link Configuration} table using the {@link #load(InputStream)} method.
+   * Writes the configuration list in a format suitable for loading into a {@link Configuration}
+   * table using the {@link #load(InputStream)} method.
    *
    * @param stream
    * @param comment
@@ -142,14 +136,14 @@ public class Configuration extends Properties {
 
     int offset = 0;
     synchronized (this) {
-      Stream<String> keys = this.sections.keySet().stream().sorted(Properties.COMPARATOR);
+      Stream<String> keys = sections.keySet().stream().sorted(Properties.COMPARATOR);
 
       if (format == Format.INI) {
-        offset = this.sections.values().stream().mapToInt(s -> Configuration.maxLength(s, format)).max().getAsInt();
+        offset = sections.values().stream().mapToInt(s -> Configuration.maxLength(s, format)).max().getAsInt();
       }
 
       for (String key : keys.collect(Collectors.toList())) {
-        Section section = this.sections.get(key);
+        Section section = sections.get(key);
         if (section.values.isEmpty()) {
           continue;
         }

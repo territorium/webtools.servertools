@@ -100,21 +100,21 @@ public class ServerPlugin extends Plugin implements IResourceChangeListener {
   @Override
   public void resourceChanged(IResourceChangeEvent event) {
     if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
-      if (this.serversProject == null) {
+      if (serversProject == null) {
         IProject project;
         try {
           project = ServerType.getServerProject();
           synchronized (this) {
-            this.serversProject = project;
+            serversProject = project;
           }
         } catch (CoreException e) {
           // Ignore
         }
       }
-      if (this.serversProject != null) {
+      if (serversProject != null) {
         IResourceDelta delta = event.getDelta();
         if (delta != null) {
-          IResourceDelta serversProjectDelta = delta.findMember(this.serversProject.getFullPath());
+          IResourceDelta serversProjectDelta = delta.findMember(serversProject.getFullPath());
           if (serversProjectDelta != null) {
             // The change occurred within the Servers project.
             IResourceDelta[] childDelta = serversProjectDelta.getAffectedChildren();

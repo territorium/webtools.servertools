@@ -69,21 +69,21 @@ class Server10Configuration extends ServerConfiguration {
 
     // first add admin port
     try {
-      int port = this.configuration.get("server.web.admin", 8888);
+      int port = configuration.get("server.web.admin", 8888);
       ports.add(new ServerPort("admin", Messages.portServer, port, "TCPIP"));
     } catch (Exception e) {
       ServerPlugin.log(Level.SEVERE, "Error getting server ports", e);
     }
 
     try {
-      int port = this.configuration.get("server.web.http", 8888);
+      int port = configuration.get("server.web.http", 8888);
       ports.add(new ServerPort("http", "HTTP/1.1", port, "HTTP", new String[] { "web", "webservices" }, false));
     } catch (Exception e) {
       ServerPlugin.log(Level.SEVERE, "Error getting server ports", e);
     }
 
     try {
-      int port = this.configuration.get("server.web.ajp", 8888);
+      int port = configuration.get("server.web.ajp", 8888);
       ports.add(new ServerPort("ajp", "AJP/1.3", port, "AJP", null, false));
     } catch (Exception e) {
       ServerPlugin.log(Level.SEVERE, "Error getting server ports", e);
@@ -102,20 +102,20 @@ class Server10Configuration extends ServerConfiguration {
     try {
       switch (id) {
         case "admin":
-          this.configuration.set("server.web.admin", "" + port);
+          configuration.set("server.web.admin", "" + port);
           // isServerDirty = true;
-          firePropertyChangeEvent(ServerConfiguration.SET_PORT_PROPERTY, id, new Integer(port));
+          firePropertyChangeEvent(IServerConfiguration.SET_PORT_PROPERTY, id, new Integer(port));
           return;
 
         case "http":
-          this.configuration.set("server.web.http", "" + port);
+          configuration.set("server.web.http", "" + port);
           // isServerDirty = true;
-          firePropertyChangeEvent(ServerConfiguration.SET_PORT_PROPERTY, id, new Integer(port));
+          firePropertyChangeEvent(IServerConfiguration.SET_PORT_PROPERTY, id, new Integer(port));
           return;
 
         case "ajp":
-          this.configuration.set("server.web.ajp", "" + port);
-          firePropertyChangeEvent(ServerConfiguration.SET_PORT_PROPERTY, id, new Integer(port));
+          configuration.set("server.web.ajp", "" + port);
+          firePropertyChangeEvent(IServerConfiguration.SET_PORT_PROPERTY, id, new Integer(port));
           return;
 
         default:
@@ -148,14 +148,15 @@ class Server10Configuration extends ServerConfiguration {
    * @param path
    * @param monitor
    */
+  @Override
   public void importConfiguration(IPath path, IProgressMonitor monitor) throws CoreException {
     try {
       monitor = ProgressUtil.getMonitorFor(monitor);
       monitor.beginTask(Messages.loadingTask, 7);
 
       // Load server properties
-      this.configuration = new Configuration();
-      this.configuration.load(new FileInputStream(path.append(Server10Configuration.SERVER).toFile()));
+      configuration = new Configuration();
+      configuration.load(new FileInputStream(path.append(Server10Configuration.SERVER).toFile()));
       monitor.worked(1);
 
       if (monitor.isCanceled()) {
@@ -186,8 +187,8 @@ class Server10Configuration extends ServerConfiguration {
 
       // Load server properties
       IFile file = folder.getFile(Server10Configuration.SERVER);
-      this.configuration = new Configuration();
-      this.configuration.load(file.getContents());
+      configuration = new Configuration();
+      configuration.load(file.getContents());
       monitor.worked(200);
 
       if (monitor.isCanceled()) {
@@ -216,7 +217,7 @@ class Server10Configuration extends ServerConfiguration {
       monitor.beginTask(Messages.savingTask, 1200);
 
       StringWriter writer = new StringWriter();
-      this.configuration.save(writer, "", Format.INI);
+      configuration.save(writer, "", Format.INI);
       InputStream in = new ByteArrayInputStream(writer.toString().getBytes());
 
       // save server properties

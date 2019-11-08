@@ -1,8 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2006 IBM Corporation and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which accompanies this distribution,
- * and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2005, 2006 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
+ * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -45,7 +44,7 @@ public class AddModuleCommand extends AbstractOperation {
   @Override
   public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
     try {
-      this.server.modifyModules(new IModule[] { this.module }, null, monitor);
+      server.modifyModules(new IModule[] { module }, null, monitor);
     } catch (Exception e) {
       // ignore
     }
@@ -60,7 +59,7 @@ public class AddModuleCommand extends AbstractOperation {
   @Override
   public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
     try {
-      this.server.modifyModules(null, new IModule[] { this.module }, monitor);
+      server.modifyModules(null, new IModule[] { module }, monitor);
     } catch (Exception e) {
       // ignore
     }

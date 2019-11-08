@@ -1,8 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2011 IBM Corporation and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which accompanies this distribution,
- * and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2004, 2011 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
+ * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -69,13 +68,12 @@ public class SourcePathComputer implements ISourcePathComputerDelegate {
     }
 
     /**
-     * Get all {@link ISourceContainer}'s reached by the current launch
-     * configuration.
+     * Get all {@link ISourceContainer}'s reached by the current launch configuration.
      */
     private ISourceContainer[] getSourceContainers() throws CoreException {
-      this.classpathes.addAll(Arrays.asList(JavaRuntime.computeUnresolvedSourceLookupPath(this.configuration)));
-      IRuntimeClasspathEntry[] entries = this.classpathes.toArray(new IRuntimeClasspathEntry[this.classpathes.size()]);
-      IRuntimeClasspathEntry[] resolved = JavaRuntime.resolveSourceLookupPath(entries, this.configuration);
+      classpathes.addAll(Arrays.asList(JavaRuntime.computeUnresolvedSourceLookupPath(configuration)));
+      IRuntimeClasspathEntry[] entries = classpathes.toArray(new IRuntimeClasspathEntry[classpathes.size()]);
+      IRuntimeClasspathEntry[] resolved = JavaRuntime.resolveSourceLookupPath(entries, configuration);
       return JavaRuntime.getSourceContainers(resolved);
     }
 
@@ -87,7 +85,7 @@ public class SourcePathComputer implements ISourcePathComputerDelegate {
       IProject project = component.getProject();
       if (project.hasNature(JavaCore.NATURE_ID)) {
         IJavaProject javaProject = JavaCore.create(project);
-        this.classpathes.add(JavaRuntime.newDefaultProjectClasspathEntry(javaProject));
+        classpathes.add(JavaRuntime.newDefaultProjectClasspathEntry(javaProject));
       }
     }
 
@@ -119,7 +117,7 @@ public class SourcePathComputer implements ISourcePathComputerDelegate {
       // resolve to
       // binary archive folders with no associated source folder for some
       // reason.
-      this.classpathes.add(JavaRuntime.newDefaultProjectClasspathEntry(javaProject));
+      classpathes.add(JavaRuntime.newDefaultProjectClasspathEntry(javaProject));
     }
 
     /**

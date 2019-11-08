@@ -1,8 +1,7 @@
 /**********************************************************************
- * Copyright (c) 2007, 2017 SAS Institute, Inc and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which accompanies this distribution,
- * and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2007, 2017 SAS Institute, Inc and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
+ * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -27,16 +26,14 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Utility class for methods that are used by more that one version of Tomcat.
- * Use of these methods makes it clear that more than one version will be
- * impacted by changes.
+ * Utility class for methods that are used by more that one version of Tomcat. Use of these methods
+ * makes it clear that more than one version will be impacted by changes.
  *
  */
 public class VersionHelper {
 
   /**
-   * Map of server type ID to expected version string fragment for version
-   * checking.
+   * Map of server type ID to expected version string fragment for version checking.
    */
   private static final Map<String, String> versionStringMap    = new HashMap<>();
   private static final Map<IPath, String>  versionPath         = new ConcurrentHashMap<>();
@@ -46,21 +43,19 @@ public class VersionHelper {
   private static volatile long lastCheck = 0;
 
   static {
-    VersionHelper.versionStringMap.put(ServerPlugin.SERVER_10, "19.07.");
+    VersionHelper.versionStringMap.put(ServerPlugin.SERVER_10, "19.");
   }
 
   /**
-   * Checks if the version of Tomcat installed at the specified location matches
-   * the specified server type. The return status indicates if the version
-   * matches or not, or can't be determined.
+   * Checks if the version of Tomcat installed at the specified location matches the specified
+   * server type. The return status indicates if the version matches or not, or can't be determined.
    *
-   * Because this can get called repeatedly for certain operations, some caching
-   * is provided. The first check for an installPath in the current Eclipse
-   * session will query the catalina.jar for its version. Any additional checks
-   * will compare the catalina.jar's time stamp and will use the previously
-   * cached version if it didn't change. Additional checks that occur within 2
-   * seconds of the last check, regardless of Tomcat version, don't bother with
-   * checking the jar time stamp and just use the cached values.
+   * Because this can get called repeatedly for certain operations, some caching is provided. The
+   * first check for an installPath in the current Eclipse session will query the catalina.jar for
+   * its version. Any additional checks will compare the catalina.jar's time stamp and will use the
+   * previously cached version if it didn't change. Additional checks that occur within 2 seconds of
+   * the last check, regardless of Tomcat version, don't bother with checking the jar time stamp and
+   * just use the cached values.
    *
    * @param installPath
    * @param serverType
@@ -132,17 +127,15 @@ public class VersionHelper {
   }
 
   /**
-   * Checks if the version of Tomcat installed at the specified location matches
-   * the specified server type. The return status indicates if the version
-   * matches or not, or can't be determined.
+   * Checks if the version of Tomcat installed at the specified location matches the specified
+   * server type. The return status indicates if the version matches or not, or can't be determined.
    *
-   * Because this can get called repeatedly for certain operations, some caching
-   * is provided. The first check for an installPath in the current Eclipse
-   * session will query the catalina.jar for its version. Any additional checks
-   * will compare the catalina.jar's time stamp and will use the previously
-   * cached version if it didn't change. Additional checks that occur within 2
-   * seconds of the last check, regardless of Tomcat version, don't bother with
-   * checking the jar time stamp and just use the cached values.
+   * Because this can get called repeatedly for certain operations, some caching is provided. The
+   * first check for an installPath in the current Eclipse session will query the catalina.jar for
+   * its version. Any additional checks will compare the catalina.jar's time stamp and will use the
+   * previously cached version if it didn't change. Additional checks that occur within 2 seconds of
+   * the last check, regardless of Tomcat version, don't bother with checking the jar time stamp and
+   * just use the cached values.
    *
    * @param installPath
    * @param serverType

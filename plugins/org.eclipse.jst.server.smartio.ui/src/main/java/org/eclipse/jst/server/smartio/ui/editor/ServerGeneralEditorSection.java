@@ -13,6 +13,7 @@ package org.eclipse.jst.server.smartio.ui.editor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jst.server.smartio.core.IServerWrapper;
+import org.eclipse.jst.server.smartio.core.ServerTools;
 import org.eclipse.jst.server.smartio.core.command.SetConfigPathCommand;
 import org.eclipse.jst.server.smartio.ui.ContextIds;
 import org.eclipse.jst.server.smartio.ui.Messages;
@@ -50,36 +51,42 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
   private boolean                updating;
   private PropertyChangeListener listener;
 
+  private Button                 reloadable;
 
-  private Button reloadable;
+  private Text                   confDir;
+  private Button                 confDirBrowse;
 
-  private Text   confDir;
-  private Button confDirBrowse;
+//  private Text                   deployDir;
+//  private Button                 deployDirBrowse;
 
   /**
    * Add listeners to detect undo changes and publishing of the server.
    */
   private void addChangeListeners() {
-    this.listener = new PropertyChangeListener() {
+    listener = new PropertyChangeListener() {
 
       @Override
       public void propertyChange(PropertyChangeEvent event) {
-        if (ServerGeneralEditorSection.this.updating) {
+        if (updating) {
           return;
         }
-        ServerGeneralEditorSection.this.updating = true;
+        updating = true;
         if (IServerWrapper.PROPERTY_CONF_DIR.equals(event.getPropertyName())) {
           String s = (String) event.getNewValue();
-          ServerGeneralEditorSection.this.confDir.setText(s);
+          confDir.setText(s);
           validate();
+//        } else if (IServerWrapper.PROPERTY_DEPLOY_DIR.equals(event.getPropertyName())) {
+//          String s = (String) event.getNewValue();
+//          deployDir.setText(s);
+//          validate();
         } else if (IServerWrapper.PROPERTY_MODULES_RELOADABLE.equals(event.getPropertyName())) {
           Boolean b = (Boolean) event.getNewValue();
-          ServerGeneralEditorSection.this.reloadable.setSelection(b.booleanValue());
+          reloadable.setSelection(b.booleanValue());
         }
-        ServerGeneralEditorSection.this.updating = false;
+        updating = false;
       }
     };
-    this.server.addPropertyChangeListener(this.listener);
+    server.addPropertyChangeListener(listener);
   }
 
   /**
@@ -98,7 +105,6 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
     section.setDescription(Messages.serverEditorGeneralDescription);
     section.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL));
 
-
     Composite composite = toolkit.createComposite(section);
     GridLayout layout = new GridLayout();
     layout.numColumns = 3;
@@ -114,22 +120,20 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
     toolkit.paintBordersFor(composite);
     section.setClient(composite);
 
-
     // modules reloadable by default
-    this.reloadable =
-        toolkit.createButton(composite, NLS.bind(Messages.serverEditorReloadableByDefault, ""), SWT.CHECK);
+    reloadable = toolkit.createButton(composite, NLS.bind(Messages.serverEditorReloadableByDefault, ""), SWT.CHECK);
     GridData data = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
     data.horizontalSpan = 3;
-    this.reloadable.setLayoutData(data);
-    this.reloadable.addSelectionListener(new SelectionAdapter() {
+    reloadable.setLayoutData(data);
+    reloadable.addSelectionListener(new SelectionAdapter() {
 
       @Override
       public void widgetSelected(SelectionEvent se) {
-        if (ServerGeneralEditorSection.this.updating) {
+        if (updating) {
           return;
         }
-        ServerGeneralEditorSection.this.updating = true;
-        ServerGeneralEditorSection.this.updating = false;
+        updating = true;
+        updating = false;
       }
     });
 
@@ -138,33 +142,68 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
     data = new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
     label.setLayoutData(data);
 
-    this.confDir = toolkit.createText(composite, null);
-    this.confDir.setEditable(false);
+    confDir = toolkit.createText(composite, null);
+    confDir.setEditable(false);
     data = new GridData(SWT.FILL, SWT.CENTER, true, false);
-    this.confDir.setLayoutData(data);
+    confDir.setLayoutData(data);
 
-    this.confDirBrowse = toolkit.createButton(composite, Messages.editorBrowse, SWT.PUSH);
-    this.confDirBrowse.addSelectionListener(new SelectionAdapter() {
+    confDirBrowse = toolkit.createButton(composite, Messages.editorBrowse, SWT.PUSH);
+    confDirBrowse.addSelectionListener(new SelectionAdapter() {
 
       @Override
       public void widgetSelected(SelectionEvent se) {
-        DirectoryDialog dialog = new DirectoryDialog(ServerGeneralEditorSection.this.confDir.getShell());
+        DirectoryDialog dialog = new DirectoryDialog(confDir.getShell());
         dialog.setMessage(Messages.serverEditorBrowseConfMessage);
-        dialog.setFilterPath(ServerGeneralEditorSection.this.confDir.getText());
-        String selectedDirectory = dialog.open();
-        if ((selectedDirectory != null)
-            && !selectedDirectory.equals(ServerGeneralEditorSection.this.confDir.getText())) {
-          ServerGeneralEditorSection.this.updating = true;
-          ServerGeneralEditorSection.this.confDir.setText(selectedDirectory);
-          // ServerGeneralEditorSection.this.wrapper.setConfDirectory(selectedDirectory);
+        dialog.setFilterPath(
+            ServerTools.getAbsolutePath(wrapper.getRuntimeBaseDirectory(), confDir.getText()).toOSString());
+
+        String selectedDirectory = ServerTools.getRelativePath(wrapper.getRuntimeBaseDirectory(), dialog.open());
+        if ((selectedDirectory != null) && !selectedDirectory.equals(confDir.getText())) {
+          updating = true;
+          confDir.setText(selectedDirectory);
           execute(new SetConfigPathCommand(wrapper, selectedDirectory));
-          ServerGeneralEditorSection.this.updating = false;
+          updating = false;
           validate();
         }
       }
     });
+    confDirBrowse.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 
-    this.confDirBrowse.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+    // configuration directory
+//    label =
+//
+//        createLabel(toolkit, composite, Messages.serverEditorDeployDir);
+//    data = new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
+//    label.setLayoutData(data);
+
+//    deployDir = toolkit.createText(composite, null);
+//    deployDir.setEditable(false);
+//    data = new GridData(SWT.FILL, SWT.CENTER, true, false);
+//    deployDir.setLayoutData(data);
+//
+//    deployDirBrowse = toolkit.createButton(composite, Messages.editorBrowse, SWT.PUSH);
+//    deployDirBrowse.addSelectionListener(new SelectionAdapter() {
+//
+//      @Override
+//      public void widgetSelected(SelectionEvent se) {
+//        DirectoryDialog dialog = new DirectoryDialog(deployDir.getShell());
+//        dialog.setMessage(Messages.serverEditorBrowseConfMessage);
+//        dialog.setFilterPath(
+//            ServerTools.getAbsolutePath(wrapper.getRuntimeBaseDirectory(), deployDir.getText()).toOSString());
+//
+//        String selectedDirectory = ServerTools.getRelativePath(wrapper.getRuntimeBaseDirectory(), dialog.open());
+//        if ((selectedDirectory != null) && !selectedDirectory.equals(deployDir.getText())) {
+//          updating = true;
+//          deployDir.setText(selectedDirectory);
+//          // ServerGeneralEditorSection.this.wrapper.setConfDirectory(selectedDirectory);
+//          execute(new SetDeployPathCommand(wrapper, selectedDirectory));
+//          updating = false;
+//          validate();
+//        }
+//      }
+//    });
+//
+//    deployDirBrowse.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 
     initialize();
   }
@@ -180,8 +219,8 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
    */
   @Override
   public void dispose() {
-    if (this.server != null) {
-      this.server.removePropertyChangeListener(this.listener);
+    if (server != null) {
+      server.removePropertyChangeListener(listener);
     }
   }
 
@@ -195,8 +234,8 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
     // Cache workspace and default deploy paths
     // IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 
-    if (this.server != null) {
-      this.wrapper = (IServerWrapper) this.server.loadAdapter(IServerWrapper.class, null);
+    if (server != null) {
+      wrapper = (IServerWrapper) server.loadAdapter(IServerWrapper.class, null);
       addChangeListeners();
     }
   }
@@ -205,13 +244,14 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
    * Initialize the fields in this editor.
    */
   private void initialize() {
-    this.updating = true;
+    updating = true;
 
-    this.reloadable.setText(Messages.serverEditorReloadableByDefault);
-    this.reloadable.setSelection(this.wrapper.isModulesReloadable());
-    this.confDir.setText(this.wrapper.getConfDirectory());
+    reloadable.setText(Messages.serverEditorReloadableByDefault);
+    reloadable.setSelection(wrapper.isModulesReloadable());
+    confDir.setText(wrapper.getConfDirectory());
+//    deployDir.setText(wrapper.getDeployDirectory());
 
-    this.updating = false;
+    updating = false;
     validate();
   }
 
@@ -220,10 +260,10 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
    */
   @Override
   public IStatus[] getSaveStatus() {
-    if (this.wrapper != null) {
+    if (wrapper != null) {
       // Check the instance directory
-      String dir = this.wrapper.getConfDirectory();
-      if (dir != null && dir.length() == 0) {
+      String dir = wrapper.getConfDirectory();
+      if ((dir != null) && (dir.length() == 0)) {
         // Must not be the same as the workspace location
         return new IStatus[] { new Status(IStatus.ERROR, ServerUIPlugin.PLUGIN_ID, Messages.errorServerDirIsRoot) };
       }
@@ -233,10 +273,10 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
   }
 
   private void validate() {
-    if (this.wrapper != null) {
+    if (wrapper != null) {
       // Validate instance directory
-      String dir = this.wrapper.getConfDirectory();
-      if (dir != null && dir.length() == 0) {
+      String dir = wrapper.getConfDirectory();
+      if ((dir != null) && (dir.length() == 0)) {
         // Must not be the same as the workspace location
         setErrorMessage(Messages.errorServerDirIsRoot);
         return;

@@ -1,20 +1,16 @@
 /*
- * Copyright (c) 2001-2019 Territorium Online Srl / TOL GmbH. All Rights
- * Reserved.
+ * Copyright (c) 2001-2019 Territorium Online Srl / TOL GmbH. All Rights Reserved.
  *
- * This file contains Original Code and/or Modifications of Original Code as
- * defined in and that are subject to the Territorium Online License Version
- * 1.0. You may not use this file except in compliance with the License. Please
- * obtain a copy of the License at http://www.tol.info/license/ and read it
- * before using this file.
+ * This file contains Original Code and/or Modifications of Original Code as defined in and that are
+ * subject to the Territorium Online License Version 1.0. You may not use this file except in
+ * compliance with the License. Please obtain a copy of the License at http://www.tol.info/license/
+ * and read it before using this file.
  *
- * The Original Code and all software distributed under the License are
- * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS
- * OR IMPLIED, AND TERRITORIUM ONLINE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
- * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY, FITNESS FOR
- * A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT. Please see the
- * License for the specific language governing rights and limitations under the
- * License.
+ * The Original Code and all software distributed under the License are distributed on an 'AS IS'
+ * basis, WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IMPLIED, AND TERRITORIUM ONLINE HEREBY
+ * DISCLAIMS ALL SUCH WARRANTIES, INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT. Please see the License for
+ * the specific language governing rights and limitations under the License.
  */
 
 package org.eclipse.jst.server.smartio.core.conf;
@@ -24,8 +20,7 @@ import java.io.InputStream;
 import java.io.Reader;
 
 /**
- * The {@link LineParser} is a generic parse for line oriented byte/char
- * streams.
+ * The {@link LineParser} is a generic parse for line oriented byte/char streams.
  */
 class LineParser {
 
@@ -57,13 +52,12 @@ class LineParser {
    * Gets the {@link Properties}.
    */
   public final Properties getProperties() {
-    return this.properties;
+    return properties;
   }
 
   /**
-   * Reads a property list (key and element pairs) from the input character
-   * stream in a simple line-oriented format. {@link Properties} are processed
-   * in terms of lines.
+   * Reads a property list (key and element pairs) from the input character stream in a simple
+   * line-oriented format. {@link Properties} are processed in terms of lines.
    *
    * @param reader
    */
@@ -72,13 +66,12 @@ class LineParser {
   }
 
   /**
-   * Reads a property list (key and element pairs) from the input byte stream.
-   * The input stream is in a simple line-oriented format as specified in
-   * {@link #load(java.io.Reader) load(Reader)} and is assumed to use the ISO
-   * 8859-1 character encoding; that is each byte is one Latin1 character.
-   * Characters not in Latin1, and certain special characters, are represented
-   * in keys and elements using Unicode escapes as defined in section 3.3 of
-   * <cite>The Java&trade; Language Specification</cite>.
+   * Reads a property list (key and element pairs) from the input byte stream. The input stream is
+   * in a simple line-oriented format as specified in {@link #load(java.io.Reader) load(Reader)} and
+   * is assumed to use the ISO 8859-1 character encoding; that is each byte is one Latin1 character.
+   * Characters not in Latin1, and certain special characters, are represented in keys and elements
+   * using Unicode escapes as defined in section 3.3 of <cite>The Java&trade; Language
+   * Specification</cite>.
    *
    * @param stream
    */
@@ -92,66 +85,65 @@ class LineParser {
    * @param reader
    */
   protected final void parse(LineReader reader) throws IOException {
-    while ((this.length = reader.readLine()) >= 0) {
-      this.character = 0;
-      this.lengthKey = 0;
-      this.offsetValue = this.length;
-      this.isSection = false;
-      this.isEscaped = false;
-      this.hasSeparator = false;
+    while ((length = reader.readLine()) >= 0) {
+      character = 0;
+      lengthKey = 0;
+      offsetValue = length;
+      isSection = false;
+      isEscaped = false;
+      hasSeparator = false;
 
       // Reading the key
-      while (this.lengthKey < this.length) {
-        this.character = reader.getLineBuffer()[this.lengthKey];
+      while (lengthKey < length) {
+        character = reader.getLineBuffer()[lengthKey];
         // need check if escaped.
-        if (!this.isEscaped) {
-          if (this.character == '[') {
-            this.isSection = true;
-          } else if (this.character == ']') {
-            this.lengthKey--;
+        if (!isEscaped) {
+          if (character == '[') {
+            isSection = true;
+          } else if (character == ']') {
+            lengthKey--;
             break;
-          } else if (!this.isSection && ((this.character == '=') || (this.character == ':'))) {
-            this.offsetValue = this.lengthKey + 1;
-            this.hasSeparator = true;
+          } else if (!isSection && ((character == '=') || (character == ':'))) {
+            offsetValue = lengthKey + 1;
+            hasSeparator = true;
             break;
-          } else if (((this.character == ' ') || (this.character == '\t') || (this.character == '\f'))) {
-            this.offsetValue = this.lengthKey + 1;
+          } else if (((character == ' ') || (character == '\t') || (character == '\f'))) {
+            offsetValue = lengthKey + 1;
             break;
           }
         }
 
-        if (this.character == '\\') {
-          this.isEscaped = !this.isEscaped;
+        if (character == '\\') {
+          isEscaped = !isEscaped;
         } else {
-          this.isEscaped = false;
+          isEscaped = false;
         }
-        this.lengthKey++;
+        lengthKey++;
       }
 
       // Reading the value
-      while (this.offsetValue < this.length) {
-        this.character = reader.getLineBuffer()[this.offsetValue];
-        if ((this.character != ' ') && (this.character != '\t') && (this.character != '\f')) {
-          if (!this.hasSeparator && ((this.character == '=') || (this.character == ':'))) {
-            this.hasSeparator = true;
+      while (offsetValue < length) {
+        character = reader.getLineBuffer()[offsetValue];
+        if ((character != ' ') && (character != '\t') && (character != '\f')) {
+          if (!hasSeparator && ((character == '=') || (character == ':'))) {
+            hasSeparator = true;
           } else {
             break;
           }
         }
-        this.offsetValue++;
+        offsetValue++;
       }
-      if (this.isSection) {
-        this.isSection = false;
-        this.section = LineHelper.toString(reader.getLineBuffer(), 1, this.lengthKey, this.conversion);
+      if (isSection) {
+        isSection = false;
+        section = LineHelper.toString(reader.getLineBuffer(), 1, lengthKey, conversion);
       } else {
-        String key = LineHelper.toString(reader.getLineBuffer(), 0, this.lengthKey, this.conversion);
-        String value = LineHelper.toString(reader.getLineBuffer(), this.offsetValue, this.length - this.offsetValue,
-            this.conversion);
+        String key = LineHelper.toString(reader.getLineBuffer(), 0, lengthKey, conversion);
+        String value = LineHelper.toString(reader.getLineBuffer(), offsetValue, length - offsetValue, conversion);
         if (key.isEmpty() || value.isEmpty()) {
           continue;
         }
-        if (this.section != null) {
-          key = String.join(".", this.section, key);
+        if (section != null) {
+          key = String.join(".", section, key);
         }
 
         getProperties().set(key.replace('/', '.').replace(':', '.'), value);

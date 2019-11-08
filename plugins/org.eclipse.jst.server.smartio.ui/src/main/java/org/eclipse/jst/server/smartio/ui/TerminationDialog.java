@@ -46,7 +46,7 @@ class TerminationDialog extends Dialog {
   @Override
   protected void configureShell(Shell newShell) {
     super.configureShell(newShell);
-    newShell.setText(this.title);
+    newShell.setText(title);
   }
 
   /**
@@ -70,7 +70,7 @@ class TerminationDialog extends Dialog {
     PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, ContextIds.SERVER_CLEAN_WORK_DIR_TERMINATE);
 
     Label label = new Label(composite, SWT.WRAP);
-    label.setText(this.message);
+    label.setText(message);
     GridData data = new GridData();
     data.widthHint = 400;
     label.setLayoutData(data);

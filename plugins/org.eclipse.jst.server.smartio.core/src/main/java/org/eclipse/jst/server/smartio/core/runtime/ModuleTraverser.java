@@ -1,13 +1,11 @@
 /**********************************************************************
- * Copyright (c) 2007, 2015 IBM Corporation and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which accompanies this distribution,
- * and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2007, 2015 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
+ * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * Contributors: Igor Fedorenko & Fabrizio Giustina - Initial API and
- * implementation
+ * Contributors: Igor Fedorenko & Fabrizio Giustina - Initial API and implementation
  **********************************************************************/
 
 package org.eclipse.jst.server.smartio.core.runtime;
@@ -65,24 +63,21 @@ public class ModuleTraverser {
       IModuleConstants.JST_WEB_MODULE;
 
   /**
-   * Name of the custom Java classpath entry attribute that is used to flag
-   * entries which should be exposed as module dependencies via the virtual
-   * component API.
+   * Name of the custom Java classpath entry attribute that is used to flag entries which should be
+   * exposed as module dependencies via the virtual component API.
    */
   private static final String CLASSPATH_COMPONENT_DEPENDENCY                           =
       "org.eclipse.jst.component.dependency";                                              // $NON-NLS-1
 
   /**
-   * Name of the custom Java classpath entry attribute that is used to flag the
-   * resolved entries of classpath containers that should not be exposed via the
-   * virtual component API.
+   * Name of the custom Java classpath entry attribute that is used to flag the resolved entries of
+   * classpath containers that should not be exposed via the virtual component API.
    */
   private static final String CLASSPATH_COMPONENT_NON_DEPENDENCY                       =
       "org.eclipse.jst.component.nondependency";                                           // $NON-NLS-1
 
   /**
-   * Argument values that are used to select component dependency attribute
-   * type.
+   * Argument values that are used to select component dependency attribute type.
    */
   private static final int    DEPENDECYATTRIBUTETYPE_DEPENDENCY_OR_NONDEPENDENCY       = 0;
   private static final int    DEPENDECYATTRIBUTETYPE_CLASSPATH_COMPONENT_DEPENDENCY    = 1;

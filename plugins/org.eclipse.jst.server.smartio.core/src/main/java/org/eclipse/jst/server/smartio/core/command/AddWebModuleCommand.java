@@ -1,8 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2006 IBM Corporation and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which accompanies this distribution,
- * and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2003, 2006 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
+ * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -39,8 +38,8 @@ public class AddWebModuleCommand extends ConfigurationCommand {
    */
   @Override
   public void execute() {
-    this.modules = this.configuration.getWebModules().size();
-    this.configuration.addWebModule(-1, this.module);
+    modules = configuration.getWebModules().size();
+    configuration.addWebModule(-1, module);
   }
 
   /**
@@ -48,6 +47,6 @@ public class AddWebModuleCommand extends ConfigurationCommand {
    */
   @Override
   public void undo() {
-    this.configuration.removeWebModule(this.modules);
+    configuration.removeWebModule(modules);
   }
 }

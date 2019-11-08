@@ -1,8 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2018 IBM Corporation and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which accompanies this distribution,
- * and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2003, 2018 IBM Corporation and others. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License 2.0 which
+ * accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -34,8 +33,7 @@ import java.util.List;
 public class ClasspathProvider extends RuntimeClasspathProviderDelegate {
 
   /**
-   * Get the class path, when the server is used in other projects as class
-   * provider.
+   * Get the class path, when the server is used in other projects as class provider.
    *
    * @param project
    * @param runtime

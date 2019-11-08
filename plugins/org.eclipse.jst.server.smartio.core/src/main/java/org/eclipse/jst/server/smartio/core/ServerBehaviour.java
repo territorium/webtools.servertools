@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugPlugin;
@@ -33,15 +32,12 @@ import org.eclipse.jst.server.core.IJ2EEModule;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.jst.server.smartio.core.ServerPlugin.Level;
 import org.eclipse.jst.server.smartio.core.util.ProgressUtil;
-import org.eclipse.jst.server.smartio.core.util.ServerTools;
 import org.eclipse.jst.server.smartio.core.util.VersionHelper;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.IRuntime;
 import org.eclipse.wst.server.core.IServer;
 import org.eclipse.wst.server.core.ServerPort;
-import org.eclipse.wst.server.core.internal.IModulePublishHelper;
-import org.eclipse.wst.server.core.internal.Server;
 import org.eclipse.wst.server.core.model.IModuleResource;
 import org.eclipse.wst.server.core.model.IModuleResourceDelta;
 import org.eclipse.wst.server.core.model.ServerBehaviourDelegate;
@@ -51,7 +47,6 @@ import org.eclipse.wst.server.core.util.SocketUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -62,19 +57,13 @@ import java.util.Properties;
 /**
  * Generic {@link ServerBehaviour} server.
  */
-public class ServerBehaviour extends ServerBehaviourDelegate implements IModulePublishHelper {
+public class ServerBehaviour extends ServerBehaviourDelegate {
 
-  private static final String   ATTR_STOP        = "stop-server";
-
-  private static final String[] JMX_EXCLUDE_ARGS =
-      new String[] { "-Dcom.sun.management.jmxremote", "-Dcom.sun.management.jmxremote.port=",
-          "-Dcom.sun.management.jmxremote.ssl=", "-Dcom.sun.management.jmxremote.authenticate=" };
-
+  private static final String ATTR_STOP = "stop-server";
 
   // the thread used to ping the server to check for startup
   private transient PingThread             ping = null;
   private transient IDebugEventSetListener processListener;
-
 
   /**
    * Get the {@link ServerWrapper} for the current {@link ServerBehaviourDelegate}
@@ -110,7 +99,6 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
     return getWrapper().getRuntimeBaseDirectory();
   }
 
-
   @Override
   public void initialize(IProgressMonitor monitor) {
     // do nothing
@@ -132,39 +120,16 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
    * @return an array of runtime arguments
    */
   private String[] getRuntimeVMArguments() {
-    IPath installPath = getServer().getRuntime().getLocation();
-    // If installPath is relative, convert to canonical path and hope for the
-    // best
-    if (!installPath.isAbsolute()) {
-      try {
-        String installLoc = (new File(installPath.toOSString())).getCanonicalPath();
-        installPath = new Path(installLoc);
-      } catch (IOException e) {
-        // Ignore if there is a problem
-      }
-    }
-    IPath configPath = getServerConfDirectory();
-    IPath deployPath = getServerDeployDirectory();
-    // If deployPath is relative, convert to canonical path and hope for the
-    // best
-    if (!deployPath.isAbsolute()) {
-      try {
-        String deployLoc = (new File(deployPath.toOSString())).getCanonicalPath();
-        deployPath = new Path(deployLoc);
-      } catch (IOException e) {
-        // Ignore if there is a problem
-      }
-    }
-    return getHandler().getRuntimeVMArguments(installPath, configPath, deployPath,
-        getServer().getServerConfiguration());
+    return getHandler().getRuntimeVMArguments(getServer().getRuntime().getLocation(), getServerConfDirectory(),
+        getServerDeployDirectory(), getServer().getServerConfiguration());
   }
 
   protected void addProcessListener(final IProcess newProcess) {
-    if ((this.processListener != null) || (newProcess == null)) {
+    if ((processListener != null) || (newProcess == null)) {
       return;
     }
 
-    this.processListener = new IDebugEventSetListener() {
+    processListener = new IDebugEventSetListener() {
 
       @Override
       public void handleDebugEvents(DebugEvent[] events) {
@@ -179,17 +144,17 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
         }
       }
     };
-    DebugPlugin.getDefault().addDebugEventListener(this.processListener);
+    DebugPlugin.getDefault().addDebugEventListener(processListener);
   }
 
   protected void stopImpl() {
-    if (this.ping != null) {
-      this.ping.stop();
-      this.ping = null;
+    if (ping != null) {
+      ping.stop();
+      ping = null;
     }
-    if (this.processListener != null) {
-      DebugPlugin.getDefault().removeDebugEventListener(this.processListener);
-      this.processListener = null;
+    if (processListener != null) {
+      DebugPlugin.getDefault().removeDebugEventListener(processListener);
+      processListener = null;
     }
     setServerState(IServer.STATE_STOPPED);
   }
@@ -280,9 +245,8 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
   }
 
   /*
-   * @see
-   * org.eclipse.wst.server.core.model.ServerBehaviourDelegate#getResources(org.eclipse.wst.server.
-   * core.IModule[])
+   * @see org.eclipse.wst.server.core.model.ServerBehaviourDelegate#getResources(org.
+   * eclipse.wst.server. core.IModule[])
    */
   @Override
   public final IModuleResource[] getResources(IModule[] module) {
@@ -290,15 +254,13 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
   }
 
   /*
-   * @see
-   * org.eclipse.wst.server.core.model.ServerBehaviourDelegate#getPublishedResourceDelta(org.eclipse
-   * .wst.server.core.IModule[])
+   * @see org.eclipse.wst.server.core.model.ServerBehaviourDelegate#
+   * getPublishedResourceDelta(org.eclipse .wst.server.core.IModule[])
    */
   @Override
   public final IModuleResourceDelta[] getPublishedResourceDelta(IModule[] module) {
     return super.getPublishedResourceDelta(module);
   }
-
 
   @Override
   protected void publishFinish(IProgressMonitor monitor) throws CoreException {
@@ -343,16 +305,10 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
         setServerState(IServer.STATE_STOPPING);
       }
 
-      ILaunchConfiguration launchConfig = ((Server) getServer()).getLaunchConfiguration(true, null);
+      ILaunchConfiguration launchConfig = getServer().getLaunchConfiguration(true, null);
       ILaunchConfigurationWorkingCopy wc = launchConfig.getWorkingCopy();
 
       String args = ServerTools.renderCommandLine(getRuntimeProgramArguments(false), " ");
-      // Remove JMX arguments if present
-      String existingVMArgs = wc.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, (String) null);
-      if (existingVMArgs.indexOf(ServerBehaviour.JMX_EXCLUDE_ARGS[0]) >= 0) {
-        wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS,
-            ServerTools.mergeArguments(existingVMArgs, new String[] {}, ServerBehaviour.JMX_EXCLUDE_ARGS, false));
-      }
       wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args);
       wc.setAttribute("org.eclipse.debug.ui.private", true);
       wc.setAttribute(ServerBehaviour.ATTR_STOP, "true");
@@ -391,17 +347,15 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
     String existingProgArgs =
         workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String) null);
     workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS,
-        ServerTools.mergeArguments(existingProgArgs, getRuntimeProgramArguments(true), null, true));
+        ServerTools.mergeArguments(existingProgArgs, getRuntimeProgramArguments(true)));
 
     String existingVMArgs =
         workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, (String) null);
 
     String mergedVMArguments = ServerTools.mergeArguments(existingVMArgs, getRuntimeVMArguments());
-    // ServerTools.mergeArguments(existingVMArgs, configVMArgs, null, false);
     workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, mergedVMArguments);
     workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH,
         getRuntimeBaseDirectory().toString());
-
 
     // update classpath
     IRuntimeClasspathEntry[] originalClasspath = JavaRuntime.computeUnresolvedRuntimeClasspath(workingCopy);
@@ -541,14 +495,14 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
    * Gets the directory to which modules should be deployed for this server.
    */
   public final IPath getServerConfDirectory() {
-    return ServerTools.getPath(getRuntimeBaseDirectory(), getWrapper().getConfDirectory());
+    return ServerTools.getAbsolutePath(getRuntimeBaseDirectory(), getWrapper().getConfDirectory());
   }
 
   /**
    * Gets the directory to which modules should be deployed for this server.
    */
   public final IPath getServerDeployDirectory() {
-    return ServerTools.getPath(getRuntimeBaseDirectory(), getServerRuntime().getDeployDirectory());
+    return ServerTools.getAbsolutePath(getRuntimeBaseDirectory(), getWrapper().getDeployDirectory());
   }
 
   /**
@@ -556,12 +510,16 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
    *
    * @param module
    */
-  @Override
-  public IPath getPublishDirectory(IModule[] module) {
-    if ((module == null) || (module.length == 0)) {
+  public IPath getPublishDirectory(IModule module) {
+    if (module == null) {
       return null;
     }
-    return getServerDeployDirectory().append(module[0].getName());
+
+    IWebModule webModule = (IWebModule) module.getAdapter(IWebModule.class);
+    if (webModule == null || webModule.getContextRoot() == null) {
+      return getServerDeployDirectory().append(module.getName());
+    }
+    return getServerDeployDirectory().append(webModule.getContextRoot());
   }
 
   public final void setServerStarted() {
@@ -661,7 +619,7 @@ public class ServerBehaviour extends ServerBehaviourDelegate implements IModuleP
       if (port != 80) {
         url += ":" + port;
       }
-      this.ping = new PingThread(getServer(), url, -1, this);
+      ping = new PingThread(getServer(), url, -1, this);
     } catch (Exception e) {
       ServerPlugin.log(Level.SEVERE, "Can't ping for smart.IO startup.");
     }

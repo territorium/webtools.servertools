@@ -1,8 +1,7 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2008 SAS Institute, Inc. and others. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which accompanies this distribution,
- * and is available at https://www.eclipse.org/legal/epl-2.0/
+ * Copyright (c) 2007, 2008 SAS Institute, Inc. and others. All rights reserved. This program and
+ * the accompanying materials are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
  *
@@ -50,8 +49,7 @@ public class CleanWorkDirAction implements IObjectActionDelegate {
    */
   @Override
   public void run(IAction action) {
-    CleanWorkDirDialog dlg =
-        new CleanWorkDirDialog(this.targetPart.getSite().getShell(), this.selectedServer, this.selectedModule);
+    CleanWorkDirDialog dlg = new CleanWorkDirDialog(targetPart.getSite().getShell(), selectedServer, selectedModule);
     dlg.open();
   }
 
@@ -60,19 +58,19 @@ public class CleanWorkDirAction implements IObjectActionDelegate {
    */
   @Override
   public void selectionChanged(IAction action, ISelection selection) {
-    this.selectedServer = null;
-    this.selectedModule = null;
+    selectedServer = null;
+    selectedModule = null;
     if (!selection.isEmpty()) {
       if (selection instanceof IStructuredSelection) {
         Object obj = ((IStructuredSelection) selection).getFirstElement();
         if (obj instanceof IServer) {
-          this.selectedServer = (IServer) obj;
+          selectedServer = (IServer) obj;
         } else if (obj instanceof IServerModule) {
           IServerModule sm = (IServerModule) obj;
           IModule[] module = sm.getModule();
-          this.selectedModule = module[module.length - 1];
-          if (this.selectedModule != null) {
-            this.selectedServer = sm.getServer();
+          selectedModule = module[module.length - 1];
+          if (selectedModule != null) {
+            selectedServer = sm.getServer();
           }
         }
       }

@@ -10,27 +10,26 @@
 
 package org.eclipse.jst.server.smartio.core.command;
 
-import org.eclipse.jst.server.smartio.core.IServerConfiguration;
+import org.eclipse.jst.server.smartio.core.IServerWrapper;
 import org.eclipse.jst.server.smartio.core.Messages;
-import org.eclipse.jst.server.smartio.core.WebModule;
 
 /**
- * Command to remove a web module.
+ * Command to change the server security option.
  */
-public class RemoveWebModuleCommand extends ConfigurationCommand {
+public class SetDeployPathCommand extends ServerCommand {
 
-  private final int index;
-  private WebModule module;
+  private final String newDirectory;
+  private String       oldDirectory;
 
   /**
-   * RemoveWebModuleCommand constructor comment.
+   * SetSecureCommand constructor comment.
    *
-   * @param configuration
-   * @param index an index
+   * @param server
+   * @param directory
    */
-  public RemoveWebModuleCommand(IServerConfiguration configuration, int index) {
-    super(configuration, Messages.configurationEditorActionRemoveWebModule);
-    this.index = index;
+  public SetDeployPathCommand(IServerWrapper server, String directory) {
+    super(server, Messages.serverEditorActionSetSecure);
+    newDirectory = directory;
   }
 
   /**
@@ -38,8 +37,8 @@ public class RemoveWebModuleCommand extends ConfigurationCommand {
    */
   @Override
   public void execute() {
-    module = configuration.getWebModules().get(index);
-    configuration.removeWebModule(index);
+//    oldDirectory = server.getDeployDirectory();
+//    server.setDeployDirectory(newDirectory);
   }
 
   /**
@@ -47,6 +46,6 @@ public class RemoveWebModuleCommand extends ConfigurationCommand {
    */
   @Override
   public void undo() {
-    configuration.addWebModule(index, module);
+//    server.setDeployDirectory(oldDirectory);
   }
 }

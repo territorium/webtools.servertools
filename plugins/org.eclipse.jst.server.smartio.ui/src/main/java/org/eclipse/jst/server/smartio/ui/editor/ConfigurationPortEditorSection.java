@@ -85,19 +85,19 @@ public class ConfigurationPortEditorSection extends ServerEditorSection {
     toolkit.paintBordersFor(composite);
     section.setClient(composite);
 
-    this.ports = toolkit.createTable(composite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION);
-    this.ports.setHeaderVisible(true);
-    this.ports.setLinesVisible(true);
-    whs.setHelp(this.ports, ContextIds.CONFIGURATION_EDITOR_PORTS_LIST);
+    ports = toolkit.createTable(composite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION);
+    ports.setHeaderVisible(true);
+    ports.setLinesVisible(true);
+    whs.setHelp(ports, ContextIds.CONFIGURATION_EDITOR_PORTS_LIST);
 
     TableLayout tableLayout = new TableLayout();
 
-    TableColumn col = new TableColumn(this.ports, SWT.NONE);
+    TableColumn col = new TableColumn(ports, SWT.NONE);
     col.setText(Messages.configurationEditorPortNameColumn);
     ColumnWeightData colData = new ColumnWeightData(15, 150, true);
     tableLayout.addColumnData(colData);
 
-    col = new TableColumn(this.ports, SWT.NONE);
+    col = new TableColumn(ports, SWT.NONE);
     col.setText(Messages.configurationEditorPortValueColumn);
     colData = new ColumnWeightData(8, 80, true);
     tableLayout.addColumnData(colData);
@@ -105,11 +105,11 @@ public class ConfigurationPortEditorSection extends ServerEditorSection {
     GridData data = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
     data.widthHint = 230;
     data.heightHint = 100;
-    this.ports.setLayoutData(data);
-    this.ports.setLayout(tableLayout);
+    ports.setLayoutData(data);
+    ports.setLayout(tableLayout);
 
-    this.viewer = new TableViewer(this.ports);
-    this.viewer.setColumnProperties(new String[] { "name", "port" });
+    viewer = new TableViewer(ports);
+    viewer.setColumnProperties(new String[] { "name", "port" });
 
     initialize();
   }
@@ -121,9 +121,9 @@ public class ConfigurationPortEditorSection extends ServerEditorSection {
   public void init(IEditorSite site, IEditorInput input) {
     super.init(site, input);
 
-    IServerWrapper wrapper = this.server.getAdapter(IServerWrapper.class);
+    IServerWrapper wrapper = server.getAdapter(IServerWrapper.class);
     try {
-      this.configuration = wrapper.loadConfiguration();
+      configuration = wrapper.loadConfiguration();
     } catch (Exception e) {
       // ignore
     }
@@ -132,8 +132,8 @@ public class ConfigurationPortEditorSection extends ServerEditorSection {
 
   @Override
   public void dispose() {
-    if (this.configuration != null) {
-      this.configuration.removePropertyChangeListener(this.listener);
+    if (configuration != null) {
+      configuration.removePropertyChangeListener(listener);
     }
   }
 
@@ -141,10 +141,10 @@ public class ConfigurationPortEditorSection extends ServerEditorSection {
    * Initialize the fields in this editor.
    */
   protected void initialize() {
-    this.ports.removeAll();
+    ports.removeAll();
 
-    for (ServerPort port : this.configuration.getServerPorts()) {
-      TableItem item = new TableItem(this.ports, SWT.NONE);
+    for (ServerPort port : configuration.getServerPorts()) {
+      TableItem item = new TableItem(ports, SWT.NONE);
 
       String portStr = "-";
       if (port.getPort() >= 0) {
@@ -156,9 +156,9 @@ public class ConfigurationPortEditorSection extends ServerEditorSection {
       item.setData(port);
     }
 
-    if (this.readOnly) {
-      this.viewer.setCellEditors(new CellEditor[] { null, null });
-      this.viewer.setCellModifier(null);
+    if (readOnly) {
+      viewer.setCellEditors(new CellEditor[] { null, null });
+      viewer.setCellModifier(null);
     } else {
       setupPortEditors();
     }
@@ -168,7 +168,7 @@ public class ConfigurationPortEditorSection extends ServerEditorSection {
    *
    */
   protected void addChangeListener() {
-    this.listener = new PropertyChangeListener() {
+    listener = new PropertyChangeListener() {
 
       @Override
       public void propertyChange(PropertyChangeEvent event) {
@@ -179,7 +179,7 @@ public class ConfigurationPortEditorSection extends ServerEditorSection {
         }
       }
     };
-    this.configuration.addPropertyChangeListener(this.listener);
+    configuration.addPropertyChangeListener(listener);
   }
 
   /**
@@ -188,7 +188,7 @@ public class ConfigurationPortEditorSection extends ServerEditorSection {
    * @param port int
    */
   protected void changePortNumber(String id, int port) {
-    TableItem[] items = this.ports.getItems();
+    TableItem[] items = ports.getItems();
     int size = items.length;
     for (int i = 0; i < size; i++) {
       ServerPort sp = (ServerPort) items[i].getData();
@@ -201,7 +201,7 @@ public class ConfigurationPortEditorSection extends ServerEditorSection {
   }
 
   protected void setupPortEditors() {
-    this.viewer.setCellEditors(new CellEditor[] { null, new TextCellEditor(this.ports) });
+    viewer.setCellEditors(new CellEditor[] { null, new TextCellEditor(ports) });
 
     ICellModifier cellModifier = new ICellModifier() {
 
@@ -229,25 +229,24 @@ public class ConfigurationPortEditorSection extends ServerEditorSection {
           Item item = (Item) element;
           ServerPort sp = (ServerPort) item.getData();
           int port = Integer.parseInt((String) value);
-          execute(new ModifyPortCommand(ConfigurationPortEditorSection.this.configuration, sp.getId(), port));
+          execute(new ModifyPortCommand(configuration, sp.getId(), port));
         } catch (Exception ex) {
           // ignore
         }
       }
     };
-    this.viewer.setCellModifier(cellModifier);
+    viewer.setCellModifier(cellModifier);
 
     // preselect second column (Windows-only)
     String os = System.getProperty("os.name");
     if ((os != null) && (os.toLowerCase().indexOf("win") >= 0)) {
-      this.ports.addSelectionListener(new SelectionAdapter() {
+      ports.addSelectionListener(new SelectionAdapter() {
 
         @Override
         public void widgetSelected(SelectionEvent event) {
           try {
-            int n = ConfigurationPortEditorSection.this.ports.getSelectionIndex();
-            ConfigurationPortEditorSection.this.viewer
-                .editElement(ConfigurationPortEditorSection.this.ports.getItem(n).getData(), 1);
+            int n = ports.getSelectionIndex();
+            viewer.editElement(ports.getItem(n).getData(), 1);
           } catch (Exception e) {
             // ignore
           }

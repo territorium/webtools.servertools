@@ -29,7 +29,7 @@ public class SetConfigPathCommand extends ServerCommand {
    */
   public SetConfigPathCommand(IServerWrapper server, String directory) {
     super(server, Messages.serverEditorActionSetSecure);
-    this.newDirectory = directory;
+    newDirectory = directory;
   }
 
   /**
@@ -37,8 +37,8 @@ public class SetConfigPathCommand extends ServerCommand {
    */
   @Override
   public void execute() {
-    this.oldDirectory = this.server.getConfDirectory();
-    this.server.setConfDirectory(this.newDirectory);
+    oldDirectory = server.getConfDirectory();
+    server.setConfDirectory(newDirectory);
   }
 
   /**
@@ -46,6 +46,6 @@ public class SetConfigPathCommand extends ServerCommand {
    */
   @Override
   public void undo() {
-    this.server.setConfDirectory(this.oldDirectory);
+    server.setConfDirectory(oldDirectory);
   }
 }
