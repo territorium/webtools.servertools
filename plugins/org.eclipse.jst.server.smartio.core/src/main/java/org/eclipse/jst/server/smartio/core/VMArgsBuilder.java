@@ -28,11 +28,11 @@ import java.util.stream.Collectors;
  */
 public class VMArgsBuilder {
 
-  public static final String BOOT_CLASS      = "it.smartio.daemon.Bootstrap";
-  public static final String BOOT_MODULE     = "smartio.daemon";
+  public static final String BOOT_CLASS   = "it.smartio.daemon.Bootstrap";
+  public static final String BOOT_MODULE  = "smartio.daemon";
 
-  public static final String SMARTIO_CONFIG  = "smartio.config";
-  public static final String SMARTIO_OVERLAY = "smartio.overlay";
+  public static final String SMARTIO_USER = "smartio.user";
+  public static final String SMARTIO_CONF = "smartio.conf";
 
 
   private final List<String> vmArgs = new ArrayList<>();
@@ -104,7 +104,7 @@ public class VMArgsBuilder {
     List<String> args = new ArrayList<>();
     args.addAll(vmArgs);
     opens.forEach(o -> args.add(o));
-    vmArgs.add("-m " + name);
+    args.add("-m " + name);
     return args.toArray(new String[args.size()]);
   }
 }

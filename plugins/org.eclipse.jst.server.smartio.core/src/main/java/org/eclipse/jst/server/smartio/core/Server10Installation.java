@@ -70,8 +70,8 @@ class Server10Installation implements IServerInstallation {
   @Override
   public final String[] getRuntimeVMArguments(IPath installPath, IPath configPath, IPath deployPath, IFolder config) {
     VMArgsBuilder args = new VMArgsBuilder();
-    args.addPath(VMArgsBuilder.SMARTIO_CONFIG, ServerTools.getRelativePath(installPath, configPath));
-    args.addPath(VMArgsBuilder.SMARTIO_OVERLAY, config.getLocation());
+    args.addPath(VMArgsBuilder.SMARTIO_USER, ServerTools.getRelativePath(installPath, configPath));
+    args.addPath(VMArgsBuilder.SMARTIO_CONF, config.getLocation());
 
     args.addOpens("java.base/java.lang");
     args.addOpens("java.rmi/sun.rmi.transport");
