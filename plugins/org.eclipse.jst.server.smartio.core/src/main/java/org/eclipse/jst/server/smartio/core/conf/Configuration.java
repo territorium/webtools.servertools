@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,7 +31,7 @@ import java.util.stream.Stream;
  * {@link Configuration} can be saved to a stream or loaded from a stream. Each key and its
  * corresponding value in the property list is a string.
  */
-public class Configuration extends Properties {
+public class Configuration extends Properties implements Iterable<String> {
 
   private static final String DEFAULT_NAME = "";
 
@@ -58,6 +59,33 @@ public class Configuration extends Properties {
    */
   public Configuration() {
     sections.put(Configuration.DEFAULT_NAME, new Section(Configuration.DEFAULT_NAME));
+  }
+
+  /**
+   * Get the section names.
+   */
+  @Override
+  public Iterator<String> iterator() {
+    return sections.keySet().iterator();
+  }
+
+  /**
+   * Get the section type
+   * 
+   * @param source
+   * @param target
+   */
+  public void renameSection(String source, String target) {
+    sections.put(target, sections.remove(source));
+  }
+
+  /**
+   * Get the section type
+   * 
+   * @param name
+   */
+  public String getSectionType(String name) {
+    return get(String.format("%s.type", name));
   }
 
   /**

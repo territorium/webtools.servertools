@@ -36,6 +36,7 @@ import java.util.List;
  */
 class Server10Configuration extends ServerConfiguration {
 
+  public static final String HTTP    = "TOMCAT";
   public static final String SERVER  = "server.properties";
   public static final String LOGGING = "logging.properties";
 
@@ -58,6 +59,15 @@ class Server10Configuration extends ServerConfiguration {
     return null;
   }
 
+  protected final String getHttpName(Configuration conf) {
+    for (String name : conf) {
+      if (HTTP.equalsIgnoreCase(conf.getSectionType(name))) {
+        return name;
+      }
+    }
+    return "server.web";
+  }
+
   /**
    * Returns a list of ServerPorts that this configuration uses.
    *
@@ -68,22 +78,23 @@ class Server10Configuration extends ServerConfiguration {
     List<ServerPort> ports = new ArrayList<>();
 
     // first add admin port
+    String http = getHttpName(configuration);
     try {
-      int port = configuration.get("server.web.admin", 8888);
+      int port = configuration.get(http + ".admin", 8888);
       ports.add(new ServerPort("admin", Messages.portServer, port, "TCPIP"));
     } catch (Exception e) {
       ServerPlugin.log(Level.SEVERE, "Error getting server ports", e);
     }
 
     try {
-      int port = configuration.get("server.web.http", 8888);
+      int port = configuration.get(http + ".http", 8080);
       ports.add(new ServerPort("http", "HTTP/1.1", port, "HTTP", new String[] { "web", "webservices" }, false));
     } catch (Exception e) {
       ServerPlugin.log(Level.SEVERE, "Error getting server ports", e);
     }
 
     try {
-      int port = configuration.get("server.web.ajp", 8888);
+      int port = configuration.get(http + ".ajp", 8009);
       ports.add(new ServerPort("ajp", "AJP/1.3", port, "AJP", null, false));
     } catch (Exception e) {
       ServerPlugin.log(Level.SEVERE, "Error getting server ports", e);
@@ -99,22 +110,23 @@ class Server10Configuration extends ServerConfiguration {
    */
   @Override
   public void setServerPort(String id, int port) {
+    String http = getHttpName(configuration);
     try {
       switch (id) {
         case "admin":
-          configuration.set("server.web.admin", "" + port);
+          configuration.set(http + ".admin", "" + port);
           // isServerDirty = true;
           firePropertyChangeEvent(IServerConfiguration.SET_PORT_PROPERTY, id, new Integer(port));
           return;
 
         case "http":
-          configuration.set("server.web.http", "" + port);
+          configuration.set(http + ".http", "" + port);
           // isServerDirty = true;
           firePropertyChangeEvent(IServerConfiguration.SET_PORT_PROPERTY, id, new Integer(port));
           return;
 
         case "ajp":
-          configuration.set("server.web.ajp", "" + port);
+          configuration.set(http + ".ajp", "" + port);
           firePropertyChangeEvent(IServerConfiguration.SET_PORT_PROPERTY, id, new Integer(port));
           return;
 
@@ -155,8 +167,16 @@ class Server10Configuration extends ServerConfiguration {
       monitor.beginTask(Messages.loadingTask, 7);
 
       // Load server properties
+      Configuration conf = new Configuration();
+      conf.load(new FileInputStream(path.append(Server10Configuration.SERVER).toFile()));
+      String http = getHttpName(conf);
+
       configuration = new Configuration();
-      configuration.load(new FileInputStream(path.append(Server10Configuration.SERVER).toFile()));
+      configuration.set(http + ".type", Server10Configuration.HTTP);
+      configuration.set(http + ".admin", conf.get(http + ".admin", "8888"));
+      configuration.set(http + ".http", conf.get(http + ".http", "8080"));
+      configuration.set(http + ".ajp", conf.get(http + ".ajp", "8009"));
+
       monitor.worked(1);
 
       if (monitor.isCanceled()) {
@@ -185,10 +205,22 @@ class Server10Configuration extends ServerConfiguration {
       monitor = ProgressUtil.getMonitorFor(monitor);
       monitor.beginTask(Messages.loadingTask, 1200);
 
+      // Load extern properties
+      Configuration conf = new Configuration();
+      conf.load(new FileInputStream(path.append(Server10Configuration.SERVER).toFile()));
+      String remoteHttp = getHttpName(conf);
+
       // Load server properties
       IFile file = folder.getFile(Server10Configuration.SERVER);
       configuration = new Configuration();
       configuration.load(file.getContents());
+
+      String localHttp = getHttpName(configuration);
+      if (localHttp != null && remoteHttp != null && !remoteHttp.equals(localHttp)) {
+        configuration.renameSection(localHttp, remoteHttp);
+        saveConfiguration(path, folder, monitor);
+      }
+
       monitor.worked(200);
 
       if (monitor.isCanceled()) {
