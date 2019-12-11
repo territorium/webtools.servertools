@@ -41,12 +41,11 @@ class Server10Configuration extends ServerConfiguration {
   public static final String LOGGING = "logging.properties";
 
 
+  private Configuration logging;
   private Configuration configuration;
 
   /**
    * Return the port number.
-   *
-   * @return int
    */
   @Override
   public ServerPort getMainPort() {
@@ -169,13 +168,17 @@ class Server10Configuration extends ServerConfiguration {
       // Load server properties
       Configuration conf = new Configuration();
       conf.load(new FileInputStream(path.append(Server10Configuration.SERVER).toFile()));
-      String http = getHttpName(conf);
 
+      String http = getHttpName(conf);
       configuration = new Configuration();
       configuration.set(http + ".type", Server10Configuration.HTTP);
       configuration.set(http + ".admin", conf.get(http + ".admin", "8888"));
       configuration.set(http + ".http", conf.get(http + ".http", "8080"));
       configuration.set(http + ".ajp", conf.get(http + ".ajp", "8009"));
+
+      // Load logging properties
+      logging = new Configuration();
+      logging.load(new FileInputStream(path.append(Server10Configuration.LOGGING).toFile()));
 
       monitor.worked(1);
 
@@ -261,19 +264,27 @@ class Server10Configuration extends ServerConfiguration {
       }
       monitor.worked(100);
 
+
       // save logging properties
       file = folder.getFile(Server10Configuration.LOGGING);
       if (!file.exists()) {
         writer = new StringWriter();
-        writer.write(";Global properties\n");
-        writer.write("level = INFO\n");
-        writer.write("handler = Console\n\n");
-        writer.write("[handler.Console]\n");
-        writer.write("type  = CONSOLE\n");
-        writer.write("level = FINE\n");
-        file.create(new ByteArrayInputStream(writer.toString().getBytes()), true,
-            ProgressUtil.getSubMonitorFor(monitor, 200));
+
+        if (logging == null) {
+          writer.write(";Global properties\n");
+          writer.write("level = INFO\n");
+          writer.write("handler = Console\n\n");
+          writer.write("[handler.Console]\n");
+          writer.write("type  = CONSOLE\n");
+          writer.write("level = FINE\n");
+        } else {
+          logging.save(writer, "", Format.INI);
+        }
+
+        in = new ByteArrayInputStream(writer.toString().getBytes());
+        file.create(in, true, ProgressUtil.getSubMonitorFor(monitor, 200));
       }
+
       monitor.worked(200);
 
       if (monitor.isCanceled()) {
