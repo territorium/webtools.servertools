@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature id="org.eclipse.jst.server_smartio.feature"/>
+   <feature id="org.eclipse.jst.server_smartio.feature">
+      <category name="server"/>
+   </feature>
    <category-def name="server" label="smart.IO Server"/>
 </site>

@@ -36,7 +36,8 @@ import java.util.List;
  */
 class Server10Configuration extends ServerConfiguration {
 
-  public static final String HTTP    = "TOMCAT";
+  public static final String HTTP    = "HTTP";
+  public static final String TOMCAT  = "TOMCAT";
   public static final String SERVER  = "server.properties";
   public static final String LOGGING = "logging.properties";
 
@@ -60,7 +61,7 @@ class Server10Configuration extends ServerConfiguration {
 
   protected final String getHttpName(Configuration conf) {
     for (String name : conf) {
-      if (HTTP.equalsIgnoreCase(conf.getSectionType(name))) {
+      if (HTTP.equalsIgnoreCase(conf.getSectionType(name)) || TOMCAT.equalsIgnoreCase(conf.getSectionType(name))) {
         return name;
       }
     }
