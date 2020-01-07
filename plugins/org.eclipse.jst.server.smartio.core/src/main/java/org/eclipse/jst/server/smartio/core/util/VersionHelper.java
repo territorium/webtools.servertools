@@ -44,6 +44,7 @@ public class VersionHelper {
 
   static {
     VersionHelper.versionStringMap.put(ServerPlugin.SERVER_10, "19.");
+    VersionHelper.versionStringMap.put(ServerPlugin.SERVER_10, "20.");
   }
 
   /**
