@@ -111,7 +111,18 @@ public class ServerBehaviour extends ServerBehaviourDelegate {
    * @return an array of runtime program arguments
    */
   private String[] getRuntimeProgramArguments(boolean starting) {
-    return getHandler().getRuntimeProgramArguments(null, starting);
+    String args[] = getHandler().getRuntimeProgramArguments(null, starting);
+    String programArgs[] = new String[args.length + 1];
+    try {
+      ServerPort port = getConfig().getShutdownPort();
+      programArgs[0] = "--shutdown " + (port == null ? 8005 : port.getPort());
+    } catch (CoreException e) {
+      programArgs[0] = "--shutdown 8005";
+    }
+    for (int i = 0; i < args.length; i++) {
+      programArgs[i + 1] = args[i];
+    }
+    return programArgs;
   }
 
   /**

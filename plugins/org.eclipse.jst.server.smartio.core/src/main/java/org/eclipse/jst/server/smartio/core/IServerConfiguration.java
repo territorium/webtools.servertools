@@ -80,6 +80,12 @@ public interface IServerConfiguration {
    * @return ServerPort
    */
   public ServerPort getMainPort();
+  /**
+   * Returns the main server port.
+   *
+   * @return ServerPort
+   */
+  public ServerPort getShutdownPort();
 
   /**
    * Returns the prefix that is used in front of the web module path property. (e.g. "webapps")

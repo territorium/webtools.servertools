@@ -194,11 +194,11 @@ public abstract class ServerTools {
     String key = text.substring(start, center);
     String value = text.substring(center, end);
 
-    if (key.startsWith("--")) {
-      args.put(key + value, "");
-    } else {
+//    if (key.startsWith("--")) {
+//      args.put(key + value, "");
+//    } else {
       args.put(key, value);
-    }
+//    }
     return end;
   }
 
@@ -250,15 +250,6 @@ public abstract class ServerTools {
       }
     }
     return -1;
-  }
-
-
-  public static void main(String[] args) {
-
-
-    // System.out.println(mergeArguments(cArgs, vmArgs));
-
-    System.out.println(ServerTools.mergeArguments("--shutdown 5000 start", new String[0]));
   }
 
   /**

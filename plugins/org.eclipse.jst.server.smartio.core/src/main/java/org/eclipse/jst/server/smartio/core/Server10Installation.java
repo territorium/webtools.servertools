@@ -84,7 +84,7 @@ class Server10Installation implements IServerInstallation {
    */
   @Override
   public String[] getRuntimeProgramArguments(IPath configPath, boolean starting) {
-    return new String[] { "--shutdown 8005", starting ? "start" : "stop" };
+    return new String[] { starting ? "start" : "stop" };
   }
 
   /**

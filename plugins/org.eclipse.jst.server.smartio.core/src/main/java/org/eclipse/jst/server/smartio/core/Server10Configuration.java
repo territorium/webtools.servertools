@@ -59,6 +59,20 @@ class Server10Configuration extends ServerConfiguration {
     return null;
   }
 
+  /**
+   * Return the port number.
+   */
+  @Override
+  public ServerPort getShutdownPort() {
+    for (ServerPort port : getServerPorts()) {
+      // Return only an SHUTDOWN port from the selected Service
+      if (port.getProtocol().toLowerCase().equals("shutdown") && (port.getId().indexOf('/') < 0)) {
+        return port;
+      }
+    }
+    return null;
+  }
+
   protected final String getHttpName(Configuration conf) {
     for (String name : conf) {
       if (HTTP.equalsIgnoreCase(conf.getSectionType(name)) || TOMCAT.equalsIgnoreCase(conf.getSectionType(name))) {
@@ -99,6 +113,13 @@ class Server10Configuration extends ServerConfiguration {
     } catch (Exception e) {
       ServerPlugin.log(Level.SEVERE, "Error getting server ports", e);
     }
+
+    try {
+      int port = configuration.get(http + ".shutdown", 8009);
+      ports.add(new ServerPort("shutdown", "Shutdown", port, "SHUTDOWN", null, false));
+    } catch (Exception e) {
+      ServerPlugin.log(Level.SEVERE, "Error getting server ports", e);
+    }
     return ports;
   }
 
@@ -127,6 +148,11 @@ class Server10Configuration extends ServerConfiguration {
 
         case "ajp":
           configuration.set(http + ".ajp", "" + port);
+          firePropertyChangeEvent(IServerConfiguration.SET_PORT_PROPERTY, id, new Integer(port));
+          return;
+
+        case "shutdown":
+          configuration.set(http + ".shutdown", "" + port);
           firePropertyChangeEvent(IServerConfiguration.SET_PORT_PROPERTY, id, new Integer(port));
           return;
 
@@ -176,6 +202,7 @@ class Server10Configuration extends ServerConfiguration {
       configuration.set(http + ".admin", conf.get(http + ".admin", "8888"));
       configuration.set(http + ".http", conf.get(http + ".http", "8080"));
       configuration.set(http + ".ajp", conf.get(http + ".ajp", "8009"));
+      configuration.set(http + ".shutdown", conf.get(http + ".shutdown", "8005"));
 
       // Load logging properties
       logging = new Configuration();
