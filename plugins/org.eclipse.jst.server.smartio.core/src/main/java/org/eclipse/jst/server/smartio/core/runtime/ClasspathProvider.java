@@ -78,8 +78,8 @@ public class ClasspathProvider extends RuntimeClasspathProviderDelegate {
   private static int getEEVersion(IProject project) {
     try {
       IFacetedProject faceted = ProjectFacetsManager.create(project);
-      if ((faceted != null) && ProjectFacetsManager.isProjectFacetDefined(IConstants.JST_WEB_FACET_ID)) {
-        IProjectFacet webModuleFacet = ProjectFacetsManager.getProjectFacet(IConstants.JST_WEB_FACET_ID);
+      if ((faceted != null) && ProjectFacetsManager.isProjectFacetDefined(IConstants.JST_WEB_MODULE)) {
+        IProjectFacet webModuleFacet = ProjectFacetsManager.getProjectFacet(IConstants.JST_WEB_MODULE);
         if (faceted.hasProjectFacet(webModuleFacet)) {
           String servletVersionStr = faceted.getInstalledVersion(webModuleFacet).getVersionString();
           if (servletVersionStr.equals("4.0")) {

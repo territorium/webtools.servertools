@@ -98,7 +98,7 @@ public abstract class ServerTools {
    */
   public static IModule[] getWebModules(IModule module) {
     List<IModule> list = new ArrayList<>();
-    IModule[] modules = ServerUtil.getModules(IConstants.JST_WEB_FACET_ID);
+    IModule[] modules = ServerUtil.getModules(IConstants.JST_WEB_MODULE);
     if (modules != null) {
       for (IModule module2 : modules) {
         IWebModule web = (IWebModule) module2.loadAdapter(IWebModule.class, null);

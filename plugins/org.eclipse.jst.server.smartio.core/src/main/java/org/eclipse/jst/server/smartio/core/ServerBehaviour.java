@@ -59,7 +59,7 @@ import java.util.Properties;
  */
 public class ServerBehaviour extends ServerBehaviourDelegate {
 
-  private static final String ATTR_STOP = "stop-server";
+  private static final String SHUTDOWN = "stop-server";
 
   // the thread used to ping the server to check for startup
   private transient PingThread             ping = null;
@@ -280,6 +280,7 @@ public class ServerBehaviour extends ServerBehaviourDelegate {
     IServerInstallation handler = getHandler();
     String serverTypeID = getServer().getServerType().getId();
     String serverVersion = VersionHelper.getVersion(baseDir, serverTypeID);
+
     // Include or remove loader jar depending on state of serving directly
     status = handler.prepareForServingDirectly(baseDir, getWrapper(), serverVersion);
     if (!status.isOK()) {
@@ -322,7 +323,7 @@ public class ServerBehaviour extends ServerBehaviourDelegate {
       String args = ServerTools.renderCommandLine(getRuntimeProgramArguments(false), " ");
       wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args);
       wc.setAttribute("org.eclipse.debug.ui.private", true);
-      wc.setAttribute(ServerBehaviour.ATTR_STOP, "true");
+      wc.setAttribute(ServerBehaviour.SHUTDOWN, "true");
       wc.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor());
     } catch (Exception e) {
       ServerPlugin.log(Level.SEVERE, "Error stopping smart.IO", e);
@@ -357,13 +358,13 @@ public class ServerBehaviour extends ServerBehaviourDelegate {
       throws CoreException {
     String existingProgArgs =
         workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String) null);
-    workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS,
-        ServerTools.mergeArguments(existingProgArgs, getRuntimeProgramArguments(true)));
+    String mergedProgArgs = ServerTools.mergeArguments(existingProgArgs, getRuntimeProgramArguments(true));
 
     String existingVMArgs =
         workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, (String) null);
-
     String mergedVMArguments = ServerTools.mergeArguments(existingVMArgs, getRuntimeVMArguments());
+
+    workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, mergedProgArgs);
     workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, mergedVMArguments);
     workingCopy.setAttribute(IJavaLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH,
         getRuntimeBaseDirectory().toString());
@@ -561,7 +562,7 @@ public class ServerBehaviour extends ServerBehaviourDelegate {
    * @throws CoreException if anything goes wrong
    */
   public void setupLaunch(ILaunch launch, String launchMode, IProgressMonitor monitor) throws CoreException {
-    if ("true".equals(launch.getLaunchConfiguration().getAttribute(ServerBehaviour.ATTR_STOP, "false"))) {
+    if ("true".equals(launch.getLaunchConfiguration().getAttribute(ServerBehaviour.SHUTDOWN, "false"))) {
       return;
     }
 

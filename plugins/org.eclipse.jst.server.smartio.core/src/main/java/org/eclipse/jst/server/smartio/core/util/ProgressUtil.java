@@ -12,7 +12,7 @@ package org.eclipse.jst.server.smartio.core.util;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.SubMonitor;
 
 /**
  * Progress Monitor utility.
@@ -40,6 +40,6 @@ public class ProgressUtil {
    * @param ticks
    */
   public static IProgressMonitor getSubMonitorFor(IProgressMonitor monitor, int ticks) {
-    return (monitor == null) ? new NullProgressMonitor() : new SubProgressMonitor(monitor, ticks);
+    return (monitor == null) ? new NullProgressMonitor() : SubMonitor.convert(monitor, "", ticks);
   }
 }

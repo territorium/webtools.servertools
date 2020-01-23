@@ -29,6 +29,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jst.server.smartio.core.IConstants;
 import org.eclipse.jst.server.smartio.core.ServerPlugin;
 import org.eclipse.jst.server.smartio.core.ServerPlugin.Level;
 import org.eclipse.osgi.util.NLS;
@@ -40,7 +41,6 @@ import org.eclipse.wst.common.componentcore.internal.StructureEdit;
 import org.eclipse.wst.common.componentcore.internal.WorkbenchComponent;
 import org.eclipse.wst.common.componentcore.internal.impl.ModuleURIUtil;
 import org.eclipse.wst.common.componentcore.internal.impl.PlatformURLModuleConnection;
-import org.eclipse.wst.common.componentcore.internal.util.IModuleConstants;
 import org.eclipse.wst.common.componentcore.resources.IVirtualComponent;
 import org.eclipse.wst.server.core.IModule;
 
@@ -59,22 +59,21 @@ public class ModuleTraverser {
   /**
    * Facet type for Web modules
    */
-  private static final String WEB_MODULE                                               =
-      IModuleConstants.JST_WEB_MODULE;
+  private static final String WEB_MODULE                                               = IConstants.JST_WEB_MODULE;
 
   /**
    * Name of the custom Java classpath entry attribute that is used to flag entries which should be
    * exposed as module dependencies via the virtual component API.
    */
   private static final String CLASSPATH_COMPONENT_DEPENDENCY                           =
-      "org.eclipse.jst.component.dependency";                                              // $NON-NLS-1
+      "org.eclipse.jst.component.dependency";                                                                      // $NON-NLS-1
 
   /**
    * Name of the custom Java classpath entry attribute that is used to flag the resolved entries of
    * classpath containers that should not be exposed via the virtual component API.
    */
   private static final String CLASSPATH_COMPONENT_NON_DEPENDENCY                       =
-      "org.eclipse.jst.component.nondependency";                                           // $NON-NLS-1
+      "org.eclipse.jst.component.nondependency";                                                                   // $NON-NLS-1
 
   /**
    * Argument values that are used to select component dependency attribute type.

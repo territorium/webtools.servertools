@@ -19,12 +19,8 @@ import org.eclipse.jst.server.smartio.core.util.FileUtil;
 import org.eclipse.jst.server.smartio.core.util.VersionHelper;
 import org.eclipse.wst.server.core.IModule;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * smart.IO handler.
@@ -35,11 +31,11 @@ class Server10Installation implements IServerInstallation {
    * Gets the base directory for this server. This directory is used as the "base" property for the
    * server.
    *
-   * @param server
+   * @param wrapper
    */
   @Override
-  public IPath getRuntimeBaseDirectory(ServerWrapper server) {
-    return server.getServer().getRuntime().getLocation();
+  public IPath getRuntimeBaseDirectory(ServerWrapper wrapper) {
+    return wrapper.getServer().getRuntime().getLocation();
   }
 
   /**
@@ -122,7 +118,6 @@ class Server10Installation implements IServerInstallation {
    */
   @Override
   public IStatus prepareForServingDirectly(IPath baseDir, ServerWrapper server, String version) {
-    // Nothing beyond configuration required for Tomcat 9
     return Status.OK_STATUS;
   }
 }

@@ -191,7 +191,7 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
    */
   @Override
   public IModule[] getRootModules(IModule module) throws CoreException {
-    if (IConstants.JST_WEB_FACET_ID.equals(module.getModuleType().getId())) {
+    if (IConstants.JST_WEB_MODULE.equals(module.getModuleType().getId())) {
       IStatus status = canModifyModules(new IModule[] { module }, null);
       if ((status == null) || !status.isOK()) {
         throw new CoreException(status);
@@ -213,7 +213,7 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
     }
 
     IModuleType moduleType = module[0].getModuleType();
-    if ((module.length == 1) && (moduleType != null) && IConstants.JST_WEB_FACET_ID.equals(moduleType.getId())) {
+    if ((module.length == 1) && (moduleType != null) && IConstants.JST_WEB_MODULE.equals(moduleType.getId())) {
       IWebModule webModule = (IWebModule) module[0].loadAdapter(IWebModule.class, null);
       if (webModule != null) {
         return webModule.getModules();
@@ -234,7 +234,7 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
       int size = add.length;
       for (int i = 0; i < size; i++) {
         IModule module = add[i];
-        if (!IConstants.JST_WEB_FACET_ID.equals(module.getModuleType().getId())) {
+        if (!IConstants.JST_WEB_MODULE.equals(module.getModuleType().getId())) {
           return new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, Messages.errorWebModulesOnly, null);
         }
 

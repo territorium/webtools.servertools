@@ -27,7 +27,7 @@ public interface IServerWrapper extends IURLProvider {
 
   // Property which specifies the directory where configurations are stored
   // published.
-//  public static final String PROPERTY_DEPLOY_DIR = "deployDir";
+  // public static final String PROPERTY_DEPLOY_DIR = "deployDir";
 
   // Property which specifies contexts should be reloadable by default.
   public static final String PROPERTY_MODULES_RELOADABLE = "modulesReloadable";
@@ -45,12 +45,6 @@ public interface IServerWrapper extends IURLProvider {
    * the runtime base directory for the server.
    */
   public String getDeployDirectory();
-
-//  /**
-//   * Gets the directory to which web applications are to be deployed. If relative, it is relative to
-//   * the runtime base directory for the server.
-//   */
-//  public void setDeployDirectory(String directory);
 
   /**
    * Returns true if contexts should be made reloadable by default.

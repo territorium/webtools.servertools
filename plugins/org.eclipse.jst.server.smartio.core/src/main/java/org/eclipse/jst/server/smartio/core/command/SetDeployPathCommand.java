@@ -18,8 +18,8 @@ import org.eclipse.jst.server.smartio.core.Messages;
  */
 public class SetDeployPathCommand extends ServerCommand {
 
-  private final String newDirectory;
-  private String       oldDirectory;
+  // private final String newDirectory;
+  // private String oldDirectory;
 
   /**
    * SetSecureCommand constructor comment.
@@ -29,7 +29,7 @@ public class SetDeployPathCommand extends ServerCommand {
    */
   public SetDeployPathCommand(IServerWrapper server, String directory) {
     super(server, Messages.serverEditorActionSetSecure);
-    newDirectory = directory;
+    // newDirectory = directory;
   }
 
   /**
@@ -37,8 +37,8 @@ public class SetDeployPathCommand extends ServerCommand {
    */
   @Override
   public void execute() {
-//    oldDirectory = server.getDeployDirectory();
-//    server.setDeployDirectory(newDirectory);
+    // oldDirectory = server.getDeployDirectory();
+    // server.setDeployDirectory(newDirectory);
   }
 
   /**
@@ -46,6 +46,6 @@ public class SetDeployPathCommand extends ServerCommand {
    */
   @Override
   public void undo() {
-//    server.setDeployDirectory(oldDirectory);
+    // server.setDeployDirectory(oldDirectory);
   }
 }
