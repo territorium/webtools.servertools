@@ -36,10 +36,11 @@ import java.util.List;
  */
 class Server10Configuration extends ServerConfiguration {
 
-  public static final String HTTP    = "HTTP";
-  public static final String TOMCAT  = "TOMCAT";
-  public static final String SERVER  = "server.properties";
-  public static final String LOGGING = "logging.properties";
+  private static final String HTTP    = "HTTP";
+  private static final String TOMCAT  = "TOMCAT";
+  private static final String SERVER  = "server.properties";
+  private static final String LOGGING = "logging.properties";
+  private static final String DEFAULT = "server.web";
 
 
   private Configuration logging;
@@ -73,13 +74,13 @@ class Server10Configuration extends ServerConfiguration {
     return null;
   }
 
-  protected final String getHttpName(Configuration conf) {
+  protected final String getHttpConfigName(Configuration conf, String fallback) {
     for (String name : conf) {
       if (HTTP.equalsIgnoreCase(conf.getSectionType(name)) || TOMCAT.equalsIgnoreCase(conf.getSectionType(name))) {
         return name;
       }
     }
-    return "server.web";
+    return fallback;
   }
 
   /**
@@ -92,7 +93,7 @@ class Server10Configuration extends ServerConfiguration {
     List<ServerPort> ports = new ArrayList<>();
 
     // first add admin port
-    String http = getHttpName(configuration);
+    String http = getHttpConfigName(configuration, Server10Configuration.DEFAULT);
     try {
       int port = configuration.get(http + ".admin", 8888);
       ports.add(new ServerPort("admin", Messages.portServer, port, "TCPIP"));
@@ -131,7 +132,7 @@ class Server10Configuration extends ServerConfiguration {
    */
   @Override
   public void setServerPort(String id, int port) {
-    String http = getHttpName(configuration);
+    String http = getHttpConfigName(configuration, Server10Configuration.DEFAULT);
     try {
       switch (id) {
         case "admin":
@@ -196,7 +197,7 @@ class Server10Configuration extends ServerConfiguration {
       Configuration conf = new Configuration();
       conf.load(new FileInputStream(path.append(Server10Configuration.SERVER).toFile()));
 
-      String http = getHttpName(conf);
+      String http = getHttpConfigName(conf, Server10Configuration.DEFAULT);
       configuration = new Configuration();
       configuration.set(http + ".type", Server10Configuration.HTTP);
       configuration.set(http + ".admin", conf.get(http + ".admin", "8888"));
@@ -239,14 +240,14 @@ class Server10Configuration extends ServerConfiguration {
       // Load extern properties
       Configuration conf = new Configuration();
       conf.load(new FileInputStream(path.append(Server10Configuration.SERVER).toFile()));
-      String remoteHttp = getHttpName(conf);
+      String remoteHttp = getHttpConfigName(conf, null);
 
       // Load server properties
       IFile file = folder.getFile(Server10Configuration.SERVER);
       configuration = new Configuration();
       configuration.load(file.getContents());
 
-      String localHttp = getHttpName(configuration);
+      String localHttp = getHttpConfigName(configuration, Server10Configuration.DEFAULT);
       if (localHttp != null && remoteHttp != null && !remoteHttp.equals(localHttp)) {
         configuration.renameSection(localHttp, remoteHttp);
         saveConfiguration(path, folder, monitor);
