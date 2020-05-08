@@ -41,6 +41,8 @@
     <module>org.eclipse.wst.server_ui.feature</module>
     <module>org.eclipse.wst.server_userdoc.feature</module>
     <module>org.eclipse.wst.server_sdk.feature</module>
+
+    <module>org.eclipse.jst.server_smartio.feature</module>
   </modules>
 
   <build>

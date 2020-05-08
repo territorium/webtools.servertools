@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.jst.server_smartio.feature"
       label="smart.IO Plugin"
-      version="1.0.15.qualifier"
+      version="1.0.16.qualifier"
       provider-name="TOL GmbH">
 
    <description url="https://www.smartio.info/">

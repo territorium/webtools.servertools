@@ -105,6 +105,10 @@
         <module>tests/org.eclipse.wst.server.http.core.tests</module>
         <module>tests/org.eclipse.wst.server.util.tests</module>
 
+        
+        <module>plugins/org.eclipse.jst.server.smartio.core</module>
+        <module>plugins/org.eclipse.jst.server.smartio.ui</module>
+
         <module>site</module>
       </modules>
     </profile>
