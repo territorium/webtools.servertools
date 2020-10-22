@@ -138,7 +138,7 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
     });
 
     // configuration directory
-    Label label = createLabel(toolkit, composite, Messages.serverEditorConfDir);
+    Label label = createLabel(toolkit, composite, Messages.projectConfDir);
     data = new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
     label.setLayoutData(data);
 

@@ -28,11 +28,16 @@ import java.util.stream.Collectors;
  */
 public class VMArgsBuilder {
 
+  public static final String USER_DIR  = "user.dir";
+  public static final String USER_HOME = "user.home";
+
+
   public static final String BOOT_CLASS   = "it.smartio.daemon.Bootstrap";
   public static final String BOOT_MODULE  = "smartio.daemon";
 
-  public static final String SMARTIO_USER = "smartio.user";
+  @Deprecated
   public static final String SMARTIO_CONF = "smartio.conf";
+  public static final String SMARTIO_USER = "smartio.user";
 
 
   private final List<String> vmArgs = new ArrayList<>();

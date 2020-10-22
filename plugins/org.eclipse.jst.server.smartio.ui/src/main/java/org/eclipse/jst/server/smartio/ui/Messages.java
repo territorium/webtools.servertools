@@ -25,6 +25,7 @@ public class Messages extends NLS {
   public static String installDir;
   public static String installDialogTitle;
   public static String selectInstallDir;
+  public static String contextCleanup;
 
 
   public static String editorEdit;
@@ -49,22 +50,15 @@ public class Messages extends NLS {
   public static String configurationEditorProjectMissing;
   public static String configurationEditorReloadEnabled;
   public static String configurationEditorReloadDisabled;
-  public static String serverEditorLocationsSection;
+
   public static String serverEditorGeneralSection;
   public static String serverEditorGeneralDescription;
-  public static String serverEditorSetDefaultDeployDirLink;
-  public static String serverEditorSetDefaultDeployDirLink2;
-  public static String serverEditorConfDir;
-  public static String serverEditorDeployDir;
-  public static String serverEditorSeparateContextFiles;
+
+
+  public static String projectConfDir;
   public static String serverEditorReloadableByDefault;
-  public static String serverEditorNotSupported;
-  public static String errorServerMustBeStopped;
   public static String errorServerDirIsRoot;
-  public static String errorServerDirUnderRoot;
-  public static String errorDeployDirNotSpecified;
   public static String serverEditorBrowseConfMessage;
-  public static String serverEditorBrowseDeployMessage;
   public static String configurationEditorWebModuleDialogTitleEdit;
   public static String configurationEditorWebModuleDialogTitleAdd;
   public static String configurationEditorWebModuleDialogProjects;
@@ -72,12 +66,14 @@ public class Messages extends NLS {
   public static String configurationEditorWebModuleDialogSelectDirectory;
   public static String configurationEditorWebModuleDialogPath;
   public static String configurationEditorWebModuleDialogReloadEnabled;
+
   public static String confirmCleanWorkDirTitle;
   public static String cleanServerStateChanging;
   public static String cleanModuleWorkDir;
   public static String cleanServerWorkDir;
   public static String cleanServerRunning;
   public static String cleanServerTask;
+
   public static String errorCouldNotCleanStateChange;
   public static String errorCouldNotCleanCantStop;
   public static String errorCouldNotCleanStopFailed;
@@ -86,7 +82,7 @@ public class Messages extends NLS {
   public static String errorErrorDuringClean;
   public static String errorErrorDuringCleanWasRunning;
   public static String errorCleanCantRestart;
-  public static String contextCleanup;
+
   public static String cleanTerminateServerDialogTitle;
   public static String cleanTerminateServerDialogMessage;
 

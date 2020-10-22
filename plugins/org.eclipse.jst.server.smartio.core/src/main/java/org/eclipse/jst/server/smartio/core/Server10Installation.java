@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
+import org.eclipse.jst.server.smartio.core.command.AddModuleCommand;
 import org.eclipse.jst.server.smartio.core.util.FileUtil;
 import org.eclipse.jst.server.smartio.core.util.VersionHelper;
 import org.eclipse.wst.server.core.IModule;
@@ -66,8 +67,11 @@ class Server10Installation implements IServerInstallation {
   @Override
   public final String[] getRuntimeVMArguments(IPath installPath, IPath configPath, IPath deployPath, IFolder config) {
     VMArgsBuilder args = new VMArgsBuilder();
+    args.add("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
     args.addPath(VMArgsBuilder.SMARTIO_USER, ServerTools.getRelativePath(installPath, configPath));
     args.addPath(VMArgsBuilder.SMARTIO_CONF, config.getLocation());
+
+    args.addPath(VMArgsBuilder.USER_DIR, config.getLocation());
 
     args.addOpens("java.base/java.lang");
     args.addOpens("java.rmi/sun.rmi.transport");
