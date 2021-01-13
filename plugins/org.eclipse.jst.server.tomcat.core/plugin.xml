@@ -149,6 +149,20 @@
          types="jst.utility"
          versions="1.0"/>
     </runtimeType>
+    <runtimeType
+       id="org.eclipse.jst.server.tomcat.runtime.100"
+       name="%runtimeTypeTomcat100Label"
+       description="%runtimeTypeTomcat100Description"
+       vendor="%apache"
+       version="10.0"
+       class="org.eclipse.jst.server.tomcat.core.internal.TomcatRuntime">
+       <moduleType
+         types="jst.web"
+         versions="2.2, 2.3, 2.4, 2.5, 3.0, 3.1, 4.0"/>
+       <moduleType
+         types="jst.utility"
+         versions="1.0"/>
+    </runtimeType>
   </extension>
 
   <extension point="org.eclipse.wst.server.core.runtimeLocators">
@@ -316,6 +330,21 @@
        class="org.eclipse.jst.server.tomcat.core.internal.TomcatServer"
        behaviourClass="org.eclipse.jst.server.tomcat.core.internal.TomcatServerBehaviour">
      </serverType>
+     <serverType
+       id="org.eclipse.jst.server.tomcat.100"
+       name="%tomcat100ServerType"
+       description="%tomcat100ServerDescription"
+       supportsRemoteHosts="false"
+       runtime="true"
+       startTimeout="45000"
+       stopTimeout="15000"
+       initialState="stopped"
+       hasConfiguration="true"
+       launchConfigId="org.eclipse.jst.server.tomcat.core.launchConfigurationType"
+       runtimeTypeId="org.eclipse.jst.server.tomcat.runtime.100"
+       class="org.eclipse.jst.server.tomcat.core.internal.TomcatServer"
+       behaviourClass="org.eclipse.jst.server.tomcat.core.internal.TomcatServerBehaviour">
+     </serverType>
   </extension>
 
   <extension point="org.eclipse.wst.server.core.serverLocators">
@@ -398,6 +427,10 @@
     <runtime-component-version
        type="org.eclipse.jst.server.tomcat"
        version="9.0"/>
+
+    <runtime-component-version
+       type="org.eclipse.jst.server.tomcat"
+       version="10.0"/>
 
     <adapter>
       <runtime-component
@@ -539,6 +572,21 @@
          id="jst.utility"
          version="1.0"/>
     </supported>
+
+    <supported>
+      <runtime-component
+         id="org.eclipse.jst.server.tomcat"
+         version="10.0"/>
+      <facet
+         id="jst.web"
+         version="2.2,2.3,2.4,2.5,3.0,3.1,4.0"/>
+      <facet
+         id="jst.webfragment"
+         version="3.0,3.1,4.0"/>
+      <facet
+         id="jst.utility"
+         version="1.0"/>
+    </supported>
   </extension>
   
   <extension point="org.eclipse.wst.common.project.facet.core.defaultFacets">
@@ -589,6 +637,10 @@
       runtimeTypeId="org.eclipse.jst.server.tomcat.runtime.90"
       runtime-component="org.eclipse.jst.server.tomcat"
       version="9.0"/>
+    <runtimeFacetMapping
+      runtimeTypeId="org.eclipse.jst.server.tomcat.runtime.100"
+      runtime-component="org.eclipse.jst.server.tomcat"
+      version="10.0"/>
   </extension>
 
   <extension point="org.eclipse.wst.server.core.installableRuntimes">
@@ -603,7 +655,7 @@
       licenseUrl="http://www.apache.org/licenses/LICENSE-1.1"
       archiveUrl="http://archive.apache.org/dist/tomcat/tomcat-3/archive/v3.2.4/bin/jakarta-tomcat-3.2.4.tar.gz"
       archivePath="jakarta-tomcat-3.2.4"
-      os="linux"/>
+      os="linux,macosx"/>
     <runtime
       id="org.eclipse.jst.server.tomcat.runtime.40"
       licenseUrl="http://www.apache.org/licenses/LICENSE-1.1"
@@ -615,7 +667,7 @@
       licenseUrl="http://www.apache.org/licenses/LICENSE-1.1"
       archiveUrl="http://archive.apache.org/dist/tomcat/tomcat-4/archive/v4.0.6/bin/jakarta-tomcat-4.0.6.tar.gz"
       archivePath="jakarta-tomcat-4.0.6"
-      os="linux"/>
+      os="linux,macosx"/>
     <runtime
         id="org.eclipse.jst.server.tomcat.runtime.41"
         licenseUrl="http://www.apache.org/licenses/LICENSE-2.0.txt"
@@ -631,7 +683,7 @@
         archivePath="apache-tomcat-4.1.40"
         archiveSize="9358737"
         fileCount="1425"
-        os="linux"/>
+        os="linux,macosx"/>
     <runtime
       id="org.eclipse.jst.server.tomcat.runtime.50"
       licenseUrl="http://www.apache.org/licenses/LICENSE-2.0.txt"
@@ -643,7 +695,7 @@
       licenseUrl="http://www.apache.org/licenses/LICENSE-2.0.txt"
       archiveUrl="http://archive.apache.org/dist/tomcat/tomcat-5/v5.0.28/bin/jakarta-tomcat-5.0.28.tar.gz"
       archivePath="jakarta-tomcat-5.0.28"
-      os="linux"/>
+      os="linux,macosx"/>
     <runtime
         id="org.eclipse.jst.server.tomcat.runtime.55"
         licenseUrl="http://www.apache.org/licenses/LICENSE-2.0.txt"
@@ -659,7 +711,7 @@
         archivePath="apache-tomcat-5.5.33"
         archiveSize="8205713"
         fileCount="840"
-        os="linux"/>
+        os="linux,macosx"/>
     <runtime
         id="org.eclipse.jst.server.tomcat.runtime.60"
         licenseUrl="http://www.apache.org/licenses/LICENSE-2.0.txt"
@@ -675,7 +727,7 @@
         archivePath="apache-tomcat-6.0.37"
         archiveSize="6885442"
         fileCount="492"
-        os="linux"/>
+        os="linux,macosx"/>
     <runtime
         id="org.eclipse.jst.server.tomcat.runtime.70"
         licenseUrl="http://www.apache.org/licenses/LICENSE-2.0.txt"
@@ -691,7 +743,7 @@
         archivePath="apache-tomcat-7.0.47"
         archiveSize="8234674"
         fileCount="629"
-        os="linux"/>
+        os="linux,macosx"/>
     <runtime
         id="org.eclipse.jst.server.tomcat.runtime.80"
         licenseUrl="http://www.apache.org/licenses/LICENSE-2.0.txt"
@@ -703,10 +755,43 @@
     <runtime
         id="org.eclipse.jst.server.tomcat.runtime.80"
         licenseUrl="http://www.apache.org/licenses/LICENSE-2.0.txt"
-        archiveUrl="http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.36/bin/apache-tomcat-8.0.36.tar.gz"
-        archivePath="apache-tomcat-8.0.36"
-        archiveSize="9277365"
-        fileCount="641"
-        os="linux"/>
+        archiveUrl="http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.53/bin/apache-tomcat-8.0.53.tar.gz"
+        archivePath="apache-tomcat-8.0.53"
+        archiveSize="9455895"
+        fileCount="643"
+        os="linux,macosx"/>
+    <runtime
+        id="org.eclipse.jst.server.tomcat.runtime.85"
+        licenseUrl="http://www.apache.org/licenses/LICENSE-2.0.txt"
+        archiveUrl="http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.61/bin/apache-tomcat-8.5.61.tar.gz"
+        archivePath="apache-tomcat-8.5.61"
+        archiveSize="10492067"
+        fileCount="625"
+        os="linux,macosx"/>
+    <runtime
+        id="org.eclipse.jst.server.tomcat.runtime.85"
+        licenseUrl="http://www.apache.org/licenses/LICENSE-2.0.txt"
+        archiveUrl="http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.61/bin/apache-tomcat-8.5.61-windows-x86.zip"
+        archivePath="apache-tomcat-8.5.61"
+        archiveSize="11538389"
+        fileCount="627"
+        os="win32"/>
+    <runtime
+        id="org.eclipse.jst.server.tomcat.runtime.90"
+        licenseUrl="http://www.apache.org/licenses/LICENSE-2.0.txt"
+        archiveUrl="http://archive.apache.org/dist/tomcat/tomcat-9/v9.0.41/bin/apache-tomcat-9.0.41.tar.gz"
+        archivePath="apache-tomcat-9.0.41"
+        archiveSize="11442169"
+        fileCount="639"
+        os="linux,macosx"/>
+    <runtime
+        id="org.eclipse.jst.server.tomcat.runtime.90"
+        licenseUrl="http://www.apache.org/licenses/LICENSE-2.0.txt"
+        archiveUrl="http://archive.apache.org/dist/tomcat/tomcat-9/v9.0.41/bin/apache-tomcat-9.0.41.zip"
+        archivePath="apache-tomcat-9.0.41"
+        archiveSize="11983597"
+        fileCount="639"
+        os="win32"/>
+
   </extension>
 </plugin>
