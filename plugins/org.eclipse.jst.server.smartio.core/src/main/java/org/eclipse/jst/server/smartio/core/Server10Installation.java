@@ -15,7 +15,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.launching.IRuntimeClasspathEntry;
-import org.eclipse.jst.server.smartio.core.command.AddModuleCommand;
 import org.eclipse.jst.server.smartio.core.util.FileUtil;
 import org.eclipse.jst.server.smartio.core.util.VersionHelper;
 import org.eclipse.wst.server.core.IModule;

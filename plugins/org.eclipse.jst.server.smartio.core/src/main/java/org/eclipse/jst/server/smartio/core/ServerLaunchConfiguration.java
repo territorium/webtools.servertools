@@ -40,8 +40,6 @@ import java.util.List;
  */
 public class ServerLaunchConfiguration extends AbstractJavaLaunchConfigurationDelegate {
 
-  private IVMInstall vm;
-
   /**
    * Constructs an instance of {@link ServerLaunchConfiguration}.
    */
@@ -72,12 +70,9 @@ public class ServerLaunchConfiguration extends AbstractJavaLaunchConfigurationDe
     }
 
     ServerBehaviour behavior = (ServerBehaviour) server.loadAdapter(ServerBehaviour.class, null);
-
-    if (vm == null) {
-      IVMInstallType installType = new StandardVMType();
-      vm = installType.createVMInstall("smart.IO VM");
-      vm.setInstallLocation(behavior.getServerRuntime().getRuntime().getLocation().toFile());
-    }
+    IVMInstallType installType = new StandardVMType();
+    IVMInstall vm = installType.createVMInstall("smart.IO VM");
+    vm.setInstallLocation(behavior.getServerRuntime().getRuntime().getLocation().toFile());
 
     IVMRunner runner = vm.getVMRunner(mode);
     if (runner == null) {
