@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.jst.server_smartio.feature"
       label="smart.IO Plugin"
-      version="1.0.19.qualifier"
+      version="1.0.21.qualifier"
       provider-name="TOL GmbH">
 
    <description url="https://www.smartio.info/">
@@ -675,6 +675,32 @@ if any, to sign a &quot;copyright disclaimer&quot; for the program, if necessary
 For more information on this, and how to apply and follow the GNU AGPL, see
 &lt;https://www.gnu.org/licenses/&gt;.license document, but changing it is not allowed.
    </license>
+
+   <requires>
+      <import plugin="org.eclipse.core.runtime" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.core.resources" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.core.commands" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.debug.core" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.jdt.core" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.jdt.launching" version="3.10.0" match="compatible"/>
+      <import plugin="org.eclipse.wst.server.core" version="1.0.204" match="compatible"/>
+      <import plugin="org.eclipse.jst.server.core" version="1.0.103" match="compatible"/>
+      <import plugin="org.eclipse.jst.common.project.facet.core" version="1.1.0" match="compatible"/>
+      <import plugin="org.eclipse.wst.common.modulecore" version="1.1.0" match="compatible"/>
+      <import plugin="org.eclipse.emf.common" version="2.2.0" match="compatible"/>
+      <import plugin="org.eclipse.wst.common.project.facet.core" version="1.1.0" match="compatible"/>
+      <import plugin="org.eclipse.core.expressions" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.ui" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.ui.ide" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.ui.forms" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.debug.ui" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.jdt.debug.ui" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.jdt.launching" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.wst.server.ui" version="1.0.204" match="compatible"/>
+      <import plugin="org.eclipse.jst.server.ui" version="1.0.103" match="compatible"/>
+      <import plugin="org.eclipse.jst.server.smartio.core" version="1.0.0" match="compatible"/>
+      <import plugin="org.eclipse.wst.common.project.facet.ui" version="1.1.0" match="compatible"/>
+   </requires>
 
    <plugin
          id="org.eclipse.jst.server.smartio.core"

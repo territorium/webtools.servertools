@@ -35,17 +35,11 @@ public class VersionHelper {
   /**
    * Map of server type ID to expected version string fragment for version checking.
    */
-  private static final Map<String, String> versionStringMap    = new HashMap<>();
   private static final Map<IPath, String>  versionPath         = new ConcurrentHashMap<>();
   private static final Map<IPath, Long>    versionLastModified = new ConcurrentHashMap<>();
 
 
   private static volatile long lastCheck = 0;
-
-  static {
-    VersionHelper.versionStringMap.put(ServerPlugin.SERVER_10, "19.");
-    VersionHelper.versionStringMap.put(ServerPlugin.SERVER_10, "20.");
-  }
 
   /**
    * Checks if the version of Tomcat installed at the specified location matches the specified
@@ -102,11 +96,11 @@ public class VersionHelper {
       if (serverVersion != null) {
         // If we have an actual version, test the version
         if (serverVersion.length() > 0) {
-          String versionTest = VersionHelper.versionStringMap.get(serverType);
-          if ((versionTest != null) && !serverVersion.startsWith(versionTest)) {
-            return new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, NLS.bind(Messages.errorInstallDirWrongVersion2,
-                serverVersion, versionTest.substring(0, versionTest.length() - 1)));
-          }
+//          String versionTest = VersionHelper.versionStringMap.get(serverType);
+//          if ((versionTest != null) && !serverVersion.startsWith(versionTest)) {
+//            return new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, NLS.bind(Messages.errorInstallDirWrongVersion2,
+//                serverVersion, versionTest.substring(0, versionTest.length() - 1)));
+//          }
         }
         // Else we have an unknown version
         else {
