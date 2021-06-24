@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2015 IBM Corporation and others.
+ * Copyright (c) 2007, 2021 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -12,15 +12,9 @@
  *******************************************************************************/
 package org.eclipse.wst.server.core.internal;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -121,7 +115,13 @@ public class InstallableRuntime2 implements IInstallableRuntime {
 				return null;
 			
 			url = new URL(licenseURL);
-			InputStream in = url.openStream();
+			URLConnection connection = url.openConnection();
+			String possibleNewURL = connection.getHeaderField("Location");
+			while (possibleNewURL != null) {
+				connection = new URL(possibleNewURL).openConnection();
+				possibleNewURL = connection.getHeaderField("Location");
+			}
+			InputStream in = connection.getInputStream();
 			out = new ByteArrayOutputStream();
 			copyWithSize(in, out, null, 0);
 			return new String(out.toByteArray());
@@ -319,11 +319,6 @@ public class InstallableRuntime2 implements IInstallableRuntime {
 		while (entry != null) {
 			String name = entry.getName();
 			progress.subTask(NLS.bind(Messages.taskUncompressing, name));
-			if (archivePath != null && name.startsWith(archivePath)) {
-				name = name.substring(archivePath.length());
-				if (name.length() > 1)
-					name = name.substring(1);
-			}
 			
 			if (name != null && name.length() > 0) {
 				if (entry.isDirectory())
@@ -361,11 +356,6 @@ public class InstallableRuntime2 implements IInstallableRuntime {
 		while (entry != null) {
 			String name = entry.getName();
 			progress.subTask(NLS.bind(Messages.taskUncompressing, name));
-			if (archivePath != null && name.startsWith(archivePath)) {
-				name = name.substring(archivePath.length());
-				if (name.length() > 1)
-					name = name.substring(1);
-			}
 			
 			if (name != null && name.length() > 0) {
 				if (entry.getFileType() == TarEntry.DIRECTORY)
