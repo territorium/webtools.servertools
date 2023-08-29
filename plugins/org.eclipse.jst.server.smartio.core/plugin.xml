@@ -122,14 +122,14 @@
     <runtime
         id="org.eclipse.jst.server.smartio.runtime.10"
         licenseUrl="https://www.gnu.org/licenses/agpl-3.0.txt"
-        archiveUrl="https://downloads.tol.info/io/smartIO-Server-Win64-19.07.6.tar.zip"
+        archiveUrl="https://downloads.tol.info/io/smartIO-Server-Win64-23.10.tar.zip"
         fileCount="645"
         os="win32"/>
     <runtime
         id="org.eclipse.jst.server.smartio.runtime.10"
         licenseUrl="https://www.gnu.org/licenses/agpl-3.0.txt"
-        archiveUrl="https://downloads.tol.info/io/smartIO-Server-Linux-19.07.6.tar.gz"
-        archivePath="smartio-server-19.09"
+        archiveUrl="https://downloads.tol.info/io/smartIO-Server-Linux-23.10.tar.gz"
+        archivePath="smartio-server-23.10"
         os="linux"/>
   </extension>
 </plugin>

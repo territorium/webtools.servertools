@@ -31,6 +31,7 @@ public interface IServerWrapper extends IURLProvider {
 
   // Property which specifies contexts should be reloadable by default.
   public static final String PROPERTY_MODULES_RELOADABLE = "modulesReloadable";
+  public static final String PROPERTY_ENABLED_EXTENSIONS = "enabledExtensions";
 
   /**
    * Gets the directory to which web applications are to be deployed. If relative, it is relative to
@@ -44,12 +45,25 @@ public interface IServerWrapper extends IURLProvider {
    * Gets the directory to which web applications are to be deployed. If relative, it is relative to
    * the runtime base directory for the server.
    */
+  public boolean isNoLogin();
+
+  public void setNoLogin(boolean value);
+
+  /**
+   * Gets the directory to which web applications are to be deployed. If relative, it is relative to
+   * the runtime base directory for the server.
+   */
   public String getDeployDirectory();
 
   /**
    * Returns true if contexts should be made reloadable by default.
    */
   public boolean isModulesReloadable();
+
+  /**
+   * Returns true if contexts should be made reloadable by default.
+   */
+  public boolean enabledExtensions();
 
   /**
    * Get the related {@link IServer}.

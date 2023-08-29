@@ -69,7 +69,6 @@ class Server10Installation implements IServerInstallation {
     args.add("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
     args.addPath(VMArgsBuilder.SMARTIO_USER, ServerTools.getRelativePath(installPath, configPath));
     args.addPath(VMArgsBuilder.SMARTIO_CONF, config.getLocation());
-
     args.addPath(VMArgsBuilder.USER_DIR, config.getLocation());
 
     args.addOpens("java.base/java.lang");

@@ -57,6 +57,7 @@ public class Messages extends NLS {
 
   public static String projectConfDir;
   public static String serverEditorReloadableByDefault;
+  public static String serverEnableNologinByDefault;
   public static String errorServerDirIsRoot;
   public static String serverEditorBrowseConfMessage;
   public static String configurationEditorWebModuleDialogTitleEdit;

@@ -50,9 +50,11 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Generic {@link ServerBehaviour} server.
@@ -110,17 +112,21 @@ public class ServerBehaviour extends ServerBehaviourDelegate {
    * @param starting true if starting
    * @return an array of runtime program arguments
    */
-  private String[] getRuntimeProgramArguments(boolean starting) {
+  private String[] getRuntimeProgramArguments(boolean starting, Set<String> extensions) {
+    int offset = 1 + (extensions.isEmpty() ? 0 : 1);
     String args[] = getHandler().getRuntimeProgramArguments(null, starting);
-    String programArgs[] = new String[args.length + 1];
+    String programArgs[] = new String[args.length + offset];
     try {
       ServerPort port = getConfig().getShutdownPort();
       programArgs[0] = "--shutdown " + (port == null ? 8005 : port.getPort());
     } catch (CoreException e) {
       programArgs[0] = "--shutdown 8005";
     }
+    if (offset > 1) {
+      programArgs[1] = "--enable " + String.join(",", extensions);
+    }
     for (int i = 0; i < args.length; i++) {
-      programArgs[i + 1] = args[i];
+      programArgs[i + offset] = args[i];
     }
     return programArgs;
   }
@@ -320,7 +326,7 @@ public class ServerBehaviour extends ServerBehaviourDelegate {
       ILaunchConfiguration launchConfig = getServer().getLaunchConfiguration(true, null);
       ILaunchConfigurationWorkingCopy wc = launchConfig.getWorkingCopy();
 
-      String args = ServerTools.renderCommandLine(getRuntimeProgramArguments(false), " ");
+      String args = ServerTools.renderCommandLine(getRuntimeProgramArguments(false, Collections.emptySet()), " ");
       wc.setAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, args);
       wc.setAttribute("org.eclipse.debug.ui.private", true);
       wc.setAttribute(ServerBehaviour.SHUTDOWN, "true");
@@ -358,7 +364,8 @@ public class ServerBehaviour extends ServerBehaviourDelegate {
       throws CoreException {
     String existingProgArgs =
         workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, (String) null);
-    String mergedProgArgs = ServerTools.mergeArguments(existingProgArgs, getRuntimeProgramArguments(true));
+    String mergedProgArgs =
+        ServerTools.mergeArguments(existingProgArgs, getRuntimeProgramArguments(true, getEnabledExtensions()));
 
     String existingVMArgs =
         workingCopy.getAttribute(IJavaLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, (String) null);
@@ -501,6 +508,13 @@ public class ServerBehaviour extends ServerBehaviourDelegate {
           new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, "Could not determine work directory for module", null);
     }
     return result;
+  }
+
+  /**
+   * Gets the directory to which modules should be deployed for this server.
+   */
+  public final Set<String> getEnabledExtensions() {
+    return getWrapper().enabledExtensions() ? Collections.singleton("NOLOGIN") : Collections.emptySet();
   }
 
   /**

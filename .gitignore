@@ -18,3 +18,13 @@ desktop.ini
 *.stackdump
 
 *.jar
+
+.settings/org.eclipse.m2e.core.prefs
+
+features/.settings/org.eclipse.m2e.core.prefs
+
+features/.project
+
+site-integration/.settings/org.eclipse.m2e.core.prefs
+
+.project

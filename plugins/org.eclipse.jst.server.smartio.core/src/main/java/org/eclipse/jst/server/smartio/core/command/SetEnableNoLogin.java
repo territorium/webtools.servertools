@@ -16,20 +16,20 @@ import org.eclipse.jst.server.smartio.core.Messages;
 /**
  * Command to change the server security option.
  */
-public class SetDeployPathCommand extends ServerCommand {
+public class SetEnableNoLogin extends ServerCommand {
 
-  // private final String newDirectory;
-  // private String oldDirectory;
+  private final boolean newValue;
+  private boolean       oldValue;
 
   /**
    * SetSecureCommand constructor comment.
    *
    * @param server
-   * @param directory
+   * @param value
    */
-  public SetDeployPathCommand(IServerWrapper server, String directory) {
+  public SetEnableNoLogin(IServerWrapper server, boolean value) {
     super(server, Messages.serverEditorActionSetSecure);
-    // newDirectory = directory;
+    newValue = value;
   }
 
   /**
@@ -37,8 +37,8 @@ public class SetDeployPathCommand extends ServerCommand {
    */
   @Override
   public void execute() {
-    // oldDirectory = server.getDeployDirectory();
-    // server.setDeployDirectory(newDirectory);
+    oldValue = server.isNoLogin();
+    server.setNoLogin(newValue);
   }
 
   /**
@@ -46,6 +46,6 @@ public class SetDeployPathCommand extends ServerCommand {
    */
   @Override
   public void undo() {
-    // server.setDeployDirectory(oldDirectory);
+    server.setNoLogin(oldValue);
   }
 }

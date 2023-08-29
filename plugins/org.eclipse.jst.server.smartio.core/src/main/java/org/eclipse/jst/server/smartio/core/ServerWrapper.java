@@ -376,6 +376,13 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
     return (handler == null) ? true : getAttribute(IServerWrapper.PROPERTY_MODULES_RELOADABLE, true);
   }
 
+  @Override
+  public final boolean enabledExtensions() {
+    // If feature is supported, return current setting
+    IServerInstallation handler = getHandler();
+    return (handler == null) ? true : getAttribute(IServerWrapper.PROPERTY_ENABLED_EXTENSIONS, true);
+  }
+
   /**
    * Get the location of the web-app deploy directory.
    */
@@ -394,6 +401,22 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
     setAttribute(IServerWrapper.PROPERTY_CONF_DIR, directory);
   }
 
+  /*
+   * @see org.eclipse.jst.server.smartio.core.IServerWrapper#isNoLogin()
+   */
+  @Override
+  public boolean isNoLogin() {
+    return getAttribute(IServerWrapper.PROPERTY_ENABLED_EXTENSIONS, true);
+  }
+
+  /*
+   * @see org.eclipse.jst.server.smartio.core.IServerWrapper#setNoLogin(boolean)
+   */
+  @Override
+  public void setNoLogin(boolean value) {
+    setAttribute(IServerWrapper.PROPERTY_ENABLED_EXTENSIONS, value);
+  }
+
   /**
    * Get the location of the web-app deploy directory.
    */
@@ -401,16 +424,6 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
   public final String getDeployDirectory() {
     return "webapps";// getAttribute(IServerWrapper.PROPERTY_DEPLOY_DIR, "webapps");
   }
-
-  // /**
-  // * Sets this process to secure mode.
-  // *
-  // * @param bool
-  // */
-  // @Override
-  // public final void setDeployDirectory(String directory) {
-  // setAttribute(IServerWrapper.PROPERTY_DEPLOY_DIR, directory);
-  // }
 
   /**
    * Return a string representation of this object.

@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jst.server.smartio.core.IServerWrapper;
 import org.eclipse.jst.server.smartio.core.ServerTools;
 import org.eclipse.jst.server.smartio.core.command.SetConfigPathCommand;
+import org.eclipse.jst.server.smartio.core.command.SetEnableNoLogin;
 import org.eclipse.jst.server.smartio.ui.ContextIds;
 import org.eclipse.jst.server.smartio.ui.Messages;
 import org.eclipse.jst.server.smartio.ui.ServerUIPlugin;
@@ -52,12 +53,13 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
   private PropertyChangeListener listener;
 
   private Button                 reloadable;
+  private Button                 nologin;
 
   private Text                   confDir;
   private Button                 confDirBrowse;
 
-//  private Text                   deployDir;
-//  private Button                 deployDirBrowse;
+  // private Text deployDir;
+  // private Button deployDirBrowse;
 
   /**
    * Add listeners to detect undo changes and publishing of the server.
@@ -75,13 +77,16 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
           String s = (String) event.getNewValue();
           confDir.setText(s);
           validate();
-//        } else if (IServerWrapper.PROPERTY_DEPLOY_DIR.equals(event.getPropertyName())) {
-//          String s = (String) event.getNewValue();
-//          deployDir.setText(s);
-//          validate();
+          // } else if (IServerWrapper.PROPERTY_DEPLOY_DIR.equals(event.getPropertyName())) {
+          // String s = (String) event.getNewValue();
+          // deployDir.setText(s);
+          // validate();
         } else if (IServerWrapper.PROPERTY_MODULES_RELOADABLE.equals(event.getPropertyName())) {
           Boolean b = (Boolean) event.getNewValue();
           reloadable.setSelection(b.booleanValue());
+        } else if (IServerWrapper.PROPERTY_ENABLED_EXTENSIONS.equals(event.getPropertyName())) {
+          Boolean b = (Boolean) event.getNewValue();
+          nologin.setSelection(b.booleanValue());
         }
         updating = false;
       }
@@ -137,6 +142,25 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
       }
     });
 
+
+    // extension no login
+    nologin = toolkit.createButton(composite, NLS.bind(Messages.serverEnableNologinByDefault, ""), SWT.CHECK);
+    data = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+    data.horizontalSpan = 3;
+    nologin.setLayoutData(data);
+    nologin.addSelectionListener(new SelectionAdapter() {
+
+      @Override
+      public void widgetSelected(SelectionEvent se) {
+        if (updating) {
+          return;
+        }
+        updating = true;
+        execute(new SetEnableNoLogin(wrapper, nologin.getSelection()));
+        updating = false;
+      }
+    });
+
     // configuration directory
     Label label = createLabel(toolkit, composite, Messages.projectConfDir);
     data = new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
@@ -168,43 +192,6 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
       }
     });
     confDirBrowse.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-
-    // configuration directory
-//    label =
-//
-//        createLabel(toolkit, composite, Messages.serverEditorDeployDir);
-//    data = new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
-//    label.setLayoutData(data);
-
-//    deployDir = toolkit.createText(composite, null);
-//    deployDir.setEditable(false);
-//    data = new GridData(SWT.FILL, SWT.CENTER, true, false);
-//    deployDir.setLayoutData(data);
-//
-//    deployDirBrowse = toolkit.createButton(composite, Messages.editorBrowse, SWT.PUSH);
-//    deployDirBrowse.addSelectionListener(new SelectionAdapter() {
-//
-//      @Override
-//      public void widgetSelected(SelectionEvent se) {
-//        DirectoryDialog dialog = new DirectoryDialog(deployDir.getShell());
-//        dialog.setMessage(Messages.serverEditorBrowseConfMessage);
-//        dialog.setFilterPath(
-//            ServerTools.getAbsolutePath(wrapper.getRuntimeBaseDirectory(), deployDir.getText()).toOSString());
-//
-//        String selectedDirectory = ServerTools.getRelativePath(wrapper.getRuntimeBaseDirectory(), dialog.open());
-//        if ((selectedDirectory != null) && !selectedDirectory.equals(deployDir.getText())) {
-//          updating = true;
-//          deployDir.setText(selectedDirectory);
-//          // ServerGeneralEditorSection.this.wrapper.setConfDirectory(selectedDirectory);
-//          execute(new SetDeployPathCommand(wrapper, selectedDirectory));
-//          updating = false;
-//          validate();
-//        }
-//      }
-//    });
-//
-//    deployDirBrowse.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-
     initialize();
   }
 
@@ -248,8 +235,11 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
 
     reloadable.setText(Messages.serverEditorReloadableByDefault);
     reloadable.setSelection(wrapper.isModulesReloadable());
+
+    nologin.setText(Messages.serverEnableNologinByDefault);
+    nologin.setSelection(wrapper.enabledExtensions());
+
     confDir.setText(wrapper.getConfDirectory());
-//    deployDir.setText(wrapper.getDeployDirectory());
 
     updating = false;
     validate();
