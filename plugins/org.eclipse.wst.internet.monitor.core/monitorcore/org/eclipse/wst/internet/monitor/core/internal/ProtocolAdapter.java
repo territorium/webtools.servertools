@@ -1,12 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2011 IBM Corporation and others.
+ * Copyright (c) 2003, 2023 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
  * https://www.eclipse.org/legal/epl-2.0/
  *
  * SPDX-License-Identifier: EPL-2.0
- * 
+ *
  * Contributors:
  *     IBM Corporation - Initial API and implementation
  *******************************************************************************/
@@ -14,10 +14,11 @@ package org.eclipse.wst.internet.monitor.core.internal;
 
 import java.io.IOException;
 import java.net.Socket;
+
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.wst.internet.monitor.core.internal.provisional.IMonitor;
 /**
- * 
+ *
  */
 public class ProtocolAdapter implements IProtocolAdapter {
 	protected IConfigurationElement element;
@@ -44,7 +45,7 @@ public class ProtocolAdapter implements IProtocolAdapter {
 	protected ProtocolAdapterDelegate getDelegate() {
 		if (delegate != null)
 			return delegate;
-		
+
 		try {
 			delegate = (ProtocolAdapterDelegate) element.createExecutableExtension("class");
 		} catch (Exception e) {
@@ -57,7 +58,7 @@ public class ProtocolAdapter implements IProtocolAdapter {
 
 	/**
 	 * Connect with the protocol.
-	 * 
+	 *
 	 * @param monitor a monitor
 	 * @param in an inbound socket
 	 * @param out an outbound socket
@@ -69,11 +70,15 @@ public class ProtocolAdapter implements IProtocolAdapter {
 
 	/**
 	 * Disconnect from the sockets.
-	 * 
+	 *
 	 * @param monitor a monitor
 	 * @throws IOException
 	 */
 	public void disconnect(IMonitor monitor) throws IOException {
 		getDelegate().disconnect(monitor);
+	}
+
+	public Socket createRemoteSocket() throws IOException {
+		return getDelegate().createRemoteSocket();
 	}
 }

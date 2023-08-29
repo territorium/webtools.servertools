@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2020 IBM Corporation and others.
+ * Copyright (c) 2005, 2022 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -37,6 +37,7 @@ public class Messages extends NLS {
 	public static String errorJRETomcat85;
 	public static String errorJRETomcat90;
 	public static String errorJRETomcat100;
+	public static String errorJRETomcat101;
 	public static String warningJRE;
 	public static String warningCantReadConfig;
 	public static String target32runtime;
@@ -47,6 +48,7 @@ public class Messages extends NLS {
 	public static String portUnknown;
 	public static String loadingTask;
 	public static String errorCouldNotLoadConfiguration;
+	public static String errorCouldNotLoadConfigurationMissingFile;
 	public static String savingTask;
 	public static String errorPublish;
 	public static String errorCouldNotSaveConfiguration;
@@ -63,6 +65,7 @@ public class Messages extends NLS {
 	public static String errorSpec85;
 	public static String errorSpec90;
 	public static String errorSpec100;
+	public static String errorSpec101;
 	public static String portServer;
 	public static String runtimeDirPrepared;
 	public static String publishConfigurationTask;

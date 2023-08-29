@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2006 IBM Corporation and others.
+ * Copyright (c) 2004, 2023 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -14,18 +14,19 @@ package org.eclipse.wst.internet.monitor.core.internal;
 
 import java.io.IOException;
 import java.net.Socket;
+
 import org.eclipse.wst.internet.monitor.core.internal.provisional.IMonitor;
 /**
  * Abstract base class for protocol adapter delegates, which provide the
  * implementation behind a particular protocol adapter.
  * A protocol adapter watches the message traffic passing between client and
- * server; it parses the messages and reports them in the form of 
+ * server; it parses the messages and reports them in the form of
  * Request objects.
  * <p>
  * This abstract class is intended to be subclassed only by clients
  * to extend the <code>protocolAdapters</code> extension point.
  * The subclass must have a public 0-argument constructor, which will be used
- * automatically to instantiate the delegate when required. 
+ * automatically to instantiate the delegate when required.
  * </p>
  * <p>
  * There is only one delegate created per protocol, and this delegate must
@@ -67,7 +68,7 @@ public abstract class ProtocolAdapterDelegate {
 	 * afterwards.</li>
 	 * </ul>
 	 * </p>
-	 * 
+	 *
 	 * @param monitor the monitor that uses this protocol adapter
 	 * @param in the input socket of the monitor client
 	 * @param out the output socket of the monitor server
@@ -75,14 +76,18 @@ public abstract class ProtocolAdapterDelegate {
 	 *    input or output sockets
 	 */
 	public abstract void connect(IMonitor monitor, Socket in, Socket out) throws IOException;
-	
+
 	/**
 	 * Called if the monitor is changed or deleted, or the plugin is shutting down.
 	 * The delegate must clean up the connections and threads created to respond to
-	 * this monitor. 
-	 * 
+	 * this monitor.
+	 *
 	 * @param monitor
 	 * @throws IOException
 	 */
 	public abstract void disconnect(IMonitor monitor) throws IOException;
+
+	public Socket createRemoteSocket() throws IOException {
+		return new Socket();
+	}
 }

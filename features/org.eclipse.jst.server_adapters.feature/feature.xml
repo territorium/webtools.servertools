@@ -11,14 +11,13 @@
     Contributors:
         IBM Corporation - initial API and implementation
  -->
-
 <feature
       id="org.eclipse.jst.server_adapters.feature"
       label="%featureName"
-      version="3.2.700.qualifier"
+      version="3.31.0.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
-      license-feature-version="1.0.1.qualifier">
+      license-feature-version="0.0.0">
 
    <description>
       %description
@@ -31,6 +30,10 @@
    <license url="%licenseURL">
       %license
    </license>
+
+   <requires>
+      <import feature="org.eclipse.wst.server_adapters.feature"/>
+   </requires>
 
    <plugin
          id="org.eclipse.jst.server.preview.adapter"

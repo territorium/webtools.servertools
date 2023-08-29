@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright (c) 2007, 2019 IBM Corporation and others.
+    Copyright (c) 2007, 2023 IBM Corporation and others.
     This program and the accompanying materials
     are made available under the terms of the Eclipse Public License 2.0
     which accompanies this distribution, and is available at
@@ -15,10 +15,10 @@
 <feature
       id="org.eclipse.wst.server_adapters.feature"
       label="%featureName"
-      version="3.2.900.qualifier"
+      version="3.31.0.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
-      license-feature-version="1.0.1.qualifier">
+      license-feature-version="0.0.0">
 
    <description>
       %description
@@ -42,46 +42,13 @@
      <import plugin="org.eclipse.jetty.http"/>
      <import plugin="org.eclipse.jetty.io"/>
      <import plugin="org.eclipse.jetty.xml"/>
+     <import plugin="jakarta.transaction-api"/>
+     <import plugin="org.apache.aries.spifly.dynamic.bundle"/>
    </requires>
    -->
 
    <plugin
          id="org.eclipse.wst.server.preview.adapter"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="jakarta.enterprise.cdi-api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="jakarta.interceptor-api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="jakarta.transaction-api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.jetty.jndi"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.jetty.plus"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -102,7 +69,21 @@
          unpack="false"/>
 
    <plugin
-         id="org.slf4j.api"
+         id="jakarta.transaction-api"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="jakarta.enterprise.cdi-api"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="jakarta.interceptor-api"
          download-size="0"
          install-size="0"
          version="0.0.0"

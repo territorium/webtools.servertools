@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2020 IBM Corporation and others.
+ * Copyright (c) 2003, 2022 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -47,6 +47,7 @@ public class TomcatPlugin extends Plugin {
 	public static final String TOMCAT_85 = "org.eclipse.jst.server.tomcat.85";
 	public static final String TOMCAT_90 = "org.eclipse.jst.server.tomcat.90";
 	public static final String TOMCAT_100 = "org.eclipse.jst.server.tomcat.100";
+	public static final String TOMCAT_101 = "org.eclipse.jst.server.tomcat.101";
 
 	// Beyond 8.0, this verification approach is not effective and actually isn't currently used for 7.0 and beyond (see verifyInstallPath method).
 	protected static final String VERIFY_INSTALL_FILE = "verifyInstall.properties";
@@ -139,34 +140,36 @@ public class TomcatPlugin extends Plugin {
 	 * Return the Tomcat version handler.
 	 * 
 	 * @param id
-	 * @return a version handler
+	 * @return a version handler or <code>null</code> if the version strung is not understood
 	 */
 	public static ITomcatVersionHandler getTomcatVersionHandler(String id) {
 		if (id.indexOf("runtime") > 0)
 			id = id.substring(0, 30) + id.substring(38);
 		//id = id.substring(0, id.length() - 8);
-		if (TOMCAT_32.equals(id))
-			return new Tomcat32Handler();
-		else if (TOMCAT_40.equals(id))
-			return new Tomcat40Handler();
-		else if (TOMCAT_41.equals(id))
-			return new Tomcat41Handler();
-		else if (TOMCAT_50.equals(id))
-			return new Tomcat50Handler();
-		else if (TOMCAT_55.equals(id))
-			return new Tomcat55Handler();
-		else if (TOMCAT_60.equals(id))
-			return new Tomcat60Handler();
-		else if (TOMCAT_70.equals(id))
-			return new Tomcat70Handler();
-		else if (TOMCAT_80.equals(id))
-			return new Tomcat80Handler();
-		else if (TOMCAT_85.equals(id))
-			return new Tomcat85Handler();
-		else if (TOMCAT_90.equals(id))
-			return new Tomcat90Handler();
+		if (TOMCAT_101.equals(id))
+			return new Tomcat101Handler();
 		else if (TOMCAT_100.equals(id))
 			return new Tomcat100Handler();
+		else if (TOMCAT_90.equals(id))
+			return new Tomcat90Handler();
+		else if (TOMCAT_85.equals(id))
+			return new Tomcat85Handler();
+		else if (TOMCAT_80.equals(id))
+			return new Tomcat80Handler();
+		else if (TOMCAT_70.equals(id))
+			return new Tomcat70Handler();
+		else if (TOMCAT_60.equals(id))
+			return new Tomcat60Handler();
+		else if (TOMCAT_55.equals(id))
+			return new Tomcat55Handler();
+		else if (TOMCAT_50.equals(id))
+			return new Tomcat50Handler();
+		else if (TOMCAT_41.equals(id))
+			return new Tomcat41Handler();
+		else if (TOMCAT_40.equals(id))
+			return new Tomcat40Handler();
+		else if (TOMCAT_32.equals(id))
+			return new Tomcat32Handler();
 		else
 			return null;
 	}

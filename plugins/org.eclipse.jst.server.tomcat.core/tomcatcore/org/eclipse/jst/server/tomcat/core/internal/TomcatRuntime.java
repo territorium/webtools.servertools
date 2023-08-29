@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2020 IBM Corporation and others.
+ * Copyright (c) 2003, 2022 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ package org.eclipse.jst.server.tomcat.core.internal;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +94,11 @@ public class TomcatRuntime extends RuntimeDelegate implements ITomcatRuntime, IT
 				// Ignore if there is a problem
 			}
 		}
-		return getVersionHandler().getRuntimeClasspath(installPath, configPath);
+		ITomcatVersionHandler versionHandler = getVersionHandler();
+		if (versionHandler == null) {
+			return new ArrayList(0);
+		}
+		return versionHandler.getRuntimeClasspath(installPath, configPath);
 	}
 
 	/**
@@ -107,7 +112,11 @@ public class TomcatRuntime extends RuntimeDelegate implements ITomcatRuntime, IT
 	}
 	
 	private IStatus verifyLocation(IPath loc) {
-		return getVersionHandler().verifyInstallPath(loc);
+		ITomcatVersionHandler versionHandler = getVersionHandler();
+		if (versionHandler == null) {
+			return new Status(IStatus.ERROR, getClass(), "No version handler able to handle location " + loc.toString());
+		}
+		return versionHandler.verifyInstallPath(loc);
 	}
 	
 	/*
@@ -142,7 +151,7 @@ public class TomcatRuntime extends RuntimeDelegate implements ITomcatRuntime, IT
 		String id = getRuntime().getRuntimeType().getId();
 		if (!found) {
 			if (id != null && (id.indexOf("55") > 0 || id.indexOf("60") > 0 || id.indexOf("70") > 0 || id.indexOf("80") > 0
-					|| id.indexOf("85") > 0 || id.indexOf("90") > 0 || id.indexOf("100") > 0)) {
+					|| id.indexOf("85") > 0 || id.indexOf("90") > 0 || id.indexOf("100") > 0 || id.indexOf("101") > 0)) {
 				found = true;
 			}
 		}
@@ -228,6 +237,17 @@ public class TomcatRuntime extends RuntimeDelegate implements ITomcatRuntime, IT
 				String javaVersion = ((IVMInstall2)vmInstall).getJavaVersion();
 				if (javaVersion != null && !isVMMinimumVersion(javaVersion, 108)) {
 					return new Status(IStatus.ERROR, TomcatPlugin.PLUGIN_ID, 0, Messages.errorJRETomcat100, null);
+				}
+			}
+		}
+
+		// Else for Tomcat 10.1, ensure we have J2SE 8.0
+		else if (id != null && id.indexOf("101") > 0) {
+			IVMInstall vmInstall = getVMInstall();
+			if (vmInstall instanceof IVMInstall2) {
+				String javaVersion = ((IVMInstall2)vmInstall).getJavaVersion();
+				if (javaVersion != null && !isVMMinimumVersion(javaVersion, 1100)) {
+					return new Status(IStatus.ERROR, TomcatPlugin.PLUGIN_ID, 0, Messages.errorJRETomcat101, null);
 				}
 			}
 		}

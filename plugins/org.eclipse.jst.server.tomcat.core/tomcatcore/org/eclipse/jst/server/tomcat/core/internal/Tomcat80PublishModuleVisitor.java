@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) 2014 SAS Institute and others.
+ * Copyright (c) 2014, 2022 SAS Institute and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -27,7 +27,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jst.server.tomcat.core.internal.xml.server40.Context;
-import org.eclipse.jst.server.tomcat.core.internal.xml.server40.JarResources;
 import org.eclipse.jst.server.tomcat.core.internal.xml.server40.PostResources;
 import org.eclipse.jst.server.tomcat.core.internal.xml.server40.PreResources;
 import org.eclipse.jst.server.tomcat.core.internal.xml.server40.ServerInstance;
@@ -89,18 +88,18 @@ public class Tomcat80PublishModuleVisitor extends TomcatPublishModuleVisitor {
 		}
 		virtualClassClasspathElements.clear();
 
-		// Add Jars as JarResources if a jar, or as PostResources if a utility project
+		// Add Jars as PreResources if a jar, or as PostResources if a utility project
 		for (Iterator iterator = virtualJarClasspathElements.iterator();
 				iterator.hasNext();) {
 			Object virtualJarClassClasspathElement = iterator.next();
 			String jarPath = virtualJarClassClasspathElement.toString();
 			if (jarPath.endsWith(".jar")) {
-				JarResources jarResources = (JarResources)context.getResources().createElement("JarResources");
-				jarResources.setClassName("org.apache.catalina.webresources.JarResourceSet");
-				jarResources.setBase(jarPath);
-				jarResources.setWebAppMount("/WEB-INF/classes");
-				jarResources.setInternalPath("/");
-				jarResources.setClassLoaderOnly("true");
+				PreResources preResources = (PreResources)context.getResources().createElement("PreResources");
+				preResources.setClassName("org.apache.catalina.webresources.FileResourceSet");
+				preResources.setBase(jarPath);
+				preResources.setWebAppMount("/WEB-INF/lib/" + new File(jarPath).getName());
+				preResources.setInternalPath("/");
+				preResources.setClassLoaderOnly("false");
 			}
 			else {
 				PostResources postResources = (PostResources)context.getResources().createElement("PostResources");

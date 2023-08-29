@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2011 IBM Corporation and others.
+ * Copyright (c) 2003, 2023 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -29,8 +29,11 @@ public class AcceptThread {
 	protected Thread thread;
 
 	class ServerThread extends Thread {
-		public ServerThread() {
+		private ProtocolAdapter protocolAdapter;
+
+		public ServerThread(ProtocolAdapter protocolAdapter) {
 			super("TCP/IP Monitor");
+			this.protocolAdapter = protocolAdapter;
 		}
 
 		/**
@@ -52,24 +55,24 @@ public class AcceptThread {
 				}
 				return;
 			}
-			
+
 			while (alive) {
 				try {
 					// accept the connection from the client
 					Socket localSocket = serverSocket.accept();
-					
+
 					int timeout = monitor.getTimeout();
 					if (timeout != 0)
 						localSocket.setSoTimeout(timeout);
-					
+
 					try {
 						// connect to the remote server
-						Socket remoteSocket = new Socket();
+						Socket remoteSocket = protocolAdapter.createRemoteSocket();
 						if (timeout != 0)
 							remoteSocket.setSoTimeout(timeout);
-						
+
 						remoteSocket.connect(new InetSocketAddress(monitor.getRemoteHost(), monitor.getRemotePort()), timeout);
-						
+
 						// relay the call through
 						String protocolId = monitor.getProtocol();
 						ProtocolAdapter adapter = MonitorPlugin.getInstance().getProtocolAdapter(protocolId);
@@ -95,27 +98,28 @@ public class AcceptThread {
 
 	/**
 	 * AcceptThread constructor.
-	 * 
+	 *
 	 * @param monitor a monitor
 	 */
 	public AcceptThread(IMonitor monitor) {
 		super();
 		this.monitor = monitor;
 	}
-	
+
 	/**
 	 * Start the server.
 	 */
 	public void startServer() {
 		if (thread != null)
 			return;
-		thread = new ServerThread();
+		ProtocolAdapter protocolAdapter = getProtocolAdapter();
+		thread = new ServerThread(protocolAdapter);
 		thread.setDaemon(true);
 		thread.setPriority(Thread.NORM_PRIORITY + 1);
 		thread.start();
-		
+
 		Thread.yield();
-		
+
 		// wait up to 2 seconds for initialization
 		int i = 0;
 		while (serverSocket == null && i < 10) {
@@ -130,7 +134,7 @@ public class AcceptThread {
 
 	/**
 	 * Returns <code>true</code> if the server is running.
-	 * 
+	 *
 	 * @return <code>true</code> if the server is running, and <code>false</code>
 	 *    otherwise
 	 */
@@ -145,9 +149,8 @@ public class AcceptThread {
 		try {
 			alive = false;
 			thread = null;
-			
-			String protocolId = monitor.getProtocol();
-		   ProtocolAdapter adapter = MonitorPlugin.getInstance().getProtocolAdapter(protocolId);
+
+			ProtocolAdapter adapter = getProtocolAdapter();
 			adapter.disconnect(monitor);
 			if (serverSocket != null)
 				serverSocket.close();
@@ -157,7 +160,7 @@ public class AcceptThread {
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns true if this port is in use.
 	 *
@@ -183,5 +186,12 @@ public class AcceptThread {
 		}
 
 		return false;
+	}
+
+
+	private ProtocolAdapter getProtocolAdapter() {
+		String protocolId = monitor.getProtocol();
+		ProtocolAdapter adapter = MonitorPlugin.getInstance().getProtocolAdapter(protocolId);
+		return adapter;
 	}
 }
