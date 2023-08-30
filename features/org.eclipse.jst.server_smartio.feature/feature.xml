@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.eclipse.jst.server_smartio.feature"
-      label="smart.IO Plugin"
+      label="smart.IO - Platform Launcher"
       version="1.1.0.qualifier"
       provider-name="TOL GmbH">
 
    <description url="https://www.smartio.info/">
-      Plugin to run &amp; debug smart.IO Server
+      Plugin integarates the smart.IO Platform in the Eclipse IDE
    </description>
 
    <copyright url="http://www.example.com/copyright">
@@ -675,6 +675,10 @@ if any, to sign a &quot;copyright disclaimer&quot; for the program, if necessary
 For more information on this, and how to apply and follow the GNU AGPL, see
 &lt;https://www.gnu.org/licenses/&gt;.license document, but changing it is not allowed.
    </license>
+
+   <url>
+      <update label="TOL Update Site" url="https://apps.tol.info/eclipse"/>
+   </url>
 
    <requires>
       <import plugin="org.eclipse.core.runtime" version="3.2.0" match="compatible"/>
