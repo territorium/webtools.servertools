@@ -42,7 +42,6 @@ import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.wst.server.core.ServerPort;
 import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 /**
@@ -60,11 +59,12 @@ public class ConfigurationPortEditorSection extends ServerEditorSection {
   /**
    * Creates the SWT controls for this workbench part.
    *
-   * @param parent the parent control
+   * @param parent
    */
   @Override
   public void createSection(Composite parent) {
     super.createSection(parent);
+
     FormToolkit toolkit = getFormToolkit(parent.getDisplay());
 
     Section section = toolkit.createSection(parent, ExpandableComposite.TWISTIE | ExpandableComposite.EXPANDED
@@ -94,13 +94,11 @@ public class ConfigurationPortEditorSection extends ServerEditorSection {
 
     TableColumn col = new TableColumn(ports, SWT.NONE);
     col.setText(Messages.configurationEditorPortNameColumn);
-    ColumnWeightData colData = new ColumnWeightData(15, 150, true);
-    tableLayout.addColumnData(colData);
+    tableLayout.addColumnData(new ColumnWeightData(15, 150, true));
 
     col = new TableColumn(ports, SWT.NONE);
     col.setText(Messages.configurationEditorPortValueColumn);
-    colData = new ColumnWeightData(8, 80, true);
-    tableLayout.addColumnData(colData);
+    tableLayout.addColumnData(new ColumnWeightData(8, 80, true));
 
     GridData data = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
     data.widthHint = 230;
@@ -114,9 +112,6 @@ public class ConfigurationPortEditorSection extends ServerEditorSection {
     initialize();
   }
 
-  /*
-   * (non-Javadoc) Initializes the editor part with a site and input.
-   */
   @Override
   public void init(IEditorSite site, IEditorInput input) {
     super.init(site, input);
@@ -164,19 +159,13 @@ public class ConfigurationPortEditorSection extends ServerEditorSection {
     }
   }
 
-  /**
-   *
-   */
-  protected void addChangeListener() {
-    listener = new PropertyChangeListener() {
 
-      @Override
-      public void propertyChange(PropertyChangeEvent event) {
-        if (IServerConfiguration.SET_PORT_PROPERTY.equals(event.getPropertyName())) {
-          String id = (String) event.getOldValue();
-          Integer i = (Integer) event.getNewValue();
-          changePortNumber(id, i.intValue());
-        }
+  protected void addChangeListener() {
+    listener = event -> {
+      if (IServerConfiguration.SET_PORT_PROPERTY.equals(event.getPropertyName())) {
+        String id = (String) event.getOldValue();
+        Integer i = (Integer) event.getNewValue();
+        changePortNumber(id, i.intValue());
       }
     };
     configuration.addPropertyChangeListener(listener);
@@ -184,8 +173,8 @@ public class ConfigurationPortEditorSection extends ServerEditorSection {
 
   /**
    *
-   * @param id java.lang.String
-   * @param port int
+   * @param id
+   * @param port
    */
   protected void changePortNumber(String id, int port) {
     TableItem[] items = ports.getItems();

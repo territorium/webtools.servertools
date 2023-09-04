@@ -22,7 +22,7 @@ import org.eclipse.wst.server.ui.wizard.WizardFragment;
  */
 public class RuntimeWizardFragment extends WizardFragment {
 
-  private RuntimeComposite comp;
+  private RuntimeComposite composite;
 
   @Override
   public final boolean hasComposite() {
@@ -41,15 +41,15 @@ public class RuntimeWizardFragment extends WizardFragment {
 
   @Override
   public final Composite createComposite(Composite parent, IWizardHandle wizard) {
-    comp = new RuntimeComposite(parent, wizard);
-    return comp;
+    composite = new RuntimeComposite(parent, wizard);
+    return composite;
   }
 
   @Override
   public final void enter() {
-    if (comp != null) {
+    if (composite != null) {
       IRuntimeWorkingCopy runtime = (IRuntimeWorkingCopy) getTaskModel().getObject(TaskModel.TASK_RUNTIME);
-      comp.setRuntime(runtime);
+      composite.setRuntime(runtime);
     }
   }
 

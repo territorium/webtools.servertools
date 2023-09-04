@@ -46,7 +46,7 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
   private final Object versionLock = new Object();
 
   /**
-   * Gets the {@link ServerRuntime}.
+   * Gets the {@link IServerRuntime}.
    */
   protected final ServerRuntime getServerRuntime() {
     IRuntime runtime = getServer().getRuntime();
@@ -66,7 +66,7 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
   }
 
   /**
-   * Set the default of the {@link ServerWrapper}.
+   * Set the default of the {@link IServerWrapper}.
    *
    * @param monitor
    */
@@ -280,7 +280,7 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
           contextRoot = "/" + contextRoot;
         }
         String docBase = config.getDocBasePrefix() + module3.getName();
-        WebModule module2 = new WebModule(contextRoot, docBase, module3.getId(), isModulesReloadable());
+        WebModule module2 = new WebModule(contextRoot, docBase, module3.getId());
         config.addWebModule(-1, module2);
       }
     }
@@ -364,16 +364,6 @@ public class ServerWrapper extends ServerDelegate implements IServerWrapper {
   public final IPath getRuntimeBaseDirectory() {
     IServerInstallation handler = getHandler();
     return (handler == null) ? null : handler.getRuntimeBaseDirectory(this);
-  }
-
-  /**
-   * Returns true if contexts should be made reloadable by default.
-   */
-  @Override
-  public final boolean isModulesReloadable() {
-    // If feature is supported, return current setting
-    IServerInstallation handler = getHandler();
-    return (handler == null) ? true : getAttribute(IServerWrapper.PROPERTY_MODULES_RELOADABLE, true);
   }
 
   @Override

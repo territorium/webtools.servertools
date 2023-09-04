@@ -25,9 +25,6 @@ import org.eclipse.wst.server.ui.ServerLaunchConfigurationTab;
  */
 public class LaunchConfigurationTabGroup extends AbstractLaunchConfigurationTabGroup {
 
-  /*
-   * @see ILaunchConfigurationTabGroup#createTabs(ILaunchConfigurationDialog, String)
-   */
   @Override
   public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
     ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[6];

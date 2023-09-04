@@ -46,7 +46,6 @@ class PingThread {
    * @param behaviour
    */
   PingThread(IServer server, String url, int maxPings, ServerBehaviour behaviour) {
-    super();
     this.server = server;
     this.url = url;
     this.maxPings = maxPings;

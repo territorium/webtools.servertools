@@ -21,67 +21,53 @@ import org.eclipse.wst.server.core.model.IURLProvider;
  */
 public interface IServerWrapper extends IURLProvider {
 
-  // Property which specifies the directory where configurations are stored
-  // published.
-  public static final String PROPERTY_CONF_DIR = "confDir";
-
-  // Property which specifies the directory where configurations are stored
-  // published.
-  // public static final String PROPERTY_DEPLOY_DIR = "deployDir";
-
-  // Property which specifies contexts should be reloadable by default.
-  public static final String PROPERTY_MODULES_RELOADABLE = "modulesReloadable";
-  public static final String PROPERTY_ENABLED_EXTENSIONS = "enabledExtensions";
+  String PROPERTY_CONF_DIR           = "confDir";
+  String PROPERTY_ENABLED_EXTENSIONS = "enabledExtensions";
 
   /**
    * Gets the directory to which web applications are to be deployed. If relative, it is relative to
    * the runtime base directory for the server.
    */
-  public String getConfDirectory();
+  String getConfDirectory();
 
-  public void setConfDirectory(String directory);
-
-  /**
-   * Gets the directory to which web applications are to be deployed. If relative, it is relative to
-   * the runtime base directory for the server.
-   */
-  public boolean isNoLogin();
-
-  public void setNoLogin(boolean value);
+  void setConfDirectory(String directory);
 
   /**
    * Gets the directory to which web applications are to be deployed. If relative, it is relative to
    * the runtime base directory for the server.
    */
-  public String getDeployDirectory();
+  boolean isNoLogin();
+
+  void setNoLogin(boolean value);
+
+  /**
+   * Gets the directory to which web applications are to be deployed. If relative, it is relative to
+   * the runtime base directory for the server.
+   */
+  String getDeployDirectory();
 
   /**
    * Returns true if contexts should be made reloadable by default.
    */
-  public boolean isModulesReloadable();
-
-  /**
-   * Returns true if contexts should be made reloadable by default.
-   */
-  public boolean enabledExtensions();
+  boolean enabledExtensions();
 
   /**
    * Get the related {@link IServer}.
    */
-  public IServer getServer();
+  IServer getServer();
 
   /**
    * Gets the server handler for the instantiated version.
    */
-  public IServerInstallation getHandler();
+  IServerInstallation getHandler();
 
   /**
    * Gets the base directory where the server instance runs. This path can vary depending on the
    * configuration. Null may be returned if a runtime hasn't been specified for the server.
    */
-  public IPath getRuntimeBaseDirectory();
+  IPath getRuntimeBaseDirectory();
 
-  public IServerConfiguration loadConfiguration() throws CoreException;
+  IServerConfiguration loadConfiguration() throws CoreException;
 
-  public void saveConfiguration(IProgressMonitor monitor) throws CoreException;
+  void saveConfiguration(IProgressMonitor monitor) throws CoreException;
 }

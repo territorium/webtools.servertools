@@ -15,27 +15,20 @@ import org.eclipse.jst.server.smartio.core.IServerWrapper;
 import org.eclipse.wst.server.core.IServerAttributes;
 
 /**
- *
+ * The {@link ConfigurationPropertyTester} class.
  */
 public class ConfigurationPropertyTester extends PropertyTester {
 
-  /*
-   * (non-Javadoc)
+  /**
    *
-   * @see org.eclipse.core.expressions.IPropertyTester#test(java.lang.Object, java.lang.String,
-   * java.lang.Object[], java.lang.Object)
    */
   @Override
   public boolean test(Object receiver, String property, Object[] args, Object expectedValue) {
     try {
       IServerAttributes server = (IServerAttributes) receiver;
       IServerWrapper wrapper = (IServerWrapper) server.loadAdapter(IServerWrapper.class, null);
-      if (wrapper != null) {
-        return wrapper.loadConfiguration() != null;
-      }
-    } catch (Exception e) {
-      // ignore
-    }
+      return (wrapper != null) && (wrapper.loadConfiguration() != null);
+    } catch (Exception e) {}
     return false;
   }
 }

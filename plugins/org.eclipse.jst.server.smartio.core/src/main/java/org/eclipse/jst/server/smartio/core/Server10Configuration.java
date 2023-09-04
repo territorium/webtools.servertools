@@ -37,7 +37,6 @@ import java.util.List;
 class Server10Configuration extends ServerConfiguration {
 
   private static final String HTTP    = "HTTP";
-  private static final String TOMCAT  = "TOMCAT";
   private static final String SERVER  = "server.properties";
   private static final String LOGGING = "logging.properties";
   private static final String DEFAULT = "server.web";
@@ -76,7 +75,7 @@ class Server10Configuration extends ServerConfiguration {
 
   protected final String getHttpConfigName(Configuration conf, String fallback) {
     for (String name : conf) {
-      if (HTTP.equalsIgnoreCase(conf.getSectionType(name)) || TOMCAT.equalsIgnoreCase(conf.getSectionType(name))) {
+      if (Server10Configuration.HTTP.equalsIgnoreCase(conf.getSectionType(name))) {
         return name;
       }
     }
@@ -137,13 +136,11 @@ class Server10Configuration extends ServerConfiguration {
       switch (id) {
         case "admin":
           configuration.set(http + ".admin", "" + port);
-          // isServerDirty = true;
           firePropertyChangeEvent(IServerConfiguration.SET_PORT_PROPERTY, id, new Integer(port));
           return;
 
         case "http":
           configuration.set(http + ".http", "" + port);
-          // isServerDirty = true;
           firePropertyChangeEvent(IServerConfiguration.SET_PORT_PROPERTY, id, new Integer(port));
           return;
 
@@ -217,7 +214,7 @@ class Server10Configuration extends ServerConfiguration {
       monitor.done();
     } catch (Exception e) {
       ServerPlugin.log(Level.WARNING,
-          "Could not load Tomcat v9.0 configuration from " + path.toOSString() + ": " + e.getMessage());
+          "Could not load smart.IO v22.04 configuration from " + path.toOSString() + ": " + e.getMessage());
       throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0,
           NLS.bind(Messages.errorCouldNotLoadConfiguration, path.toOSString()), e));
     }
@@ -261,7 +258,7 @@ class Server10Configuration extends ServerConfiguration {
       monitor.done();
     } catch (Exception e) {
       ServerPlugin.log(Level.WARNING,
-          "Could not reload Tomcat v9.0 configuration from: " + folder.getFullPath() + ": " + e.getMessage());
+          "Could not reload smart.IO v22.04 configuration from: " + folder.getFullPath() + ": " + e.getMessage());
       throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0,
           NLS.bind(Messages.errorCouldNotLoadConfiguration, folder.getFullPath().toOSString()), e));
     }
@@ -321,7 +318,7 @@ class Server10Configuration extends ServerConfiguration {
       }
       monitor.done();
     } catch (Exception e) {
-      ServerPlugin.log(Level.SEVERE, "Could not save Tomcat v9.0 configuration to " + folder.toString(), e);
+      ServerPlugin.log(Level.SEVERE, "Could not save smart.IO v22.04 configuration to " + folder.toString(), e);
       throw new CoreException(new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0,
           NLS.bind(Messages.errorCouldNotSaveConfiguration, new String[] { e.getLocalizedMessage() }), e));
     }
@@ -388,7 +385,7 @@ class Server10Configuration extends ServerConfiguration {
    * @param reloadable boolean
    */
   @Override
-  public void modifyWebModule(int index, String docBase, String path, boolean reloadable) {
+  public void modifyWebModule(int index, String docBase, String path) {
     // try {
     // Context context = instance.getContext(index);
     // if (context != null) {
@@ -434,8 +431,7 @@ class Server10Configuration extends ServerConfiguration {
    */
   @Override
   public IStatus cleanupServer(IPath baseDir, IPath installDir, IProgressMonitor monitor) {
-    return Status.OK_STATUS;// TomcatVersionHelper.cleanupCatalinaServer(baseDir,
-                            // installDir, getWebModules(), monitor);
+    return Status.OK_STATUS;
   }
 
   /**
@@ -445,13 +441,10 @@ class Server10Configuration extends ServerConfiguration {
    * @param baseDir
    * @param deployDir
    * @param server
-   *
-   * @see IServerConfiguration#localizeConfiguration(IPath, IPath, ServerWrapper, IProgressMonitor)
    */
   @Override
-  public IStatus localizeConfiguration(IPath baseDir, IPath deployDir, ServerWrapper wrapper,
+  public IStatus localizeConfiguration(IPath baseDir, IPath deployDir, IServerWrapper wrapper,
       IProgressMonitor monitor) {
-    return Status.OK_STATUS;// TomcatVersionHelper.localizeConfiguration(baseDir,
-                            // deployDir, wrapper, monitor);
+    return Status.OK_STATUS;
   }
 }

@@ -20,8 +20,6 @@ import org.eclipse.jst.server.smartio.ui.ContextIds;
 import org.eclipse.jst.server.smartio.ui.Messages;
 import org.eclipse.jst.server.smartio.ui.Trace;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -63,12 +61,12 @@ class WebModuleDialog extends Dialog {
    *
    * @param shell
    * @param attributes
-   * @param webModule a module
+   * @param webModule
    */
   WebModuleDialog(Shell shell, IServerAttributes attributes, WebModule webModule) {
     super(shell);
     this.attributes = attributes;
-    isEdit = true;
+    this.isEdit = true;
     this.webModule = webModule;
   }
 
@@ -80,7 +78,7 @@ class WebModuleDialog extends Dialog {
    * @param isProject
    */
   WebModuleDialog(Shell shell, IServerAttributes attributes, boolean isProject) {
-    this(shell, attributes, new WebModule("/", "", null, true));
+    this(shell, attributes, new WebModule("/", "", null));
     isEdit = false;
     this.isProject = isProject;
   }
@@ -91,6 +89,15 @@ class WebModuleDialog extends Dialog {
    */
   protected final IModule getIModule() {
     return module;
+  }
+
+  /**
+   * Return the mime mapping.
+   *
+   * @return org.eclipse.jst.server.smartio.WebModule
+   */
+  public final WebModule getWebModule() {
+    return webModule;
   }
 
   /**
@@ -176,14 +183,9 @@ class WebModuleDialog extends Dialog {
     if (isProject || ((webModule.getMemento() != null) && (webModule.getMemento().length() > 0))) {
       docBase.setEditable(false);
     } else {
-      docBase.addModifyListener(new ModifyListener() {
-
-        @Override
-        public void modifyText(ModifyEvent e) {
-          webModule =
-              new WebModule(webModule.getPath(), docBase.getText(), webModule.getMemento(), webModule.isReloadable());
-          validate();
-        }
+      docBase.addModifyListener(e -> {
+        webModule = new WebModule(webModule.getPath(), docBase.getText(), webModule.getMemento());
+        validate();
       });
     }
 
@@ -217,17 +219,8 @@ class WebModuleDialog extends Dialog {
     data.widthHint = 150;
     path.setLayoutData(data);
     path.setText(webModule.getPath());
-    /*
-     * if (module.getMemento() != null && module.getMemento().length() > 0) path.setEditable(false);
-     * else
-     */
-    path.addModifyListener(new ModifyListener() {
-
-      @Override
-      public void modifyText(ModifyEvent e) {
-        webModule = new WebModule(path.getText(), webModule.getDocumentBase(), webModule.getMemento(),
-            webModule.isReloadable());
-      }
+    path.addModifyListener(e -> {
+      webModule = new WebModule(path.getText(), webModule.getDocumentBase(), webModule.getMemento());
     });
     whs.setHelp(path, ContextIds.CONFIGURATION_EDITOR_WEBMODULE_DIALOG_PATH);
 
@@ -236,20 +229,6 @@ class WebModuleDialog extends Dialog {
     if (!isProject) {
       // auto reload
       new Label(composite, SWT.NONE).setText("");
-      final Button reloadable = new Button(composite, SWT.CHECK);
-      reloadable.setText(Messages.configurationEditorWebModuleDialogReloadEnabled);
-      data = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-      reloadable.setLayoutData(data);
-      reloadable.setSelection(webModule.isReloadable());
-      reloadable.addSelectionListener(new SelectionAdapter() {
-
-        @Override
-        public void widgetSelected(SelectionEvent e) {
-          webModule = new WebModule(webModule.getPath(), webModule.getDocumentBase(), webModule.getMemento(),
-              reloadable.getSelection());
-        }
-      });
-      whs.setHelp(reloadable, ContextIds.CONFIGURATION_EDITOR_WEBMODULE_DIALOG_RELOAD);
     }
 
     if (!isEdit && isProject) {
@@ -264,7 +243,7 @@ class WebModuleDialog extends Dialog {
             if ((contextRoot != null) && !contextRoot.startsWith("/") && (contextRoot.length() > 0)) {
               contextRoot = "/" + contextRoot;
             }
-            webModule = new WebModule(contextRoot, module3.getName(), module3.getId(), webModule.isReloadable());
+            webModule = new WebModule(contextRoot, module3.getName(), module3.getId());
             docBase.setText(module3.getName());
             path.setText(contextRoot);
             module = module3;
@@ -296,14 +275,5 @@ class WebModuleDialog extends Dialog {
     }
 
     getButton(IDialogConstants.OK_ID).setEnabled(ok);
-  }
-
-  /**
-   * Return the mime mapping.
-   *
-   * @return org.eclipse.jst.server.smartio.WebModule
-   */
-  public WebModule getWebModule() {
-    return webModule;
   }
 }

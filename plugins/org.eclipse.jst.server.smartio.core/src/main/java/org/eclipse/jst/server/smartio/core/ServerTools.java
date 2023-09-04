@@ -194,11 +194,11 @@ public abstract class ServerTools {
     String key = text.substring(start, center);
     String value = text.substring(center, end);
 
-//    if (key.startsWith("--")) {
-//      args.put(key + value, "");
-//    } else {
-      args.put(key, value);
-//    }
+    // if (key.startsWith("--")) {
+    // args.put(key + value, "");
+    // } else {
+    args.put(key, value);
+    // }
     return end;
   }
 

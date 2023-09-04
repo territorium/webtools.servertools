@@ -36,7 +36,7 @@ public class ServerLaunchAdapter extends LaunchableAdapterDelegate {
   @Override
   public Object getLaunchable(IServer server, IModuleArtifact artifact) {
     ServerPlugin.log(Level.FINER, "ServerLaunchAdapter " + server + "-" + artifact);
-    if (server.getAdapter(ServerWrapper.class) == null) {
+    if (server.getAdapter(IServerWrapper.class) == null) {
       return null;
     }
 

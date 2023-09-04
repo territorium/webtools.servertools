@@ -85,7 +85,7 @@ public abstract class ServerConfiguration implements IServerConfiguration {
    * @return result of operation
    */
   @Override
-  public abstract IStatus localizeConfiguration(IPath baseDir, IPath deployDir, ServerWrapper server,
+  public abstract IStatus localizeConfiguration(IPath baseDir, IPath deployDir, IServerWrapper server,
       IProgressMonitor monitor);
 
   /**

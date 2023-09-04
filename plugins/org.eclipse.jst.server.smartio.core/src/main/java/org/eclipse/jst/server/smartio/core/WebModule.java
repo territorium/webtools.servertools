@@ -23,10 +23,9 @@ public class WebModule {
       + "</web-app>";
 
 
-  private final String  docBase;
-  private final String  path;
-  private final String  memento;
-  private final boolean reloadable;
+  private final String docBase;
+  private final String path;
+  private final String memento;
 
   /**
    * WebModule constructor comment.
@@ -34,13 +33,11 @@ public class WebModule {
    * @param path
    * @param docBase
    * @param memento
-   * @param reloadable
    */
-  public WebModule(String path, String docBase, String memento, boolean reloadable) {
+  public WebModule(String path, String docBase, String memento) {
     this.path = path;
     this.docBase = docBase;
     this.memento = memento;
-    this.reloadable = reloadable;
   }
 
   /**
@@ -62,13 +59,6 @@ public class WebModule {
    */
   public final String getMemento() {
     return memento;
-  }
-
-  /**
-   * Return true if the web module is auto-reloadable.
-   */
-  public final boolean isReloadable() {
-    return reloadable;
   }
 
   /**

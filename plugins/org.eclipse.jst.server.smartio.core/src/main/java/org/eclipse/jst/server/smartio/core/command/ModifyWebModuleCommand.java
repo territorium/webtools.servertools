@@ -35,7 +35,7 @@ public class ModifyWebModuleCommand extends ConfigurationCommand {
   @Override
   public void execute() {
     oldModule = configuration.getWebModules().get(index);
-    configuration.modifyWebModule(index, newModule.getDocumentBase(), newModule.getPath(), newModule.isReloadable());
+    configuration.modifyWebModule(index, newModule.getDocumentBase(), newModule.getPath());
   }
 
   /**
@@ -43,6 +43,6 @@ public class ModifyWebModuleCommand extends ConfigurationCommand {
    */
   @Override
   public void undo() {
-    configuration.modifyWebModule(index, oldModule.getDocumentBase(), oldModule.getPath(), oldModule.isReloadable());
+    configuration.modifyWebModule(index, oldModule.getDocumentBase(), oldModule.getPath());
   }
 }

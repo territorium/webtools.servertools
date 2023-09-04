@@ -14,7 +14,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.ColumnWeightData;
-import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.TableLayout;
 import org.eclipse.jst.server.core.IWebModule;
 import org.eclipse.jst.server.smartio.core.IServerConfiguration;
@@ -32,7 +31,6 @@ import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -50,7 +48,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.wst.server.core.IModule;
 import org.eclipse.wst.server.core.ServerUtil;
-import org.eclipse.wst.server.ui.ServerUICore;
 import org.eclipse.wst.server.ui.editor.ServerEditorPart;
 
 import java.beans.PropertyChangeEvent;
@@ -178,17 +175,12 @@ public class ConfigurationWebModuleEditorPart extends ServerEditorPart {
     rightPanel.setLayout(layout);
     data = new GridData();
     rightPanel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_BEGINNING));
-    // toolkit.paintBordersFor(rightPanel);
 
-    // buttons still to add:
-    // add project, add external module, remove module
     addProject = toolkit.createButton(rightPanel, Messages.configurationEditorAddProjectModule, SWT.PUSH);
     data = new GridData(GridData.FILL_HORIZONTAL);
     addProject.setLayoutData(data);
     whs.setHelp(addProject, ContextIds.CONFIGURATION_EDITOR_WEBMODULES_ADD_PROJECT);
 
-    // disable the add project module button if there are no
-    // web projects in the workbench
     if (!canAddWebModule()) {
       addProject.setEnabled(false);
     } else {
@@ -330,7 +322,6 @@ public class ConfigurationWebModuleEditorPart extends ServerEditorPart {
     webAppTable.removeAll();
     setErrorMessage(null);
 
-    ILabelProvider labelProvider = ServerUICore.getLabelProvider();
     List<WebModule> list = configuration.getWebModules();
     Iterator<WebModule> iterator = list.iterator();
     while (iterator.hasNext()) {
@@ -338,26 +329,11 @@ public class ConfigurationWebModuleEditorPart extends ServerEditorPart {
       TableItem item = new TableItem(webAppTable, SWT.NONE);
 
       String memento = module.getMemento();
-      String projectName = "";
-      Image projectImage = null;
       if ((memento != null) && (memento.length() > 0)) {
-        projectName = NLS.bind(Messages.configurationEditorProjectMissing, new String[] { memento });
-        projectImage = ServerUIPlugin.getImage(ServerUIPlugin.IMG_PROJECT_MISSING);
         IModule module2 = ServerUtil.getModule(memento);
         if (module2 != null) {
-          projectName = labelProvider.getText(module2);
-          projectImage = labelProvider.getImage(module2);
           item.setData(module2);
         }
-      }
-
-      String reload = module.isReloadable() ? Messages.configurationEditorReloadEnabled
-          : Messages.configurationEditorReloadDisabled;
-      String[] s = new String[] { module.getPath(), module.getDocumentBase(), projectName, reload };
-      item.setText(s);
-      item.setImage(0, ServerUIPlugin.getImage(ServerUIPlugin.IMG_WEB_MODULE));
-      if (projectImage != null) {
-        item.setImage(2, projectImage);
       }
 
       if (!isDocumentBaseValid(module.getDocumentBase())) {
@@ -365,7 +341,6 @@ public class ConfigurationWebModuleEditorPart extends ServerEditorPart {
         setErrorMessage(NLS.bind(Messages.errorMissingWebModule, module.getDocumentBase()));
       }
     }
-    labelProvider = null;
 
     if (readOnly) {
       addProject.setEnabled(false);

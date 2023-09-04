@@ -34,7 +34,7 @@ class Server10Installation implements IServerInstallation {
    * @param wrapper
    */
   @Override
-  public IPath getRuntimeBaseDirectory(ServerWrapper wrapper) {
+  public IPath getRuntimeBaseDirectory(IServerWrapper wrapper) {
     return wrapper.getServer().getRuntime().getLocation();
   }
 
@@ -69,7 +69,6 @@ class Server10Installation implements IServerInstallation {
     args.add("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
     args.addPath(VMArgsBuilder.SMARTIO_USER, ServerTools.getRelativePath(installPath, configPath));
     args.addPath(VMArgsBuilder.SMARTIO_CONF, config.getLocation());
-
     args.addPath(VMArgsBuilder.USER_DIR, config.getLocation());
 
     args.addOpens("java.base/java.lang");
@@ -78,17 +77,11 @@ class Server10Installation implements IServerInstallation {
     return args.build(VMArgsBuilder.BOOT_MODULE);
   }
 
-  /**
-   * @see IServerInstallation#getRuntimeProgramArguments(IPath, boolean, boolean)
-   */
   @Override
   public String[] getRuntimeProgramArguments(IPath configPath, boolean starting) {
     return new String[] { starting ? "start" : "stop" };
   }
 
-  /**
-   * @see IServerInstallation#verifyInstallPath(IPath)
-   */
   @Override
   public IStatus verifyInstallPath(IPath installPath) {
     IStatus result = VersionHelper.checkVersion(installPath, ServerPlugin.SERVER_10);
@@ -99,28 +92,19 @@ class Server10Installation implements IServerInstallation {
     return result;
   }
 
-  /**
-   * @see IServerInstallation#canAddModule(IModule)
-   */
   @Override
   public IStatus canAddModule(IModule module) {
     return WebModule.canAddModule(module) ? Status.OK_STATUS
         : new Status(IStatus.ERROR, ServerPlugin.PLUGIN_ID, 0, Messages.errorSpec10, null);
   }
 
-  /**
-   * @see IServerInstallation#prepareDeployDirectory(IPath)
-   */
   @Override
   public IStatus prepareDeployDirectory(IPath deployPath) {
     return FileUtil.createDeploymentDirectory(deployPath, WebModule.DEFAULT_WEBXML_SERVLET25);
   }
 
-  /**
-   * @see IServerInstallation#prepareForServingDirectly(IPath, ServerWrapper)
-   */
   @Override
-  public IStatus prepareForServingDirectly(IPath baseDir, ServerWrapper server, String version) {
+  public IStatus prepareForServingDirectly(IPath baseDir, IServerWrapper server, String version) {
     return Status.OK_STATUS;
   }
 }

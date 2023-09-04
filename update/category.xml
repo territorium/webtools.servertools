@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature id="org.eclipse.jst.server_smartio.feature" url="features/org.eclipse.jst.server_smartio.feature_1.0.25.v20210626-0551.jar" version="1.0.25.v20210626-0551">
+      <category name="site"/>
+   </feature>
+   <category-def name="site" label="Eclipse Tools 4 smart.IO">
+      <description>
+         To install these features, point Eclipse at this site.
+      </description>
+   </category-def>
+</site>

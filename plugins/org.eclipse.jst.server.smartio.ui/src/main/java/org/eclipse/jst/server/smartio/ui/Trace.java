@@ -18,15 +18,6 @@ public class Trace {
   static final byte        WARNING = 1;
   public static final byte SEVERE  = 2;
 
-
-  /**
-   * Trace constructor comment.
-   */
-  private Trace() {
-    super();
-  }
-
-
   /**
    * Trace the given message and exception.
    *

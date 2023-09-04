@@ -47,28 +47,28 @@ public class CleanWorkDirDialog extends Dialog {
 
   private final IServer server;
   private final IModule module;
-  private int           state;
-  private String        mode;
-  private IStatus       completionStatus;
+
+
+  private int     state;
+  private String  mode;
+  private IStatus completionStatus;
 
   /**
    * Creates a dialog instance confirm deletion of the work directory for a module on a server, or
    * the work directory for the entire server.
    *
-   * @param parentShell the parent shell, or <code>null</code> to create a top-level shell
-   * @param server server on which to delete the work directory
-   * @param module module whose work directory is to be deleted, or <code>null</code> if if these
-   *        server's entire work directory is to be deleted.
+   * @param shell
+   * @param server
+   * @param module
    */
-  public CleanWorkDirDialog(Shell parentShell, IServer server, IModule module) {
-    super(parentShell);
+  public CleanWorkDirDialog(Shell shell, IServer server, IModule module) {
+    super(shell);
+    this.server = server;
+    this.module = module;
 
     if (server == null) {
       throw new IllegalArgumentException();
     }
-
-    this.server = server;
-    this.module = module;
 
   }
 
@@ -136,37 +136,22 @@ public class CleanWorkDirDialog extends Dialog {
   @Override
   protected void okPressed() {
     String jobName = NLS.bind(Messages.cleanServerTask, module != null ? module.getName() : server.getName());
-    // Create job to perform the cleaning, including stopping and starting the
-    // server if necessary
+
     CleanWorkDirJob job = new CleanWorkDirJob(jobName);
-    // Note: Since stop and start, if needed, will set scheduling rules in their
-    // jobs,
-    // don't set one here. Instead do the actual deletion in a child job too
-    // with the
-    // scheduling rule on that job, like stop and start.
     job.schedule();
 
     super.okPressed();
   }
 
-  /*
-   * Job to clean the appropriate smart.IO work directory. It includes stopping and starting the
-   * server if the server is currently running. The stopping, deletion, and starting are all done
-   * with child jobs, each using the server scheduling rule. Thus, this job should not use this rule
-   * or it will block these child jobs.
-   */
   private class CleanWorkDirJob extends Job {
 
     /**
-     * @param name name for job
+     * @param name
      */
     private CleanWorkDirJob(String jobName) {
       super(jobName);
     }
 
-    /**
-     * @see Job#belongsTo(Object)
-     */
     @Override
     public boolean belongsTo(Object family) {
       return ServerUtil.SERVER_JOB_FAMILY.equals(family);
@@ -334,7 +319,6 @@ public class CleanWorkDirDialog extends Dialog {
 
     @Override
     protected IStatus run(IProgressMonitor monitor) {
-
       IStatus status = Status.OK_STATUS;
       // If server isn't stopped, abort the attempt to delete the work directory
       if (server.getServerState() != IServer.STATE_STOPPED) {
@@ -347,7 +331,7 @@ public class CleanWorkDirDialog extends Dialog {
       ServerBehaviour behavior = (ServerBehaviour) server.loadAdapter(ServerBehaviour.class, monitor);
       try {
         if (webModule != null) {
-          WebModule tcWebModule = new WebModule(webModule.getContextRoot(), "", "", true);
+          WebModule tcWebModule = new WebModule(webModule.getContextRoot(), "", "");
           status = behavior.cleanContextWorkDir(tcWebModule, null);
         } else {
           status = behavior.cleanServerWorkDir(null);

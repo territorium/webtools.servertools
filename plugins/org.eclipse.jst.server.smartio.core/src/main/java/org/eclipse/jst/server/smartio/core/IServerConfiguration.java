@@ -26,16 +26,16 @@ import java.util.List;
  */
 public interface IServerConfiguration {
 
-  public static final String SET_PORT_PROPERTY          = "setPort";
+  String SET_PORT_PROPERTY          = "setPort";
 
-  public static final String WEB_MODULE_PROPERTY_ADD    = "addWebModule";
-  public static final String WEB_MODULE_PROPERTY_MODIFY = "modifyWebModule";
-  public static final String WEB_MODULE_PROPERTY_REMOVE = "removeWebModule";
+  String WEB_MODULE_PROPERTY_ADD    = "addWebModule";
+  String WEB_MODULE_PROPERTY_MODIFY = "modifyWebModule";
+  String WEB_MODULE_PROPERTY_REMOVE = "removeWebModule";
 
   /**
    * Returns a list of ServerPorts that this configuration uses.
    */
-  public List<ServerPort> getServerPorts();
+  List<ServerPort> getServerPorts();
 
   /**
    * Modify the port with the given id.
@@ -43,12 +43,12 @@ public interface IServerConfiguration {
    * @param id
    * @param port
    */
-  public void setServerPort(String id, int port);
+  void setServerPort(String id, int port);
 
   /**
    * Return a list of the web modules in this server.
    */
-  public List<WebModule> getWebModules();
+  List<WebModule> getWebModules();
 
   /**
    * Change a web module.
@@ -58,9 +58,9 @@ public interface IServerConfiguration {
    * @param path
    * @param reloadable
    */
-  public void modifyWebModule(int index, String docBase, String path, boolean reloadable);
+  void modifyWebModule(int index, String docBase, String path);
 
-  public IStatus cleanupServer(IPath confDir, IPath installDir, IProgressMonitor monitor);
+  IStatus cleanupServer(IPath confDir, IPath installDir, IProgressMonitor monitor);
 
   /**
    * Make any local changes to the server configuration at the specified runtime base directory
@@ -72,27 +72,28 @@ public interface IServerConfiguration {
    * @param monitor a progress monitor
    * @return result of operation
    */
-  public IStatus localizeConfiguration(IPath confDir, IPath deployDir, ServerWrapper server, IProgressMonitor monitor);
+  IStatus localizeConfiguration(IPath confDir, IPath deployDir, IServerWrapper server, IProgressMonitor monitor);
 
   /**
    * Returns the main server port.
    *
    * @return ServerPort
    */
-  public ServerPort getMainPort();
+  ServerPort getMainPort();
+
   /**
    * Returns the main server port.
    *
    * @return ServerPort
    */
-  public ServerPort getShutdownPort();
+  ServerPort getShutdownPort();
 
   /**
    * Returns the prefix that is used in front of the web module path property. (e.g. "webapps")
    *
    * @return java.lang.String
    */
-  public String getDocBasePrefix();
+  String getDocBasePrefix();
 
   /**
    * Returns the partial URL applicable to this module.
@@ -100,7 +101,7 @@ public interface IServerConfiguration {
    * @param webModule a web module
    * @return the partial URL
    */
-  public String getWebModuleURL(IModule webModule);
+  String getWebModuleURL(IModule webModule);
 
   /**
    * Returns the given module from the config.
@@ -108,7 +109,7 @@ public interface IServerConfiguration {
    * @param module a web module
    * @return a web module
    */
-  public WebModule getWebModule(IModule module);
+  WebModule getWebModule(IModule module);
 
   /**
    * Import the runtime configuration.
@@ -116,7 +117,7 @@ public interface IServerConfiguration {
    * @param path
    * @param monitor
    */
-  public void importConfiguration(IPath path, IProgressMonitor monitor) throws CoreException;
+  void importConfiguration(IPath path, IProgressMonitor monitor) throws CoreException;
 
   /**
    * Loads the current {@link IServerConfiguration}.
@@ -125,7 +126,7 @@ public interface IServerConfiguration {
    * @param folder
    * @param monitor
    */
-  public void loadConfiguration(IPath path, IFolder folder, IProgressMonitor monitor) throws CoreException;
+  void loadConfiguration(IPath path, IFolder folder, IProgressMonitor monitor) throws CoreException;
 
   /**
    * Saves the current {@link IServerConfiguration}.
@@ -134,11 +135,11 @@ public interface IServerConfiguration {
    * @param folder
    * @param monitor
    */
-  public void saveConfiguration(IPath path, IFolder folder, IProgressMonitor monitor) throws CoreException;
+  void saveConfiguration(IPath path, IFolder folder, IProgressMonitor monitor) throws CoreException;
 
-  public void addWebModule(int index, WebModule module);
+  void addWebModule(int index, WebModule module);
 
-  public void removeWebModule(int index);
+  void removeWebModule(int index);
 
   /**
    * Gets the work directory for the server.
@@ -146,7 +147,7 @@ public interface IServerConfiguration {
    * @param basePath path to server runtime directory
    * @return path for the server's work directory
    */
-  public IPath getServerWorkDirectory(IPath basePath);
+  IPath getServerWorkDirectory(IPath basePath);
 
   /**
    * Gets the work directory for the specified module on the server.
@@ -154,19 +155,19 @@ public interface IServerConfiguration {
    * @param basePath
    * @param module
    */
-  public IPath getContextWorkDirectory(IPath basePath, WebModule module);
+  IPath getContextWorkDirectory(IPath basePath, WebModule module);
 
   /**
    * Adds a property change listener to this server.
    *
    * @param listener
    */
-  public void addPropertyChangeListener(PropertyChangeListener listener);
+  void addPropertyChangeListener(PropertyChangeListener listener);
 
   /**
    * Removes a property change listener from this server.
    *
    * @param listener
    */
-  public void removePropertyChangeListener(PropertyChangeListener listener);
+  void removePropertyChangeListener(PropertyChangeListener listener);
 }

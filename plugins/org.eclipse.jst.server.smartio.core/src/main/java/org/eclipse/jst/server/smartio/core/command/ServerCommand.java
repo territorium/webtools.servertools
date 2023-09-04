@@ -16,14 +16,13 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jst.server.smartio.core.IServerWrapper;
-import org.eclipse.jst.server.smartio.core.ServerWrapper;
 
 /**
  * A command on a smart.IO server.
  */
 abstract class ServerCommand extends AbstractOperation {
 
-  protected ServerWrapper server;
+  protected IServerWrapper server;
 
   /**
    * ServerCommand constructor comment.
@@ -33,7 +32,7 @@ abstract class ServerCommand extends AbstractOperation {
    */
   ServerCommand(IServerWrapper server, String label) {
     super(label);
-    this.server = (ServerWrapper) server;
+    this.server = server;
   }
 
   @Override

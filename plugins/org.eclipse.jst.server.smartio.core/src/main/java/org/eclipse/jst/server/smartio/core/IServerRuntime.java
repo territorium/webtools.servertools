@@ -25,5 +25,5 @@ public interface IServerRuntime {
    *
    * @param configPath
    */
-  public List<IRuntimeClasspathEntry> getRuntimeClasspath(IPath configPath);
+  List<IRuntimeClasspathEntry> getRuntimeClasspath(IPath configPath);
 }

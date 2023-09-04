@@ -21,9 +21,7 @@ public class Messages extends NLS {
   public static String errorVersionEmpty;
   public static String errorUnknownVersion;
   public static String errorInstallDirEmpty;
-  public static String errorInstallDirWrongVersion2;
   public static String errorInstallDirTrailingSlash;
-
 
   public static String warningJRE;
   public static String warningCantReadConfig;
@@ -34,9 +32,8 @@ public class Messages extends NLS {
   public static String errorCouldNotSaveConfiguration;
   public static String errorSpec10;
   public static String portServer;
-  public static String publishConfigurationTask;
-  public static String errorPublishConfiguration;
-  public static String publisherPublishTask;
+
+
   public static String errorNoConfiguration;
   public static String errorConfigurationProjectClosed;
   public static String errorWebModulesOnly;
@@ -53,7 +50,6 @@ public class Messages extends NLS {
   public static String configurationEditorActionModifyWebModule;
   public static String configurationEditorActionRemoveWebModule;
   public static String serverEditorActionSetSecure;
-  public static String serverEditorActionSetDeployDirectory;
 
   static {
     NLS.initializeMessages(ServerPlugin.PLUGIN_ID + ".Messages", Messages.class);

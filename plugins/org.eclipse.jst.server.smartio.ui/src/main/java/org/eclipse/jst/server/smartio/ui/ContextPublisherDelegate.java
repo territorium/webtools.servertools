@@ -74,12 +74,21 @@ public class ContextPublisherDelegate extends PublisherDelegate {
               if (MessageDialog.openQuestion(shell, Messages.wizardTitle,
                   NLS.bind(Messages.contextCleanup, m.getName()))) {
                 int index = configuration.getWebModules().indexOf(webModule2);
-                configuration.modifyWebModule(index, webModule2.getDocumentBase(), context, webModule2.isReloadable());
+                configuration.modifyWebModule(index, webModule2.getDocumentBase(), context);
                 save[0] = true;
               }
             }
           });
-          markProject(m, contextRoot);
+
+          IProject project = m.getProject();
+          if (project != null) {
+            try {
+              project.setPersistentProperty(ContextPublisherDelegate.QUALIFIED_NAME, contextRoot);
+            } catch (CoreException ce) {
+              // ignore, it's ok to prompt again later
+            }
+          }
+
         }
       }
     }
@@ -104,19 +113,6 @@ public class ContextPublisherDelegate extends PublisherDelegate {
       return !contextRoot.equals(s);
     } catch (CoreException ce) {
       return true;
-    }
-  }
-
-  protected void markProject(IModule m, String contextRoot) {
-    IProject project = m.getProject();
-    if (project == null) {
-      return;
-    }
-
-    try {
-      project.setPersistentProperty(ContextPublisherDelegate.QUALIFIED_NAME, contextRoot);
-    } catch (CoreException ce) {
-      // ignore, it's ok to prompt again later
     }
   }
 }

@@ -48,15 +48,14 @@ public class Messages extends NLS {
   public static String configurationEditorAddProjectModule;
   public static String configurationEditorAddExternalModule;
   public static String configurationEditorProjectMissing;
-  public static String configurationEditorReloadEnabled;
-  public static String configurationEditorReloadDisabled;
+
 
   public static String serverEditorGeneralSection;
   public static String serverEditorGeneralDescription;
 
 
   public static String projectConfDir;
-  public static String serverEditorReloadableByDefault;
+
   public static String serverEnableNologinByDefault;
   public static String errorServerDirIsRoot;
   public static String serverEditorBrowseConfMessage;
@@ -66,7 +65,7 @@ public class Messages extends NLS {
   public static String configurationEditorWebModuleDialogDocumentBase;
   public static String configurationEditorWebModuleDialogSelectDirectory;
   public static String configurationEditorWebModuleDialogPath;
-  public static String configurationEditorWebModuleDialogReloadEnabled;
+
 
   public static String confirmCleanWorkDirTitle;
   public static String cleanServerStateChanging;

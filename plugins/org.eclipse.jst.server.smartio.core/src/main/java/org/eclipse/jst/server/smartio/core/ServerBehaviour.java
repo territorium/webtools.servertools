@@ -68,10 +68,10 @@ public class ServerBehaviour extends ServerBehaviourDelegate {
   private transient IDebugEventSetListener processListener;
 
   /**
-   * Get the {@link ServerWrapper} for the current {@link ServerBehaviourDelegate}
+   * Get the {@link IServerWrapper} for the current {@link ServerBehaviourDelegate}
    */
-  protected final ServerWrapper getWrapper() {
-    return (ServerWrapper) getServer().loadAdapter(ServerWrapper.class, null);
+  protected final IServerWrapper getWrapper() {
+    return (IServerWrapper) getServer().loadAdapter(ServerWrapper.class, null);
   }
 
   protected final IServerInstallation getHandler() {

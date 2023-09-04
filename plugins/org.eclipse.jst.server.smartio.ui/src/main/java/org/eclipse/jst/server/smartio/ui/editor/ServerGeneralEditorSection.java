@@ -40,7 +40,6 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.wst.server.ui.editor.ServerEditorSection;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 /**
@@ -52,44 +51,29 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
   private boolean                updating;
   private PropertyChangeListener listener;
 
-  private Button                 reloadable;
   private Button                 nologin;
 
   private Text                   confDir;
   private Button                 confDirBrowse;
 
-  // private Text deployDir;
-  // private Button deployDirBrowse;
-
   /**
    * Add listeners to detect undo changes and publishing of the server.
    */
   private void addChangeListeners() {
-    listener = new PropertyChangeListener() {
-
-      @Override
-      public void propertyChange(PropertyChangeEvent event) {
-        if (updating) {
-          return;
-        }
-        updating = true;
-        if (IServerWrapper.PROPERTY_CONF_DIR.equals(event.getPropertyName())) {
-          String s = (String) event.getNewValue();
-          confDir.setText(s);
-          validate();
-          // } else if (IServerWrapper.PROPERTY_DEPLOY_DIR.equals(event.getPropertyName())) {
-          // String s = (String) event.getNewValue();
-          // deployDir.setText(s);
-          // validate();
-        } else if (IServerWrapper.PROPERTY_MODULES_RELOADABLE.equals(event.getPropertyName())) {
-          Boolean b = (Boolean) event.getNewValue();
-          reloadable.setSelection(b.booleanValue());
-        } else if (IServerWrapper.PROPERTY_ENABLED_EXTENSIONS.equals(event.getPropertyName())) {
-          Boolean b = (Boolean) event.getNewValue();
-          nologin.setSelection(b.booleanValue());
-        }
-        updating = false;
+    listener = event -> {
+      if (updating) {
+        return;
       }
+      updating = true;
+      if (IServerWrapper.PROPERTY_CONF_DIR.equals(event.getPropertyName())) {
+        String s = (String) event.getNewValue();
+        confDir.setText(s);
+        validate();
+      } else if (IServerWrapper.PROPERTY_ENABLED_EXTENSIONS.equals(event.getPropertyName())) {
+        Boolean b = (Boolean) event.getNewValue();
+        nologin.setSelection(b.booleanValue());
+      }
+      updating = false;
     };
     server.addPropertyChangeListener(listener);
   }
@@ -125,27 +109,9 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
     toolkit.paintBordersFor(composite);
     section.setClient(composite);
 
-    // modules reloadable by default
-    reloadable = toolkit.createButton(composite, NLS.bind(Messages.serverEditorReloadableByDefault, ""), SWT.CHECK);
-    GridData data = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-    data.horizontalSpan = 3;
-    reloadable.setLayoutData(data);
-    reloadable.addSelectionListener(new SelectionAdapter() {
-
-      @Override
-      public void widgetSelected(SelectionEvent se) {
-        if (updating) {
-          return;
-        }
-        updating = true;
-        updating = false;
-      }
-    });
-
-
     // extension no login
     nologin = toolkit.createButton(composite, NLS.bind(Messages.serverEnableNologinByDefault, ""), SWT.CHECK);
-    data = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+    GridData data = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
     data.horizontalSpan = 3;
     nologin.setLayoutData(data);
     nologin.addSelectionListener(new SelectionAdapter() {
@@ -218,9 +184,6 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
   public void init(IEditorSite site, IEditorInput input) {
     super.init(site, input);
 
-    // Cache workspace and default deploy paths
-    // IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-
     if (server != null) {
       wrapper = (IServerWrapper) server.loadAdapter(IServerWrapper.class, null);
       addChangeListeners();
@@ -232,9 +195,6 @@ public class ServerGeneralEditorSection extends ServerEditorSection {
    */
   private void initialize() {
     updating = true;
-
-    reloadable.setText(Messages.serverEditorReloadableByDefault);
-    reloadable.setSelection(wrapper.isModulesReloadable());
 
     nologin.setText(Messages.serverEnableNologinByDefault);
     nologin.setSelection(wrapper.enabledExtensions());

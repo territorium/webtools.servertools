@@ -54,22 +54,18 @@ public class ServerUIPlugin extends AbstractUIPlugin {
    * {@link ServerUIPlugin} constructor comment.
    */
   public ServerUIPlugin() {
-    super();
     ServerUIPlugin.singleton = this;
   }
 
   @Override
   protected ImageRegistry createImageRegistry() {
     ImageRegistry registry = new ImageRegistry();
-
     registerImage(registry, ServerUIPlugin.IMG_WIZ, ServerUIPlugin.URL_WIZBAN + "smartio_wiz.png");
-
     registerImage(registry, ServerUIPlugin.IMG_WEB_MODULE, ServerUIPlugin.URL_OBJ + "web_module.gif");
     registerImage(registry, ServerUIPlugin.IMG_MIME_MAPPING, ServerUIPlugin.URL_OBJ + "mime_mapping.gif");
     registerImage(registry, ServerUIPlugin.IMG_MIME_EXTENSION, ServerUIPlugin.URL_OBJ + "mime_extension.gif");
     registerImage(registry, ServerUIPlugin.IMG_PORT, ServerUIPlugin.URL_OBJ + "port.gif");
     registerImage(registry, ServerUIPlugin.IMG_PROJECT_MISSING, ServerUIPlugin.URL_OBJ + "project_missing.gif");
-
     return registry;
   }
 
@@ -110,8 +106,6 @@ public class ServerUIPlugin extends AbstractUIPlugin {
    * Convenience method to get a Display. The method first checks, if the thread calling this method
    * has an associated display. If so, this display is returned. Otherwise the method returns the
    * default display.
-   *
-   * @return the display
    */
   private static Display getStandardDisplay() {
     Display display = Display.getCurrent();
@@ -123,9 +117,9 @@ public class ServerUIPlugin extends AbstractUIPlugin {
 
 
   static boolean queryCleanTermination(IServer server) {
-    CleanTerminationRunnable tr = new CleanTerminationRunnable(server);
-    Display.getDefault().syncExec(tr);
-    return tr.shouldTerminate();
+    CleanTerminationRunnable runnable = new CleanTerminationRunnable(server);
+    Display.getDefault().syncExec(runnable);
+    return runnable.shouldTerminate();
   }
 
   private static class CleanTerminationRunnable implements Runnable {
@@ -139,9 +133,11 @@ public class ServerUIPlugin extends AbstractUIPlugin {
 
     @Override
     public void run() {
-      Shell shell = ServerUIPlugin.getShell();
-      TerminationDialog dialog = new TerminationDialog(shell, Messages.cleanTerminateServerDialogTitle,
-          NLS.bind(Messages.cleanTerminateServerDialogMessage, server.getName()));
+      String title = Messages.cleanTerminateServerDialogTitle;
+      String message = NLS.bind(Messages.cleanTerminateServerDialogMessage, server.getName());
+
+      Shell shell = ServerUIPlugin.getStandardDisplay().getActiveShell();
+      TerminationDialog dialog = new TerminationDialog(shell, title, message);
       dialog.open();
       if (dialog.getReturnCode() == IDialogConstants.OK_ID) {
         terminate = true;
@@ -151,15 +147,6 @@ public class ServerUIPlugin extends AbstractUIPlugin {
     private boolean shouldTerminate() {
       return terminate;
     }
-  }
-
-  /**
-   * Convenience method to get a shell
-   *
-   * @return Shell
-   */
-  private static Shell getShell() {
-    return ServerUIPlugin.getStandardDisplay().getActiveShell();
   }
 
   /**

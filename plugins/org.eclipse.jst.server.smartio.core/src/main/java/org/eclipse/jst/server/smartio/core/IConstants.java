@@ -22,6 +22,4 @@ package org.eclipse.jst.server.smartio.core;
 public interface IConstants {
 
   String JST_WEB_MODULE = "jst.web";
-
-
 }

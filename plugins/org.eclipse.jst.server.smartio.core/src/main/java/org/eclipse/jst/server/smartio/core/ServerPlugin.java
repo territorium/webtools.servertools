@@ -213,9 +213,7 @@ public class ServerPlugin extends Plugin implements IResourceChangeListener {
     sb.append(ServerPlugin.sdf.format(new Date()));
     sb.append(" ");
     sb.append(message);
-    // Platform.getDebugOption(ServerCore.PLUGIN_ID + "/" + "resources");
 
-    System.out.println(sb.toString());
     if (throwable != null) {
       throwable.printStackTrace();
     }

@@ -29,16 +29,6 @@ public class CleanWorkDirAction implements IObjectActionDelegate {
   private IServer        selectedServer;
   private IModule        selectedModule;
 
-  /**
-   * Constructor for Action1.
-   */
-  public CleanWorkDirAction() {
-    super();
-  }
-
-  /**
-   * @see IObjectActionDelegate#setActivePart(IAction, IWorkbenchPart)
-   */
   @Override
   public void setActivePart(IAction action, IWorkbenchPart targetPart) {
     this.targetPart = targetPart;
@@ -49,13 +39,10 @@ public class CleanWorkDirAction implements IObjectActionDelegate {
    */
   @Override
   public void run(IAction action) {
-    CleanWorkDirDialog dlg = new CleanWorkDirDialog(targetPart.getSite().getShell(), selectedServer, selectedModule);
-    dlg.open();
+    CleanWorkDirDialog dialog = new CleanWorkDirDialog(targetPart.getSite().getShell(), selectedServer, selectedModule);
+    dialog.open();
   }
 
-  /**
-   * @see org.eclipse.ui.IActionDelegate#selectionChanged(IAction, ISelection)
-   */
   @Override
   public void selectionChanged(IAction action, ISelection selection) {
     selectedServer = null;
